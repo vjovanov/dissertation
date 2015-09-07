@@ -24,10 +24,6 @@
 			],
 			"follow_symlinks": true,
 			"path": "."
-		},
-		{
-			"follow_symlinks": true,
-			"path": "/home/vjovanov/research/papers/2015-scala-symposium"
 		}
 	]
 }

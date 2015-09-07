@@ -1,9 +1,9 @@
 all: pdf
 
 pdf:
-	pdflatex --shell-escape phd
+	pdflatex phd
 	bibtex phd
-	pdflatex --shell-escape phd
+	pdflatex phd
 
 clean:
 	rm -f *.aux *.log *.bbl *.blg *.toc *.lof *.lot *.out

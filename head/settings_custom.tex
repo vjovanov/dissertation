@@ -103,6 +103,7 @@
 
 \newcommand{\code}[1]{\scode{#1}}
 \newcommand{\sct}[1]{\S \ref{#1}}
+\lstnewenvironment{lstparagraph}{\lstset{language=Scala}\vspace{1.8mm}}{\vspace{1.8mm}}
 
 % Helper macro that returns #2 if #1 is empty, #3 otherwise.  The
 % macro will misbehave if #1=\\.
@@ -288,7 +289,9 @@
 \newcommand{\Dhd}{\!\!\!\!\!\Rightarrow}
 \newcommand{\la}{\langle}
 \newcommand{\ra}{\rangle}
-\newcommand{\eg}{{\em e.g.}}
+\newcommand{\eg}{e.g.\xspace}
+\newcommand{\cf}{c.f.\xspace}
+\newcommand{\ie}{i.e.\xspace}
 
 % misc identifiers
 \newcommand{\fn}{\mbox{\sl fn}}
@@ -408,3 +411,7 @@
 
 \newcommand{\calculus}{the calculus\xspace}
 
+
+% ScalaCT
+\newcommand{\smartparagraph}[1]{{\bf #1}}
+\newcommand{\tabref}[1]{Table~\ref{#1}}

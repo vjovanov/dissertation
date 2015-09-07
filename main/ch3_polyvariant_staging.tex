@@ -1,1 +1,677 @@
 \chapter{Polyvariant Staging}
+
+
+\emph{Multi-stage programming} (or \emph{staging}) is a meta-programming technique
+  where compilation is separated in multiple \emph{stages}. Execution of each
+  stage outputs code that is executed in the next stage of compilation. The first
+  stage of compilation happens at the \emph{host language} compile time, the second
+  stage happens at the host language runtime, the third stage happens at runtime of
+  runtime generated code, etc. Different stages of compilation can be executed in the same
+  language~\cite{taha_multi-stage_1997,nielson2005two} or in different languages~\cite{brown_heterogeneous_2011,devito2013terra}.
+  In this work we will focus on staging systems where all stages are in the same language and that, through static typing, assure
+  that terms in the next stage are well typed.
+
+  Notable staging systems in statically typed languages are
+  MetaOCaml~\cite{taha_multi-stage_1997,calcagno2003implementing}
+  and LMS~\cite{rompf2012lightweight}. These systems were successfully applied as a
+  \emph{partial evaluatior}~\cite{jones1993partial}: for removing abstraction
+  overheads in high-level programs~\cite{carette2005multi,rompf2012lightweight},
+  for domain-specific languages~\cite{czarnecki_dsl_2004,jonnalagedda2014staged,taha2004gentle}, and for converting language
+  interpreters into compilers~\cite{lancet,futamura1999partial}. Staging originates
+  from research on two-level~\cite{nielson2005two,davies1996temporal} and multi-level~\cite{davies1996modal} calculi.
+
+ We show an example of how staging is used for partial evaluation of a function
+ for computing the inner product of two vectors\footnotemark[1]:\begin{lstparagraph}
+def dot[T:Numeric](v1: Vector[T], v2: Vector[T]): T =
+  (v1 zip v2).foldLeft(zero[T]) {
+    case (prod, (cl, cr)) => prod + cl * cr
+  }
+ \end{lstparagraph}
+
+In function \code{dot}, if vector sizes are constant, the inner product can
+ be partially evaluated into a sum of products of vector components. To achieve partial evaluation,
+ we must communicate to the staging system that operations on values of vector components
+ should be executed in the next stage. The compilation stage
+ in which a term is executed is determined by \emph{code quotation}~(in MetaOCaml)
+ or by parametric types \code{Rep}~(in LMS). In LMS marking
+ that the vector size is statically known is achieved by annotating only vector elements with
+ a \code{Rep} type\footnotemark[2]:\begin{lstparagraph}
+def dot[T:Numeric]
+  (v1: Vector[Rep[T]], v2: Vector[Rep[T]]): Rep[T]
+ \end{lstparagraph}
+
+Here the \code{Rep} annotations on \code{Rep[T]} denote that elements of vectors will be known
+ only in the next stage (in LMS, this is a stage after run-time compilation). After run-time compilation \code{zip},
+ \code{foldLeft}, and pattern matching inside the closure will not exist
+ as they were evaluated in the previous stage of compilation (host language runtime). Note that in
+ LMS unannotated code is always executed during host-language runtime
+ and type-annotated code is executed after run-time compilation.
+
+{\bf Staging at host language compile time.} How can we use staging for programs whose values are statically
+ known at the host language compile-time (the first stage)? Existing staging frameworks
+ treat unannotated terms as runtime values of the host language and annotated terms as
+ values in later stages of compilation. Even if we would take that the first stage is executed
+ at the host language compile time, we would have to annotate all run-time values.
+ Annotating all values is cumbersome since host language run-time values comprise
+ the majority of user programs~(\sct{sct:discussion}).
+
+\footnotetext[1]{All code examples are written in \emph{Scala}. It is necessary to
+know the basics of Scala to comprehend this paper.}
+\footnotetext[2]{In this work we use LMS as a representative of type-based staging systems.}
+
+MacroML~\cite{ganz2001macros} expresses macros as two-stage computations that start executing from host language compile time.
+ In MacroML, parameters of macros can be annotated as an early stage computation. These parameters
+ can then used in escaped terms for compile-time computation. Terms scheduled for runtime execution,
+ withing the escaped terms, again need to be quoted with brackets. This,
+ in effect, imposes quotation for both escaping and brackets which requiring additional effort.
+
+% Type annotations, and thus all operations continue to work!
+{\bf Code Duplication.} Staging systems based on type annotations (e.g., LMS and type-directed
+partial evaluation~\cite{danvy1999type}) inherently require code duplication as,
+a priory, no operations are defined on \code{Rep} annotated types. For example,
+in the LMS version of the \code{dot} function, all numeric types (\ie, \code{Rep[Int]}, \code{Rep[Double]}, etc.)
+must be re-implemented in order to typecheck the programs and achieve code generation
+for the next stage.
+
+Sujeeth et al.~\cite{forge} and Jovanovic et al.~\cite{yin-yang}
+ propose generating code for the next stage computations based on
+ a language specification. These approaches solve the problem,
+ but they require writing additional specification for the libraries,
+ require a large machinery for code generation,
+ and support only restricted parts of Scala.
+
+{\bf Annotating the Previous Stage.} The main idea of this paper is that \emph{annotated types}
+ should denote computations that happen during the \emph{previous stage} of compilation.
+ The reason is that static terms appear less frequently than run-time terms in a large set
+ of analyzed programs (\sct{sct:discussion}). Therefore, annotating static terms
+ introduces less overhead for the programmer.
+
+% TODO count the number of terms
+We treat annotated types as \emph{compile-time views}
+ of existing data types. Compile-time view of a type denotes that all operations on that type are
+ executed at host language compile time. We promote types to their compile-time views
+ with the \code{@ct} annotation (\eg, \code{Int@ct}). Similarly, statically known terms can be promoted
+ their compile time duals with the \code{ct} function on the term level.
+ By having two views of the same type we obviate the need for introducing reification and code generation logic for
+ existing types.
+
+% Restricted to compile-time, but just techincal.
+With compile-time views, to require that vectors \code{v1} and \code{v2} are
+ static and to partially evaluate the function, a programmer needs to make
+ a simple modification of the \code{dot} signature:\begin{lstparagraph}
+def dot[V: Numeric@ct]
+  (v1: Vector[V]@ct, v2: Vector[V]@ct): V
+\end{lstparagraph}
+
+Since, vector elements are polymorphic the result
+ of the function can be a dynamic value, or a compile-time view
+ that can be further used for compile-time computations. The binding time of the return type
+ of \code{dot} will match the binding time of vector elements:
+
+\vspace{1.8mm}
+\begin{listing}[mathescape]
+  // [el1, el2, el3, el4] are dynamic decimals
+  dot(Vector(el1, el2), Vector(el3, el4))
+    $\hookrightarrow$ (el1 * el3 + el2 * el4): Double
+
+  // static terms are internally tracked
+  dot(Vector(2.0, 4.0), Vector(1.0, 10.0))
+    $\hookrightarrow$ (2.0 * 1.0 + 4.0 * 10.0): Double@static
+
+  // ct promotes static terms to compile-time views
+  dot(Vector(ct(2), ct(4)),
+      Vector(ct(1), ct(10)))
+    $\hookrightarrow$ 42: Double@ct
+\end{listing}
+\vspace{1.8mm}
+
+In this paper we contribute to the state of the art:
+\begin{itemize}
+
+ \item By introducing compile-time views~(\sct{sct:interface}) as means to succinctly achieve
+  type safe two-stage programming starting from host language compile time.
+
+ \item By obviating the need for reification and code generation logic in type based staging systems.
+
+ \item By demonstrating the usefulness of compile-time views in four case
+  studies (\sct{sct:case-studies}): inlining, partially evaluating recursion,
+  removing overheads of variable argument functions, and removing overheads of
+  type-classes~\cite{wadler1989make,hall_type_1996,oliveira_type_2010}.
+
+\end{itemize}
+
+We have implemented a staging extension for Scala \tool \footnotemark[3].
+ \tool has a minimal interface (\sct{sct:interface}) based on type annotations.
+ We have evaluated performance gains and the validity of \tool on all case
+ studies~(\sct{sct:case-studies}) and compared them to LMS. In all benchmarks (\sct{sct:evaluation})
+ our evaluator performs the same as LMS and gives significant performance gains compared to original programs.
+
+\footnotetext[3]{Source code: \url{https://github.com/scala-inline/scala-inline}.}
+
+\section{Compile-Time Views in Scala}
+\label{sct:interface}
+
+In this section we informally present \tool, a staging extension for Scala based on compile-time views.
+ \tool is a compiler plugin that executes in a phase after the
+ Scala type checker. The plugin takes as input typechecked Scala programs and uses
+ type annotations~\cite{odersky_1996_putting} to track and verify information about the biding-time
+ of terms. It supports only two stages of compilation: host language compile-time
+ (types annotated with \code{@ct}) and host language run-time (unannotated code).
+
+To the user, \tool exposes a minimal interface (\figref{fig:interface}) with
+a single annotation \code{ct} and a single function \code{ct}.
+
+\begin{figure}
+\begin{listing}
+package object scalact {
+  final class ct extends StaticAnnotation
+
+  @compileTimeOnly def ct[T](body: => T): T = ???
+}
+\end{listing}
+\label{fig:interface}
+\caption{Interface of \tool.}
+\end{figure}
+
+\smartparagraph{Annotation \code{ct}} is used on types~(\eg,
+\code{Int@ct}) to promote them to their compile-time views. The
+annotation is integrated in the Scala's type system and, therefore, can be
+arbitrarily nested in different variants of types.
+
+Since all operations on compile-time views are executed at compile time, non-generic
+ method parameters and result types of compile-time views also become compile-time views. Table \ref{tbl:ct-type}
+ shows how the \code{@ct} annotation can be placed on types and how it affects method
+ signatures on annotated types.
+
+\begin{table*}[t]
+\caption{Compile-time views of types and their corresponding method signatures.}
+\label{tbl:ct-type}
+\centering
+\begin{tabularx}{\linewidth}{ X X X X }
+\toprule
+
+  Annotated Type              & \ &  Type's Method Signatures                          &  \\
+  \code{Int@ct}               & \ &  \code{+(rhs: Int@ct): Int@ct}                     &  \\
+  \code{Vector[Int]@ct}       & \ &  \code{map[U](f: (Int => U)@ct): Vector[U]@ct}     &  \\
+                              & \ &  \code{length: Int@ct}                             &  \\
+  \code{Vector[Int@ct]@ct}    & \ &  \code{map[U](f: (Int@ct => U)@ct): Vector[U]@ct}  &  \\
+                              & \ &  \code{length: Int@ct}                             &  \\
+  \code{Map[Int@ct, Int]@ct}  & \ &  \code{get(key: Int@ct): Option[Int]@ct}           &  \\
+
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+ In \tabref{tbl:ct-type}, on \code{Int@ct} both parameters and result types of all
+ methods are also compile-time views. On the other hand, \code{Vector[Int]@ct} has parameters
+ of all methods transformed except the generic ones. In effect, this, makes higher order combinators of \code{Vector}
+ operate on dynamic values, thus, function \code{f} passed to \code{map} accepts
+ the dynamic value as input. Type \code{Vector[Int@ct]@ct} has all methods executed
+ at compile-time. The return type of the function \code{map} on \code{Vector[Int@ct]@ct}
+ can still be either dynamic or a compile-time view due to the type parameter \code{U}.
+
+Annotation \code{ct} can be used to achieve simple inlining of statically
+ known methods and functions. This is achieved by putting the annotation of the method/function
+ definition:\begin{lstparagraph}
+ def dot[V: Numeric]
+  (v1: Vector[V], v2: Vector[V]): V
+\end{lstparagraph}
+Annotated methods will have an annotated method type\begin{lstparagraph}
+((v1: Vector[V], v2: Vector[V]) => V)@ct
+\end{lstparagraph} which can not be written by the users. This is not the first time
+that inlining is achieved through partial evaluation~\cite{monnier2003inlining}.
+
+
+
+\smartparagraph{Function \code{ct}} is used at the term level
+ for promoting literals, modules, and methods/functions into their compile-time views.
+ Without \code{ct} we would not be able to instantiate compile-time views of types.
+ \tabref{tbl:ct-term} shows how different types of terms are promoted to their
+ compile-time views. An exception for promoting terms to compile-time views is the
+ \code{new} construct. Here we use the type annotation on the constructed type.
+
+
+\begin{table*}[t]
+\caption{Promotion of terms to their compile-time views.}
+\label{tbl:ct-term}
+\centering
+\begin{tabularx}{\linewidth}{ X X }
+\toprule
+
+  Promoted Term        \quad \quad \quad & Term's Type                      \\
+  \code{ct(Vector)(1, 2, 3)            } & : \code{ Vector[Int]@ct        } \\
+  \code{ct(Vector)(ct(1), ct(2), ct(3))} & : \code{ Vector[Int@ct]@ct     } \\
+  \code{ct((x: Int@ct) => x)           } & : \code{ (Int@ct => Int@ct)@ct } \\
+  \code{ct((x: Int) => x)              } & : \code{ (Int => Int)@ct       } \\
+  \code{new (::@ct)(1, Nil)            } & : \code{ (::[Int])@ct          } \\
+  \code{new (::@ct)(ct(1), ct(Nil))    } & : \code{ (::[Int@ct])@ct       } \\
+
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+\subsection{Tracking Binding-Time of Terms}
+\label{sct:static}
+
+ Internally \tool has additional type annotations for tracking the binding time of terms.
+  Type of each term is annotated with either \code{dynamic}, \code{static}, or \code{ct}. \code{dynamic} denotes
+  that the term can only be known at runtime, \code{static} that the term is known
+  at compile-time but it will not be computed at compile time, and \code{ct} that
+  the term will be computed at compile-time.
+
+ Tracking static terms was studied in the context of binding-time analysis
+  in partial evaluation for typed~\cite{nielson_1988_automatic} and
+  untyped~\cite{gomard1991partial} languages. We use similar techniques, however,
+  unlike in partial evaluation we do not evaluate static terms at compile time. They are tracked for verifying
+  correctness and providing convenient implicit conversions. Static terms are evaluated only
+  when they are explicitly marked by the programmer with \code{ct}.
+
+  % What are the static terms
+In \tool language literals, functions, direct class constructor calls with static arguments, and static method
+ calls with static arguments are marked as static. Examples of static terms are\begin{lstparagraph}
+1.0, "1", (x: Int => x), new Cons(1, Nil), List(1,2,3)
+\end{lstparagraph}
+
+\subsection{Least Upper Bounds}
+\label{sct:lub}
+
+ We use subtyping of Scala to simplify tracking of binding times by introducing a
+ subtyping relation between \code{dynamic}, \code{static}, and \code{ct}. We argue that
+ a \code{static} type is a more specific \code{dynamic} as it is statically known
+ and that \code{ct} is more specific than \code{static} as its operations are executed
+ at compile time. Therefore we establish that\begin{lstparagraph}
+                 ct <: static <: dynamic
+\end{lstparagraph}
+
+ The use of subtyping simplifies tracking binding times of terms as in all cases
+ where least upper bounds are calculated we can use the same mechanism for binding-times.
+ An interesting example are the binding times of type parameters:\begin{lstparagraph}
+ct(List)(1, ct(2)): List[Int@static]@ct
+ct(List)(ct(1), ct(2)): List[Int@ct]@ct
+ct(List)((x: Int@dynamic), ct(2)): List[Int@dynamic]@ct
+\end{lstparagraph}
+
+Notable exception are control flow constructs for which the original Scala rules for least
+ upper bounds do not hold. The binding-time of control flow constructs does not
+ depend only on the return type of the branches but also on the conditionals. For example, if
+ both branches of an \code{if} construct are \code{static} the result can still be \code{dynamic}
+ if the condition is \code{dynamic}. Here subtyping also helps as the binding type of the
+ return value is simply calculated as \code{lub(c, thn, elz)} where \code{lub(tps: Type*)} is a function
+ for computing the least upper bounds of types, and \code{c}, \code{thn}, \code{elz} are respectively
+ binding times of the condition, the then branch, and the else branch. The same principles can be applied for
+ pattern matching.
+
+\subsection{Well-Formedness of Compile-Time Views}
+\label{sct:wf-ctv}
+
+% Nice description of csp and pointer to the right paper.
+Earlier stages of computation can not depend on values from later stages. This property,
+ defined as \emph{cross-stage persistence}~\cite{taha_multi-stage_1997,westbrook2010mint},
+ imposes that all operations on compile-time views must known at compile time.
+
+To satisfy cross-stage persistence \tool verifies that binding time of composite
+ types~(\eg, polymorphic types, function types, record types, etc.) is always
+ a subtype of the binding time of their components. In the following example,
+ we show malformed types and examples of terms that are inconsistent:\begin{lstparagraph}
+xs: List[Int@ct]     => ct(Predef).println(xs.head)
+fn: (Int@ct=>Int@ct) => ct(Predef).println(fn(ct(1)))
+\end{lstparagraph}
+
+In the first example the program would, according to the semantics of \code{@ct}, print a head of the list at compile time.
+ However, the head of the list is known only in the runtime stage. In the second example the program should
+ print the result of \code{fn} at compile time but the body of the function will
+ be known only at runtime. By causality such examples are not possible.
+
+% Examples on classes
+On functions/methods the \code{ct} annotation requires that function/method bodies are known at compile-time.
+ Otherwise, inlining of such functions/methods would not be possible at compile-time. In Scala,
+ method bodies are statically known in objects and classes with final methods, thus, the \code{ct}
+ annotation is only applicable on such methods.
+
+\subsection{Implicit Conversions}
+\label{sct:implicits}
+
+% Requires desugaring
+If method parameters require compile-time views of a type the corresponding arguments
+ in method application would always have to be promoted to \code{ct}.
+ In some libraries this could require an inconveniently large number
+ of annotations.
+
+To minimize the number of required annotations we introduce implicit conversions from certain \code{static} terms to \code{ct} terms.
+ The conversions support translation of language literals, direct class constructor calls with static arguments, and static method
+ calls with static arguments into their compile-time views. Since our compile-time evaluator does
+ not use Asai's~\cite{asai2002binding,sumii2001hybrid} method to keep track of
+ the value of each static term, we disallow implicit conversions of terms with static variables.
+
+For example, for a factorial function \begin{lstparagraph}
+def fact(n: Int @ct): Int@ct =
+  if (n == 0) 1 else fact(n - 1)
+ \end{lstparagraph} we will not require promotions of literals \code{0}, and \code{1}. Furthermore,
+ the function can be invoked without promoting the argument into it's compile-time view:\begin{lstparagraph}
+fact(5)
+  $\hookrightarrow$ 120
+ \end{lstparagraph}
+
+Without implicit conversions the factorial functions would be more verbose \begin{lstparagraph}
+def fact(n: Int @ct): Int@ct =
+  if (n == ct(0)) ct(1) else fact(n - ct(1))
+ \end{lstparagraph} as well as each function application (\code{fact(ct(5))}).
+
+
+
+
+\section{Case Studies}
+\label{sct:case-studies}
+
+In this section we present selected use-cases for compile-time views that, at the
+same time, demonstrate step-by-step the mechanics behind \tool. We start by inlining a simple function with staging
+(\sct{sct:inlining}), then do the canonical staging  example of the integer power function
+(\sct{sct:recursion}), then we demonstrate how variable argument functions can
+be  desugared into the core functionality (\sct{sct:varargs}). Finally, we
+demonstrate how the abstraction overhead of the \code{dot} function and all
+associated type-class related abstraction an be removed (\sct{sct:dot-product}).
+
+\subsection{Inlining Expressed Through Staging}
+\label{sct:inlining}
+
+Function inlining can be expressed as staged computation~\cite{monnier2003inlining}.
+ Inlining is achieved when a statically known function body is applied with symbolic
+ arguments. In \tool we use the \code{ct} annotation on functions and methods to achieve inlining:\begin{lstparagraph}
+@ct def zero[T](implicit num: Numeric[T]) = num.zero
+
+zero[Double]
+  $\hookrightarrow$ num.zero
+\end{lstparagraph}
+
+
+\subsection{Recursion}
+\label{sct:recursion}
+
+The canonical example in staging literature is partial evaluation of the power function
+ where exponent is an integer:
+\begin{lstparagraph}
+def pow(base: Double, exp: Int): Double =
+  if (exp == 0) 1 else base * pow(base, exp - 1)
+\end{lstparagraph} When the exponent (\code{exp}) is statically known this function can be partially
+evaluated into \code{exp} multiplications of the \code{base} argument, significantly
+improving performance~\cite{calcagno2003implementing}.
+
+With compile-time views making \code{pow} partially evaluated requires adding only one annotation:
+
+\begin{lstparagraph}
+def pow(base: Double, exp: Int@ct): Double =
+  if (exp == 0) 1 else base * pow(base, exp - 1)
+\end{lstparagraph}
+
+% TODO cite infinite recursion
+To satisfy cross-stage persistence (\sct{sct:wf-ctv}) the \code{pow} must be \code{@ct}.
+However, to reduce the number of required annotations we implicitly add the \code{ct} annotation
+when at least one parameter type or the result type is marked as \code{ct}. In the example
+ the \code{ct} annotation on \code{exp} requires that the function must be called with
+ a compile-time view of \code{Int}. \tool ensures that the definiton of the \code{pow} function
+ does not cause infinite recursion at compile-time by invoking the power function
+ only when the value of the \code{ct} arguments is known.
+
+ The application of the function \code{pow} with a constant
+ exponent will produce:
+
+\begin{lstparagraph}
+pow(base, 4)
+  $\hookrightarrow$ base * base * base * base * 1
+\end{lstparagraph}
+
+Constant 4 is promoted to \code{ct} by the implicit conversions (\sct{sct:implicits}).
+
+\subsection{Variable Argument Functions}
+\label{sct:varargs}
+
+% Variable argument functions
+Variable argument functions appear in widely used languages like Java, C\#, and Scala.
+ Such arguments are typically passed in the function body inside of the data structure
+ (\eg \code{Seq[T]} in Scala). When applied with variable arguments the size of the
+ data-structure is statically known and all operations on them can be partially
+ evaluated. However, sometimes, the function is called with arguments of dynamic size.
+ For example, function \code{min} that accepts multiple integers\begin{lstparagraph}
+def min(vs: Int*): Int = vs.tail.foldLeft(vs.head) {
+  (min, el) => if (el < min) el else min
+}
+\end{lstparagraph}can be called either with statically known arguments
+ (\eg, \code{min(1,2)}) or with dynamic arguments:\begin{lstparagraph}
+val values: Seq[Int] = ... // dynamic value
+min(values: _*)
+\end{lstparagraph}
+
+Ideally, we would be able to achieve partial evaluation if the arguments are of statically
+known size and avoid partial evaluation in case of dynamic arguments. To this end we translate
+the method \code{min} into a partially evaluated version and a dynamic version. The call to these
+methods is dispatched, at compile-time, by the \code{min} method which checks if
+arguments are statically known. Desugaring of \code{min} is shown in \figref{fig:min}.
+
+\begin{figure}
+\begin{listing}
+def min(vs: Int*): Int = macro
+  if (isVarargs(vs)) q"min_CT(vs)"
+  else q"min_D(vs)"
+
+def min_CT(vs: Seq[Int]@ct): Int =
+  vs.tail.foldLeft(vs.head) { (min, el) =>
+    if (el < min) el else min
+  }
+
+def min_D(vs: Seq[Int]): Int =
+  vs.tail.foldLeft(vs.head) {
+    (min, el) => if (el < min) el else min
+  }
+\end{listing}
+\caption{Function \code{min} is desugared into a \code{min} macro that based on the
+binding time of the arguments dispatches to the partially evaluated version (\code{min_CT})
+for statically known varargs or to the original min function for dynamic arguments \code{min_D}.}
+\label{fig:min}
+\end{figure}
+
+\subsection{Removing Abstraction Overhead of Type-Classes}
+\label{sct:type-classes-removal}
+
+Type-classes are omnipresent in everyday programming as they allow abstraction over
+ generic parameters (\eg, \code{Numeric} abstracts over numeric values). Unfortunately,
+ type-classes introduce \emph{dynamic dispatch} on every call~\cite{rompf_optimizing_2013} and,
+ thus, impose a performance penalty. Type-classes are in most of the cases statically known. Here
+ we show how with \tool we can remove all abstraction overheads of type classes.
+
+In Scala, type classes are implemented with objects and implicit parameters~\cite{oliveira_type_2010}.
+In \figref{fig:numeric}, we define a \code{trait Numeric} serves as an interface for
+all numeric types. Then we define a concrete implementation of \code{Numeric} for
+type \code{Double} (\code{DoubleNumeric}). The \code{DoubleNumeric} is than passed
+as an implicit argument \code{dnum} to all methods that use it (\eg, \code{zero}).
+
+\begin{figure}
+\begin{listing}
+object Numeric {
+  implicit def dnum: Numeric[Double]@ct =
+    ct(DoubleNumeric)
+  def zero[T](implicit num: Numeric[T]@ct): T =
+    num.zero
+}
+
+trait Numeric[T] {
+  def plus(x: T, y: T): T
+  def times(x: T, y: T): T
+  def zero: T
+}
+
+object DoubleNumeric extends Numeric[Double] {
+  def plus(x: Double, y: Double): Double = x + y
+  def times(x: Double, y: Double): Double = x * y
+  def zero: Double = 0.0
+}
+\end{listing}
+\caption{\label{fig:numeric} Removing abstraction overheads of type classes.}
+\end{figure}
+
+When \code{zero} is applied first the implicit argument (\code{dnum}) gets
+inlined due to the \code{ct} annotation of the return type, then the function \code{zero} gets
+inlined. Since \code{dnum} returns a compile-time view of \code{DoubleNumerc}
+the method \code{zero} on \code{dnum} is evaluated at compile time. The constant \code{0.0} is
+promoted to \code{ct} since \code{DoubleNumeric} is a compile time view. Finally the \code{ct(0.0)} result
+is coerced to a dynamic value by the signature of \code{Numeric.zero}. The
+compile-time execution is shown in the following snippet
+
+\begin{lstparagraph}
+Numeric.zero[Double]
+  $\hookrightarrow$ Numeric.zero[Double](DoubleNumeric)
+  $\hookrightarrow$ ct(DoubleNumeric).zero
+  $\hookrightarrow$ (ct(0.0): Double)
+  $\hookrightarrow$ 0.0
+\end{lstparagraph}
+
+\subsection{Inner Product of Vectors}
+\label{sct:dot-product}
+
+Here we demonstrate how the introductory example (\sct{sct:introduction}) is
+partially evaluated through staging. We start with the desugared \code{dot}
+function~(\ie, all implicit operations are shown):
+
+\begin{lstparagraph}
+ def dot[V](v1: Vector[V]@ct, v2: Vector[V]@ct)
+  (implicit num: Numeric[V]@ct): V =
+  (v1 zip v2).foldLeft(zero[V](num)) {
+    case (prod, (cl, cr)) => prod + cl * cr
+  }
+\end{lstparagraph}
+
+Function \code{dot} is generic in the type of vector elements. This will reflect
+upon the staging annotations as well (\code{ct} and \code{static}). When we apply the
+\code{dot} function with static arguments we will get the vector with static elements back:
+
+\begin{lstparagraph}
+dot[Double@static](
+  ct(Vector)(2.0, 4.0), ct(Vector)(1.0, 10.0))(
+  Numeric.dnum)
+$\hookrightarrow$
+  (ct(Vector)(2.0, 4.0) zip ct(Vector)(1.0, 10.0))
+    .foldLeft(ct(0.0)) {
+      case (prod, (cl, cr)) => prod + cl * cr
+    }
+$\hookrightarrow$ (2.0 * 1.0 + 4.0 * 10.0): Double@static
+\end{lstparagraph}
+
+When \code{dot} is evaluated with the \code{ct} elements the last step will further
+execute to a single compile-time value that can further be used in compile-time computations:
+\begin{lstparagraph}
+dot[Double@ct](
+  ct(Vector)(ct(2.0), ct(4.0)),
+  ct(Vector)(ct(1.0), ct(10.0)))(Numeric.dnum)
+$\hookrightarrow$ ct(2.0) * ct(1.0) + ct(4.0) * ct(10.0)
+$\hookrightarrow$ 42.0: Double@ct
+\end{lstparagraph}
+
+
+
+\section{Discussion}
+\label{sct:discussion}
+
+% State the three possibilities.
+To distinguish terms executed at compile-time from terms executed at runtime with type annotations we have the following possibilities:
+\begin{enumerate}
+\item Annotate types of all terms that should be executed at runtime. Here all types analyzed LMS and realized that this is not an option.
+
+
+\item Annotate types of terms that should be executed at runtime but introduce scopes (e.g., method bodies) for which this rule applies.
+In this way we would avoid annotating types of all runtime terms. This approach is taken by MacroML where
+macro functions are executed at compile time and quoted terms are executed at runtime. First approach is, also,
+a special case of this approach where there is a single scope for the whole language.
+
+\item Annotate types of terms that are executed at compile time. This approach is used with \tool and annotated types are
+called compile-time views.
+\end{enumerate}
+
+In \tool we decided to annotate types of terms that are executed at compile time. Compared to
+the first solution our approach takes requires less annotations. We analyzed
+% TODO Count annotations in OptiML
+
+Compared to the second approach our solution is simpler to comprehend and communicate. In the second approach there are
+two things that users need to understand when reasoning about staged programs: \emph{i)} where does
+the compile time scope start, and \emph{ii)} which terms are annotated. With \tool the comprehension
+is simple: terms whose types are annotated with \code{ct} are executed at compile time.
+
+% The number of annotations if it is a mostly manipulate code snippets.
+It is also interesting to the second and third approaches. Here the number of annotations
+depends on the program. If the programs are mostly partially evaluated the second approach
+is better. These category of programs could also be regarded as code generators as most of the code
+is executed at compile time and produces large outputs. When programs are comprised of mostly
+runtime values the approach of \tool requires less annotations.
+
+\section{Limitations}
+\label{sct:limitations}
+
+\begin{itemize}
+\item Interaction with type variables.
+\item Type variables.
+\item Type annotations and overloading and implicit search.
+\item Can not inherit from a compile time view.
+\end{itemize}
+
+
+\section{Related Work}
+\label{sct:related-work}
+
+% Staging LMS Type Directed partial evaluation
+MetaOCaml~\cite{taha_multi-stage_1997,calcagno2003implementing} is a staging extension
+ for OCaml. It uses quotation to determine the stage in which the term is executed. Types of quoted terms are annotated
+ to assure cross-stage persistence. Staging in MetaOCaml starts at host language runtime and
+ can not express compile-time computations. Further, operations on annotated types
+ do not get automatically promoted to the adequate stage of computation as with compile-time views.
+ Finally, there are no implicit conversions so all stage promotions of terms must be explicit.
+
+% MacroML
+MacroML~\cite{ganz2001macros} is a language that translates macros into MetaML staging executed
+ at compile time to provide a ``clean'' solution for macros. In MacroML, within
+ the \code{let mac} construct function parameters can be annotated as an early stage computation. These parameters
+ can then be used in escaped terms, \ie, terms scheduled to execute at compile time. Unlike \tool, MacroML
+ uses escapes and early parameters to mark terms scheduled for to execute at compile time. Within
+ escapes terms scheduled for runtime again need to be marked with brackets. This kind of dual annotations are
+ not required as compile-time views are automatically promoted to runtime terms.
+
+% LMS Type Directed partial evaluation
+In LMS~\cite{rompf2012lightweight} terms that are annotated with \code{Rep} types will be executed at
+ the stage after runtime compilation. Therefore, LMS can not directly be used for compile time computation. Furthermore,
+ LMS requires additional reification logic and code generation for all \code{Rep} types.
+
+ Programming language Idris~\cite{brady2010scrapping} introduces the \code{static} annotation
+  on function parameters to achieve partial evaluation. Annotation \code{static} denotes
+  that the term is statically known and that all operations on that term should
+  be executed at compile-time. However, since \code{static} is placed on terms rather
+  then types, it can mark only \emph{whole terms} as static. This restricts the number
+  of programs that can be expressed, \eg, we could not express that vectors in the
+  signature of \emph{dot} are static only in size. Finally, information about \code{static}
+  terms can not be propagated through return types of functions so \code{static}
+  in Idris is a partial evaluation construct, i.e., it hints that partial evaluation
+  should be applied if function arguments are static.
+
+% Specialization Scenarios
+% TODO should we \cite{le2004specialization}
+
+% Hybrid Partial Evaluation
+Hybrid Partial Evaluation~(HPE)~\cite{shali2011Hybrid} is a technique for partial evaluation that
+ does not perform binding time analysis (similarly to online partial evaluators) but relies on the user
+ provided annotation \code{CT}\footnote{Name \code{ct} in \tool is inspired by hybrid partial evaluation.}.
+ HPE implementations exist for both Java and Scala~\cite{sherwany2015refactoring}.
+ Although, \code{CT} is used for partial evaluation, it does not affect typing of user programs. Furthermore,
+ behavior of \code{CT} in context of generics is not described. \tool can be seen
+ as statically typed version of hybrid partial evaluation with support for parametric polymorphism.
+ Due to the support for parametric polymorphism \tool can express compile-time data structures with
+ dynamic data.
+
+% Forge
+Forge~\cite{forge}, by Sujeeth et al., uses a DSL to declare a specification of the libraries.
+ Forge then generates both unannotated and annotated code based on the specification.
+ Their language also supports generating staged code (comprised of terms different from multiple stages).
+ Forge specification and code generation supports only a subset of Scala guided towards the
+ Delite~\cite{brown_heterogeneous_2011,composition-ecoop2013} framework.
+
+% Yin-Yang
+The Yin-Yang framework, by Jovanovic et al.~\cite{yin-yang}, solves the problem
+ of code duplication by generating reification and code generation logic based on Scala code of existing types.
+ With their approach there is no code duplication for the supported language features. However, not all of the
+ Scala language is supported and all generated terms are generated for the next stage, thus,
+ making a stage distinction is impossible.
