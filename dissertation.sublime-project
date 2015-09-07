@@ -1,0 +1,11 @@
+{
+	"folders":
+	[
+		{
+			"follow_symlinks": true,
+			"path": ".",
+      "file_exclude_patterns": ["*.aux", "*.cpt", "*.bbl", "*.out", "*.sty", "*.lot", "*.log", "*.lof", "*.blg", "*.toc"],
+      "folder_exclude_patterns": ["utopia_font", "lineno", "fonts", "images"]
+    }
+  ]
+}

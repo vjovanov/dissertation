@@ -1,0 +1,1082 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"Matri",
+				"MatrixMult"
+			],
+			[
+				"matri",
+				"MatrixCarrier"
+			],
+			[
+				"Ordering",
+				"ScalaGenOrderingOps"
+			],
+			[
+				"Boolean",
+				"BooleanOpsExp"
+			],
+			[
+				"Dyn",
+				"DynamicBase"
+			],
+			[
+				"update",
+				"updateAttachment"
+			],
+			[
+				"Double",
+				"DoubleNumeric"
+			],
+			[
+				"App",
+				"AppTpe"
+			],
+			[
+				"expec",
+				"expectedTp"
+			],
+			[
+				"Type",
+				"TypeVariant"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "main/ch2_asynchronous_computation.aux",
+			"settings":
+			{
+				"buffer_size": 9634,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "Packages/User/paper.sublime-build",
+	"command_palette":
+	{
+		"height": 75.0,
+		"selected_items":
+		[
+			[
+				"kbu",
+				"Preferences: Key Bindings - Default"
+			],
+			[
+				"Preview",
+				"GitHub Flavored Markdown: Preview"
+			],
+			[
+				"Previ",
+				"GitHub Flavored Markdown: Preview"
+			],
+			[
+				"Gith",
+				"GitHub Flavored Markdown: Preview"
+			],
+			[
+				"Install",
+				"Package Control: Install Package"
+			],
+			[
+				"Mark",
+				"Preferences: MarkdownEditing Settings – Default"
+			],
+			[
+				"Packa",
+				"Package Control: Remove Package"
+			],
+			[
+				"Pacak",
+				"Package Control: Disable Package"
+			],
+			[
+				"Pref",
+				"Preferences: Settings - User"
+			],
+			[
+				"pref",
+				"Preferences: Settings - Default"
+			],
+			[
+				"User",
+				"Preferences: Settings - User"
+			],
+			[
+				"Setting",
+				"Preferences: Settings - Default"
+			],
+			[
+				"Prefere",
+				"Preferences: Settings - User"
+			],
+			[
+				"user",
+				"Preferences: Settings - User"
+			]
+		],
+		"width": 575.0
+	},
+	"console":
+	{
+		"height": 139.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404' + 'e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/home/vjovanov/dissertation",
+		"/home/vjovanov/dissertation/head",
+		"/home/vjovanov/dissertation/images",
+		"/home/vjovanov/dissertation/lineno",
+		"/home/vjovanov/dissertation/main"
+	],
+	"file_history":
+	[
+		"/home/vjovanov/dissertation/phd.aux",
+		"/home/vjovanov/code/vjovanov.github.io/dsldi-summer-school/ins_qdsl.html",
+		"/home/vjovanov/code/vjovanov.github.io/dsldi-summer-school/contact.html",
+		"/home/vjovanov/code/vjovanov.github.io/dsldi-summer-school/gettinghere.html",
+		"/home/vjovanov/code/vjovanov.github.io/dsldi-summer-school/program.html",
+		"/home/vjovanov/code/vjovanov.github.io/dsldi-summer-school/lausanne.html",
+		"/home/vjovanov/code/vjovanov.github.io/dsldi-summer-school/index.html",
+		"/home/vjovanov/.config/sublime-text-3/Packages/Default/Default (Linux).sublime-keymap",
+		"/home/vjovanov/code/vjovanov.github.io/dsldi-summer-school/photos.html",
+		"/home/vjovanov/code/vjovanov.github.io/dsldi-summer-school/css/skel.css",
+		"/home/vjovanov/Downloads/jssor/demos-no-jquery/image-gallery.source.html",
+		"/home/vjovanov/code/virtualization-lms-core/test-src/epfl/test11-shonan/TestHMM.scala",
+		"/home/vjovanov/code/virtualization-lms-core/src/common/Base.scala",
+		"/home/vjovanov/code/virtualization-lms-core/test-out/common/target/resolution-cache/reports/default-common_2.10-compile.xml",
+		"/home/vjovanov/code/virtualization-lms-core/test-out/common/target/resolution-cache/reports/default-common_2.10-plugin.xml",
+		"/home/vjovanov/code/virtualization-lms-core/test-out/common/target/resolution-cache/reports/default-common_2.10-optional.xml",
+		"/home/vjovanov/code/virtualization-lms-core/project/target/resolution-cache/reports/default-virtualization-lms-core-build-compile.xml",
+		"/home/vjovanov/code/virtualization-lms-core/src/internal/CudaDeviceTransfer.scala",
+		"/home/vjovanov/code/virtualization-lms-core/src/common/DSLOps.scala",
+		"/home/vjovanov/code/virtualization-lms-core/src/common/Structs.scala",
+		"/home/vjovanov/code/virtualization-lms-core/src/internal/Exceptions.scala",
+		"/home/vjovanov/code/virtualization-lms-core/src/common/Equal.scala",
+		"/home/vjovanov/code/virtualization-lms-core/build.sbt",
+		"/home/vjovanov/code/virtualization-lms-core/src/internal/Expressions.scala",
+		"/home/vjovanov/code/virtualization-lms-core/.gitignore",
+		"/home/vjovanov/papers/2015-scala-symposium/Makefile",
+		"/home/vjovanov/papers/2015-scala-symposium/safe-commit.sh",
+		"/home/vjovanov/papers/2015-scala-symposium/clean-make.sh",
+		"/home/vjovanov/papers/2015-scala-symposium/case-studies.tex",
+		"/home/vjovanov/papers/2015-scala-symposium/calculus.tex",
+		"/home/vjovanov/papers/2015-scala-symposium/bcprules.sty",
+		"/home/vjovanov/papers/2015-scala-symposium/prooftree.sty",
+		"/home/vjovanov/papers/2015-scala-symposium/related.tex",
+		"/home/vjovanov/papers/2015-scala-symposium/partial-evaluator.tex",
+		"/home/vjovanov/papers/2015-scala-symposium/math.sty",
+		"/home/vjovanov/papers/2015-scala-symposium/macros.tex",
+		"/home/vjovanov/papers/2015-scala-symposium/limitations.tex",
+		"/home/vjovanov/papers/2015-scala-symposium/evaluation.tex",
+		"/home/vjovanov/papers/2015-scala-symposium/discussion.tex",
+		"/home/vjovanov/papers/2015-scala-symposium/conclusion.tex",
+		"/home/vjovanov/code/scala-ct/.project",
+		"/home/vjovanov/code/scala-ct/interpreter-old/tests/src/test/scala/PrimitivesSuite.scala",
+		"/home/vjovanov/code/scala-ct/target/streams/compile/unmanagedJars/$global/streams/export",
+		"/home/vjovanov/code/scala-ct/src/ch/epfl/inline/Inline.scala",
+		"/home/vjovanov/code/scala-ct/resources/scalac-plugin.xml",
+		"/home/vjovanov/code/scala-ct/interpreter/project/plugins.sbt",
+		"/home/vjovanov/code/scala-ct/project/plugins.sbt",
+		"/home/vjovanov/code/scala-ct/project/target/resolution-cache/reports/default-scala-ct-build-compile-internal.xml",
+		"/home/vjovanov/code/scala-ct/project/target/resolution-cache/reports/default-scala-ct-build-compile.xml",
+		"/home/vjovanov/code/scala-ct/src/ch/epfl/inline/plugin/InlinePlugin.scala",
+		"/home/vjovanov/code/scala-ct/test/InlineSpec.scala",
+		"/home/vjovanov/code/scala-ct/src/ch/epfl/inline/examples/VarargsExample.scala",
+		"/home/vjovanov/code/scala-ct/src/ch/epfl/package.scala",
+		"/home/vjovanov/code/scala-ct/project/build.properties",
+		"/home/vjovanov/code/scala-ct/project/Build.scala",
+		"/home/vjovanov/code/scala-ct/README.md",
+		"/home/vjovanov/code/scala-ct/LICENCE",
+		"/home/vjovanov/code/scala-ct/.travis.yml",
+		"/home/vjovanov/code/scala-ct/.gitmodules",
+		"/home/vjovanov/code/scala-ct/.gitignore",
+		"/home/vjovanov/code/scala/test/junit/scala/tools/nsc/symtab/SymbolTableForUnitTesting.scala",
+		"/home/vjovanov/code/scala/src/reflect/scala/reflect/internal/Trees.scala",
+		"/home/vjovanov/code/scala/src/reflect/scala/reflect/api/Symbols.scala",
+		"/home/vjovanov/code/scala/src/reflect/scala/reflect/internal/Types.scala",
+		"/home/vjovanov/code/scala/src/reflect/scala/reflect/internal/Symbols.scala",
+		"/home/vjovanov/code/scala-inline/src/ch/epfl/inline/Inline.scala",
+		"/home/vjovanov/code/scala-inline/test/InlineSpec.scala",
+		"/home/vjovanov/code/scala/src/library/scala/math/Numeric.scala",
+		"/home/vjovanov/code/scala-inline/test/NewTest.scala",
+		"/home/vjovanov/code/scala-inline/src/ch/epfl/package.scala",
+		"/home/vjovanov/code/scala-inline/test/CaseStudies.scala",
+		"/home/vjovanov/code/scala/src/intellij/library.iml.SAMPLE",
+		"/home/vjovanov/code/scala-inline/test/library/List.scala",
+		"/home/vjovanov/code/scala/test/scaladoc/resources/SI_5287.scala",
+		"/home/vjovanov/code/scala/tools/codegen-anyvals",
+		"/home/vjovanov/code/scala/test/files/neg/migration28.check",
+		"/home/vjovanov/code/scala/test/files/neg/macro-invalidusage-nontypeable.check",
+		"/home/vjovanov/code/scala/test/files/neg/macro-invalidimpl.check",
+		"/home/vjovanov/code/scala/META-INF/MANIFEST.MF",
+		"/home/vjovanov/code/scala/test/files/pos/inline-access-levels.flags",
+		"/home/vjovanov/code/scala/test/simplejson/encoder.py",
+		"/home/vjovanov/code/scala/test/files/res/t831/NewScalaParserXXX.scala",
+		"/home/vjovanov/code/scala/test/files/pos/erasure-nsquared.scala",
+		"/home/vjovanov/code/scala/src/library/scala/Symbol.scala",
+		"/home/vjovanov/code/scala/tools/new-starr",
+		"/home/vjovanov/code/scala/test/files/jvm/actor-normal-exit.check",
+		"/home/vjovanov/code/scala/src/library/scala/inline.scala",
+		"/home/vjovanov/code/scala/src/library/scala/concurrent/Lock.scala",
+		"/home/vjovanov/code/scala/src/compiler/scala/tools/nsc/backend/icode/BasicBlocks.scala",
+		"/home/vjovanov/code/scala/test/files/run/macro-term-declared-in-block.check",
+		"/home/vjovanov/code/scala/src/library/scala/concurrent/BlockContext.scala",
+		"/home/vjovanov/code/scala/tools/binary-repo-lib.sh",
+		"/home/vjovanov/code/scala-inline/project/Build.scala",
+		"/home/vjovanov/code/scala/test/files/neg/virtpatmat_unreach_select.check",
+		"/home/vjovanov/code/scala/test/files/run/spec-self.check",
+		"/home/vjovanov/code/scala/test/benchmarks/src/scala/collection/parallel/benchmarks/parallel_array/SameElementsLong.scala",
+		"/home/vjovanov/code/scala/test/files/run/caseClassEquality.scala",
+		"/home/vjovanov/code/scala/test/files/run/compiler-asSeenFrom.check",
+		"/home/vjovanov/code/scala/CONTRIBUTING.md",
+		"/home/vjovanov/code/scala/test/files/run/t4841-isolate-plugins/t4841-isolate-plugin.scala",
+		"/home/vjovanov/code/scala-inline/project/plugins.sbt",
+		"/home/vjovanov/code/scala-inline/resources/scalac-plugin.xml",
+		"/home/vjovanov/code/scala/test/files/run/t4841-isolate-plugins.check",
+		"/home/vjovanov/code/scala/src/library/scala/collection/IterableProxyLike.scala",
+		"/home/vjovanov/code/scala/test/files/neg/import-precedence.check",
+		"/home/vjovanov/code/scala/src/build/maven/scala-library-all-pom.xml",
+		"/home/vjovanov/code/scala/test/files/pos/caseClassInMethod.scala",
+		"/home/vjovanov/code/scala/test/files/pos/implicit-unwrap-tc.scala",
+		"/home/vjovanov/code/scala/test/files/pos/ilya2/Nullable.java",
+		"/home/vjovanov/code/scala/test/files/neg/quasiquotes-unliftable-not-found.check",
+		"/home/vjovanov/code/scala-inline/interpreter/project/target/resolution-cache/reports/default-interpreter-module-build-compile-internal.xml",
+		"/home/vjovanov/code/scala/test/files/run/interpolationMultiline1.check",
+		"/home/vjovanov/code/scala/test/files/run/macro-invalidusage-partialapplication.check",
+		"/home/vjovanov/code/scala/test/files/pos/isApplicableSafe.scala",
+		"/home/vjovanov/code/scala/test/disabled/run/applet-prop.scala",
+		"/home/vjovanov/code/scala/tools/abspath",
+		"/home/vjovanov/code/scala/pull-binary-libs.sh",
+		"/home/vjovanov/code/scala-inline/src/ch/epfl/inline/plugin/InlinePlugin.scala",
+		"/home/vjovanov/code/scala/test/files/neg/logImplicits.check",
+		"/home/vjovanov/code/scala-inline/LICENCE",
+		"/home/vjovanov/code/scala/spec/_layouts/default.yml",
+		"/home/vjovanov/code/scala/test/files/run/deprecate-early-type-defs.check",
+		"/home/vjovanov/code/scala/dbuild-meta.json",
+		"/home/vjovanov/code/scala/test/files/run/t5225_2.check",
+		"/home/vjovanov/code/scala/test/files/pos/t2741/2741_2.scala",
+		"/home/vjovanov/code/scala/test/files/pos/t4205/2.scala",
+		"/home/vjovanov/code/scala/test/pending/script/error-messages.check",
+		"/home/vjovanov/code/scala/test/files/scalacheck/parallel-collections/ParallelVectorCheck.scala"
+	],
+	"find":
+	{
+		"height": 50.0
+	},
+	"find_in_files":
+	{
+		"height": 93.0,
+		"where_history":
+		[
+			"",
+			"/home/vjovanov/code/yin-yang/components/generator/src/types",
+			"",
+			"/home/vjovanov/code/yin-yang/components/backend/src",
+			"",
+			"voltdb/*",
+			"voltdb",
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			">\n",
+			"Program",
+			"<li><a href=\"program.html\" class=\"button\">Program</a></li>",
+			"Program",
+			")\n",
+			"img/2015",
+			"20150716_203331",
+			"2015",
+			"\"thumb\"",
+			"scr",
+			"     ",
+			"position",
+			"$Duration: 1200",
+			"../img/alila",
+			"query.sc",
+			"query.",
+			"Array",
+			"155",
+			"null",
+			"def until",
+			"def update",
+			"assign",
+			"IR:",
+			"def <",
+			"def infix_<",
+			"Int",
+			"fromDyn",
+			"Matrix",
+			"quote(",
+			"null",
+			"GenDynMatrixOps",
+			"DynamicExp",
+			"Gen",
+			"Rep[Matrix]",
+			"def test()",
+			"manifest[Int]",
+			"def test(): Rep[Int]",
+			"with IMpl",
+			"unit",
+			"def >",
+			"def infix_<",
+			"def infix_>",
+			"assert",
+			"println(",
+			"Matrix",
+			"1",
+			"DynMatrixOps",
+			"==",
+			" ==",
+			"Equals",
+			"= Equals",
+			"= Equals(",
+			"Equals(",
+			"Equals",
+			"Equals(",
+			"Equals",
+			"equals",
+			"__equals",
+			"infix_==",
+			"infix_equals",
+			"unary_",
+			"Long",
+			"extends",
+			"Int",
+			"Double",
+			"Int",
+			"allArgsDynamic",
+			"cond1",
+			"ScalaGenBooleanOps",
+			"GenericCodeGen",
+			"DynamicGen",
+			"DynamicExp",
+			"type Rep[+T] = Exp",
+			"def unit",
+			"case Const",
+			"def infix_&&",
+			"def &&",
+			"def unit",
+			"def reifyBlock",
+			"compile(test",
+			"Compile",
+			"def emitSource",
+			"trait Compile",
+			"emitSource",
+			"def emitSource",
+			"emitSource",
+			"def emitSource",
+			"StaticData",
+			"ScalaCompile",
+			"DynCompile",
+			"def compile",
+			"TestMisc",
+			"selectDynamicMac",
+			"(\n      implicit r: c.WeakTypeTag[R])",
+			"[R: c.WeakTypeTag]",
+			"Expr[R]",
+			"[R](",
+			"def emitSource",
+			"def compile",
+			"globalDefs",
+			"val globalDefs",
+			"def globa",
+			"def globalDef",
+			"def globalDefsCache",
+			"def findDefinition",
+			"findDefinition",
+			"\\sigma",
+			"infrule",
+			"kbool",
+			"constructor",
+			"constru",
+			"\\;",
+			"Interface of",
+			"@compileTimeOnly",
+			"@compileTimeOonly",
+			"dussart1995polymorphic",
+			"henglein1994polymorphic",
+			"polymorphic",
+			"PEPM",
+			"article",
+			"rytz1992polyvariant",
+			"CVector",
+			"Long",
+			"LONG_MINUS_LONG",
+			"LONG_PLUS_LONG",
+			"LONG_EQEQ_INT",
+			"LONG_EQEQ_LONG",
+			"LONG_EQEQ_LONG\n"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"Nil"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "main/ch2_asynchronous_computation.aux",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 9634,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								8,
+								8
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 25.0
+	},
+	"input":
+	{
+		"height": 33.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 382.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.git":
+	{
+		"height": 112.0
+	},
+	"project": "dissertation.sublime-project",
+	"replace":
+	{
+		"height": 46.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"prog",
+				"program.html"
+			],
+			[
+				"ind",
+				"index.html"
+			],
+			[
+				"inde",
+				"index.html"
+			],
+			[
+				"basi",
+				"test-out/epfl/test15-dynamic-basic"
+			],
+			[
+				"",
+				"test-src/epfl/test15-dynamic-compilation/TestDynamicCompilation.scala"
+			],
+			[
+				"test15",
+				"test-out/epfl/test15-dynamic-basic"
+			],
+			[
+				"dyna",
+				"test-src/epfl/test15-dynamic-compilation/TestDynamicCompilation.scala"
+			],
+			[
+				"dyn",
+				"src/common/DynamicBase.scala"
+			],
+			[
+				"var",
+				"src/common/Variables.scala"
+			],
+			[
+				"array",
+				"src/common/ArrayOps.scala"
+			],
+			[
+				"testdy",
+				"test-src/epfl/test15-dynamic-compilation/TestDynamicCompilation.scala"
+			],
+			[
+				"dy",
+				"src/common/DynamicBase.scala"
+			],
+			[
+				"basic",
+				"test-out/epfl/test15-dynamic-basic"
+			],
+			[
+				"generic",
+				"src/internal/GenericCodegen.scala"
+			],
+			[
+				"geneir",
+				"src/internal/GenericCodegen.scala"
+			],
+			[
+				"dynamiba",
+				"src/common/DynamicBase.scala"
+			],
+			[
+				"dynamiccom",
+				"test-src/epfl/test15-dynamic-compilation/TestDynamicCompilation.scala"
+			],
+			[
+				"equa",
+				"src/common/Equal.scala"
+			],
+			[
+				"bool",
+				"src/common/BooleanOps.scala"
+			],
+			[
+				"testhmm",
+				"test-src/epfl/test11-shonan/TestHMM.scala"
+			],
+			[
+				"primi",
+				"src/common/PrimitiveOps.scala"
+			],
+			[
+				"arit",
+				"test-src/epfl/test1-arith/Arith.scala"
+			],
+			[
+				"testdyn",
+				"test-src/epfl/test15-dynamic-compilation/TestDynamicCompilation.scala"
+			],
+			[
+				"boolean",
+				"src/common/BooleanOps.scala"
+			],
+			[
+				"e",
+				"src/internal/Expressions.scala"
+			],
+			[
+				"dynamicc",
+				"test-src/epfl/test15-dynamic-compilation/TestDynamicCompilation.scala"
+			],
+			[
+				"base",
+				"src/common/Base.scala"
+			],
+			[
+				"ifthen",
+				"src/common/IfThenElse.scala"
+			],
+			[
+				"compil",
+				"src/common/Compile.scala"
+			],
+			[
+				"testdynamic",
+				"test-src/epfl/test15-dynamic-compilation/TestDynamicCompilation.scala"
+			],
+			[
+				"staticda",
+				"src/common/StaticData.scala"
+			],
+			[
+				"scal",
+				"src/internal/ScalaCompile.scala"
+			],
+			[
+				"scalacom",
+				"src/internal/ScalaCompile.scala"
+			],
+			[
+				"dynami",
+				"src/common/DynamicBase.scala"
+			],
+			[
+				"defcompile",
+				"project/target/resolution-cache/reports/default-default-c949ce/compile-resolved.xml"
+			],
+			[
+				"expression",
+				"src/internal/Expressions.scala"
+			],
+			[
+				"base.",
+				"src/common/Base.scala"
+			],
+			[
+				"par",
+				"2015-scala-symposium/partial-evaluator.tex"
+			],
+			[
+				"make",
+				"2015-scala-symposium/Makefile"
+			],
+			[
+				"m",
+				"2015-scala-symposium/macros.tex"
+			],
+			[
+				"cal",
+				"2015-scala-symposium/calculus.tex"
+			],
+			[
+				"forma",
+				"yy-pldi/formalization.tex"
+			],
+			[
+				"macro",
+				"2015-scala-symposium/macros.tex"
+			],
+			[
+				"form",
+				"yy-pldi/formalization.tex"
+			],
+			[
+				"in",
+				"intro.tex"
+			],
+			[
+				"pa",
+				"partial-evaluator.tex"
+			],
+			[
+				"limi",
+				"limitations.tex"
+			],
+			[
+				"int",
+				"intro.tex"
+			],
+			[
+				"vjo",
+				"vjovanov-lib.bib"
+			],
+			[
+				"intro",
+				"intro.tex"
+			],
+			[
+				"intor",
+				"intro.tex"
+			],
+			[
+				"ab",
+				"abstract.tex"
+			],
+			[
+				"pap",
+				"paper.tex"
+			],
+			[
+				"abs",
+				"abstract.tex"
+			],
+			[
+				"proje",
+				"project/Build.scala"
+			],
+			[
+				"emul",
+				"interpreter-old/interpreter/src/main/scala/internal/Emulators.scala"
+			],
+			[
+				"i",
+				"test/InlineSpec.scala"
+			],
+			[
+				"inline",
+				"test/InlineSpec.scala"
+			],
+			[
+				"inlineplu",
+				"src/ch/epfl/inline/plugin/InlinePlugin.scala"
+			],
+			[
+				"plugin",
+				"src/ch/epfl/inline/plugin/InlinePlugin.scala"
+			],
+			[
+				"lib",
+				"test/library/Library.scala"
+			],
+			[
+				"inlinespec.",
+				"test/InlineSpec.scala"
+			],
+			[
+				"library",
+				"test/library/Library.scala"
+			],
+			[
+				"packa",
+				"~/code/scala-inline/src/ch/epfl/package.scala"
+			],
+			[
+				"inline.scala",
+				"~/code/scala-inline/src/ch/epfl/inline/Inline.scala"
+			],
+			[
+				"libra",
+				"~/code/scala-inline/test/library/Library.scala"
+			],
+			[
+				"libray",
+				"~/code/scala-inline/test/library/Library.scala"
+			],
+			[
+				"numeric",
+				"~/code/scala/src/library/scala/math/Numeric.scala"
+			],
+			[
+				"case",
+				"scala-inline/test/CaseStudies.scala"
+			],
+			[
+				"inlinepl",
+				"scala-inline/src/ch/epfl/inline/plugin/InlinePlugin.scala"
+			],
+			[
+				"inlinespe",
+				"scala-inline/test/InlineSpec.scala"
+			],
+			[
+				"inlinp",
+				"scala-inline/src/ch/epfl/inline/plugin/InlinePlugin.scala"
+			],
+			[
+				"newte",
+				"scala-inline/test/NewTest.scala"
+			],
+			[
+				"emula",
+				"scala-inline/interpreter/interpreter/src/main/scala/internal/Emulators.scala"
+			],
+			[
+				"inter",
+				"scala/test/files/jvm/interpreter.scala"
+			],
+			[
+				"new",
+				"scala-inline/test/NewTest.scala"
+			],
+			[
+				"newtest",
+				"scala-inline/test/NewTest.scala"
+			],
+			[
+				"engine",
+				"scala-inline/interpreter/interpreter/src/main/scala/internal/Engine.scala"
+			],
+			[
+				"librar",
+				"scala-inline/test/library/Library.scala"
+			],
+			[
+				"casestu",
+				"scala-inline/test/CaseStudies.scala"
+			],
+			[
+				"newt",
+				"scala-inline/test/NewTest.scala"
+			],
+			[
+				"symbols",
+				"scala/src/reflect/scala/reflect/internal/Symbols.scala"
+			],
+			[
+				"inlinplu",
+				"scala-inline/src/ch/epfl/inline/plugin/InlinePlugin.scala"
+			],
+			[
+				"package.",
+				"scala-inline/src/ch/epfl/package.scala"
+			],
+			[
+				"library.",
+				"scala-inline/test/library/Library.scala"
+			],
+			[
+				"inlineplug",
+				"scala-inline/src/ch/epfl/inline/plugin/InlinePlugin.scala"
+			],
+			[
+				"cases",
+				"scala-inline/test/CaseStudies.scala"
+			],
+			[
+				"iplugin.scala",
+				"scala-inline/src/ch/epfl/inline/plugin/InlinePlugin.scala"
+			],
+			[
+				"library.scala",
+				"scala-inline/test/library/Library.scala"
+			],
+			[
+				"engine.scala",
+				"scala-inline/interpreter/interpreter/src/main/scala/internal/Engine.scala"
+			],
+			[
+				"emulator",
+				"scala-inline/interpreter/interpreter/src/main/scala/internal/Emulators.scala"
+			],
+			[
+				"emulato",
+				"scala-inline/interpreter/interpreter/src/main/scala/internal/Emulators.scala"
+			],
+			[
+				"inlinesp",
+				"scala-inline/test/InlineSpec.scala"
+			],
+			[
+				"inline.s",
+				"scala-inline/src/ch/epfl/inline/Inline.scala"
+			],
+			[
+				"list.s",
+				"scala-inline/test/library/List.scala"
+			],
+			[
+				"engin",
+				"scala-inline/interpreter/interpreter/src/main/scala/internal/Engine.scala"
+			],
+			[
+				"545",
+				"scala/test/files/neg/t545.check"
+			],
+			[
+				"52",
+				"scala/test/scaladoc/resources/SI_5287.scala"
+			],
+			[
+				"engine.",
+				"scala-inline/interpreter/interpreter/src/main/scala/internal/Engine.scala"
+			],
+			[
+				"inlineplugin",
+				"scala-inline/src/ch/epfl/inline/plugin/InlinePlugin.scala"
+			],
+			[
+				"interp",
+				"scala/test/files/jvm/interpreter.scala"
+			],
+			[
+				"trees.ca",
+				"scala/src/reflect/scala/reflect/api/Trees.scala"
+			],
+			[
+				"en",
+				"interpreter/interpreter/src/main/scala/internal/Engine.scala"
+			],
+			[
+				"emulators.",
+				"interpreter/interpreter/src/main/scala/internal/Emulators.scala"
+			],
+			[
+				"emulators.s",
+				"interpreter/interpreter/src/main/scala/internal/Emulators.scala"
+			],
+			[
+				"eng",
+				"interpreter/interpreter/src/main/scala/internal/Engine.scala"
+			],
+			[
+				"inte",
+				"~/code/interpreter/interpreter/src/main/scala/Interpreter.scala"
+			],
+			[
+				"inlinep",
+				"~/code/scala-inline/src/ch/epfl/inline/plugin/InlinePlugin.scala"
+			],
+			[
+				"buil",
+				"~/code/scala-inline/project/Build.scala"
+			],
+			[
+				"interpreter.scala",
+				"~/code/interpreter/interpreter/src/main/scala/Interpreter.scala"
+			],
+			[
+				"numer",
+				"~/code/scala/src/library/scala/math/Numeric.scala"
+			],
+			[
+				"specl",
+				"~/code/scala-inline/test/InlineSpec.scala"
+			],
+			[
+				"innlineplu",
+				"~/code/scala-inline/src/ch/epfl/inline/plugin/InlinePlugin.scala"
+			],
+			[
+				"b",
+				"~/code/scala-inline/project/Build.scala"
+			],
+			[
+				"build",
+				"~/code/interpreter/project/build.scala"
+			],
+			[
+				"types.s",
+				"scala/src/reflect/scala/reflect/internal/Types.scala"
+			],
+			[
+				"universe",
+				"scala/src/reflect/scala/reflect/macros/Universe.scala"
+			],
+			[
+				"univers.e",
+				"scala/src/reflect/scala/reflect/api/Universe.scala"
+			],
+			[
+				"build.",
+				"interpreter/project/build.scala"
+			],
+			[
+				"build.s",
+				"scala-inline/project/Build.scala"
+			],
+			[
+				"global.scala",
+				"scala/src/compiler/scala/tools/nsc/Global.scala"
+			],
+			[
+				"global",
+				"scala/src/compiler/scala/tools/nsc/Global.scala"
+			],
+			[
+				"types.",
+				"scala/src/reflect/scala/reflect/api/Types.scala"
+			],
+			[
+				"types.scala",
+				"scala/src/reflect/scala/reflect/internal/Types.scala"
+			],
+			[
+				"types.sca",
+				"scala/src/reflect/scala/reflect/internal/Types.scala"
+			],
+			[
+				"inlines",
+				"scala-inline/test/InlineSpec.scala"
+			],
+			[
+				"typers",
+				"scala/src/compiler/scala/tools/nsc/typechecker/Typers.scala"
+			],
+			[
+				"typers.s",
+				"scala/src/compiler/scala/tools/nsc/typechecker/Typers.scala"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 392.0,
+		"selected_items":
+		[
+		],
+		"width": 1218.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 387.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
