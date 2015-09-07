@@ -4,6 +4,9 @@ pdf:
 	pdflatex phd
 	bibtex phd
 	pdflatex phd
+	pdflatex phd
+	pdflatex phd
+	pdflatex phd
 
 clean:
 	rm -f *.aux *.log *.bbl *.blg *.toc *.lof *.lot *.out

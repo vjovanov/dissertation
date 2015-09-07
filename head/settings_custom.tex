@@ -47,6 +47,11 @@
 \usepackage{booktabs}
 \usepackage{tabularx}
 
+\usepackage{cite}
+\usepackage{natbib}
+
+% Replace all cites with citeps for the thesis
+\let\cite\citep
 
 % ----- begin macros
 \lstdefinelanguage{Scala}%
@@ -88,6 +93,7 @@
 %  keywordstyle=\sffamily\bfseries,%
 %  xleftmargin=0.5cm
 }
+
 
 
 \newcommand{\commentstyle}[1]{\slseries{#1}}
