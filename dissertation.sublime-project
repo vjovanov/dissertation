@@ -2,10 +2,32 @@
 	"folders":
 	[
 		{
+			"file_exclude_patterns":
+			[
+				"*.aux",
+				"*.cpt",
+				"*.bbl",
+				"*.out",
+				"*.sty",
+				"*.lot",
+				"*.log",
+				"*.lof",
+				"*.blg",
+				"*.toc"
+			],
+			"folder_exclude_patterns":
+			[
+				"utopia_font",
+				"lineno",
+				"fonts",
+				"images"
+			],
 			"follow_symlinks": true,
-			"path": ".",
-      "file_exclude_patterns": ["*.aux", "*.cpt", "*.bbl", "*.out", "*.sty", "*.lot", "*.log", "*.lof", "*.blg", "*.toc"],
-      "folder_exclude_patterns": ["utopia_font", "lineno", "fonts", "images"]
-    }
-  ]
+			"path": "."
+		},
+		{
+			"follow_symlinks": true,
+			"path": "/home/vjovanov/research/papers/2015-scala-symposium"
+		}
+	]
 }

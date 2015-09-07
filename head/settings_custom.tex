@@ -7,86 +7,218 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%
-%   Use this file for your own custom packages, command-definitions, etc...
-%
+% Math
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{math}
+\usepackage{mathtools}
 
+% Graphics
+\usepackage{graphicx}
 
-% the following lines are for creating a simplified TO-DO box. However since boites is not per default installed with all latex-distributions, we have removed this example again
-% if you want to use it and do not have "boites" installed, you can get it from here: http://www.ctan.org/tex-archive/macros/latex/contrib/boites
-%
-%\usepackage{boites,boites_exemples}
-%\newcommand{\todolist}[1]{\begin{boiteepaisseavecuntitre}{TO DO in this chapter} #1 \end{boiteepaisseavecuntitre}}  % creates a little box
-% %\newcommand{\todolist}[1]{}  % to be used when to do is not to be printed
-
-\usepackage{minted}
-\usemintedstyle{trac}
-% \usepackage{listings}
+% Text stuff
+% \usepackage{minted}
+% \usemintedstyle{trac}
+\usepackage{listings}
+\usepackage{microtype}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{color}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{multirow}
+\usepackage{etoolbox}
+\usepackage{stmaryrd}
+
+% PL Formulas
+\usepackage{fleqn}
+\usepackage{latexsym}
 \usepackage{bcprules}
-\usepackage{amsmath, amsthm, amscd, amsfonts, amssymb, color} % for definitions/properties
-\usepackage{mdframed} % for framing theorems/properties?
-\usepackage{mdwlist}
-\usepackage{mathpartir}
-\usepackage{longtable}
-\usepackage{colortbl}%
-  \newcommand{\myrowcolour}{\rowcolor[gray]{0.925}}
-\usepackage{csquotes}
-\usepackage{enumitem}
-\usepackage{cite}
-\usepackage{natbib}
-% \usepackage{fontspec} % to customize monospace font...
-\usepackage{inconsolata}
-% \renewcommand*\familydefault{\ttdefault} %% Only if the base font of the document is to be typewriter style
-\usepackage[T1]{fontenc}
-\usepackage{cprotect}
-\usepackage{alltt}
-\usepackage{lineno}
+\usepackage{prooftree}
+
+%for Strikethrough, to remove when not required anymore
 \usepackage[normalem]{ulem}
-\usepackage{math}
-% \usepackage{fleqn}
-% \usepackage{prooftree}
+
+% Layout
+\usepackage{xspace}% space in macros
+\usepackage{multicol}
+
+% Makes tables look beautiful
+\usepackage{booktabs}
+\usepackage{tabularx}
 
 
-% \setmainfont{Utopia Std}
-% \setmonofont[Scale=1.0,BoldFont={Consolas Bold}]{Consolas}
+% ----- begin macros
+\lstdefinelanguage{Scala}%
+{morekeywords={abstract,%
+  case,catch,char,class,%
+  def,else,extends,final,for,%
+  if,import,implicit,%
+  match,module,%
+  new,null,%
+  object,override,%
+  %package,% commented out for a specific example
+  private,protected,public,%
+  for,public,return,super,%
+  this,throw,trait,try,type,%
+  val,var,%
+  with,while,%
+  yield,%
+  macro%
+  },%
+  sensitive,%
+  morecomment=[l]//,%
+  morecomment=[s]{/*}{*/},%
+  morestring=[b]",%
+  morestring=[b]',%
+  showstringspaces=false%
+}[keywords,comments,strings]%
 
-% use citep instead of cite
-\let\cite\citep
+\lstset{language=Scala,%
+  mathescape=true,%
+%  columns=[c]fixed,%
+%  basewidth={0.5em, 0.40em},%
+  aboveskip=1pt,%\smallskipamount,
+  belowskip=1pt,%\negsmallskipamount,
+  lineskip=-0.2pt,
+  basewidth={0.54em, 0.4em},%
+%  basicstyle=\ttfamily,%\scriptsize,%
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\sffamily\bfseries%
+%  keywordstyle=\sffamily\bfseries,%
+%  xleftmargin=0.5cm
+}
 
 
-% shorthands
-\newcommand{\selfassembly}{\texttt{self-assembly~}}
-\newcommand{\Selfassembly}{\texttt{Self-assembly~}}
-\newcommand{\sselfassembly}{\texttt{self-assembly}}
-\newcommand{\sporeurl}{\url{https://github.com/scala/spores}}
+\newcommand{\commentstyle}[1]{\slseries{#1}}
+\newcommand{\keywordstyle}[1]{\bfseries{#1}}
 
-% icons
-\newcommand*\loc{\includegraphics[height=0.65em,keepaspectratio]{loc}}
-\newcommand*\stars{\includegraphics[height=0.8em,keepaspectratio]{stars}}
-\newcommand*\contribs{\includegraphics[height=0.8em,keepaspectratio]{contribs}}
+% Code
+\lstnewenvironment{listing}{\lstset{language=Scala}}{}
+\lstnewenvironment{listingsmall}{\lstset{language=Scala,basicstyle=\small\ttfamily}}{}
+\lstnewenvironment{listingtiny}{\lstset{language=Scala,basicstyle=\footnotesize\ttfamily}}{}
 
-% comments and notes
-\newcommand{\comment}[1]{}
-% \newcommand{\note}[1]{{\bf $\clubsuit$ #1 $\spadesuit$}} % already defined?
-\newcommand{\ifreport}[1]{#1}
-%\newcommand{\ifreport}[1]{}
-\newcommand{\todo}{{\bf \colorbox{red}{\color{white}TODO:}}}
-\newcommand{\ie}{{\em i.e.,~}}
-\newcommand{\eg}{{\em e.g.,~}}
-\newcommand{\term}[1]{\mbox{\texttt{#1}}}
-\newcommand{\itl}[1]{\mbox{\textit{#1}}}
+\newcommand{\scode}[1]{\lstinline[language=Scala,columns=fixed,basicstyle=\ttfamily,keywordstyle=\ttfamily]|#1|}
+\newcommand{\jcode}[1]{\lstinline[language=Java,flexiblecolumns=true,basicstyle=\ttfamily]{#1}}
+
+\newcommand{\code}[1]{\scode{#1}}
+\newcommand{\sct}[1]{\S \ref{#1}}
+
+% Helper macro that returns #2 if #1 is empty, #3 otherwise.  The
+% macro will misbehave if #1=\\.
+\newcommand{\ifempty}[3]{\ifx\\#1\\ #2\else #3\fi}
+
+
+% TODOs:
+\newif\ifshowTodos
+\showTodostrue
+\showTodosfalse % Uncomment this to hide all TODOs.
+\ifshowTodos
+\newcommand{\todo}[1]{{\color{red} \textbf{[TODO: #1 ]}}}
+\newcommand{\sstucki}[1]{{\color{red} [\textbf{sstucki}: #1 ]}}
+\newcommand{\manojo}[1]{{\color{red} [\textbf{manojo}: #1 ]}}
+\newcommand{\comm}[1]{}
+\newcommand{\orElse}[2]{{\color{red} [\sout{#1} {\color{magenta} #2}]}}
+\else
+\newcommand{\todo}[1]{}
+\newcommand{\sstucki}[1]{}
+\newcommand{\manojo}[1]{}
+\newcommand{\comm}[1]{}
+\newcommand{\orElse}[2]{#2}
+\renewcommand{\sout}[1]{}
+\fi
+
+\newif\ifreport
+
+\reportfalse
+
+% paper specific commands
+\newcommand{\tool}{Yin-Yang\xspace}
+
+
+
+
+\newcommand{\figurebox}[1]
+        {\fbox{\begin{minipage}{\textwidth} #1 \medskip\end{minipage}}}
+\newcommand{\twofig}[3]
+        {\begin{figure*}[t]#3\ \hrulefill\
+        \caption{\label{#1}#2}\end{figure*}}
+\newcommand{\boxfig}[3]
+        {\begin{figure*}\figurebox{#3\caption{\label{#1}#2}}\end{figure*}}
+\newcommand{\figref}[1]
+        {Figure~\ref{#1}}
+
+% yin-yang rules
+\newcommand{\eval}[2]{\_eval[#1] #2}
+\newcommand{\lift}[2]{\_lift[#1]\;#2}
+%\newcommand{\transf}[2]{\textlbrackdbl #1 \textrbrackdbl \reduces #2}
+\newcommand{\ttransf}[2]{ \llbracket #1 \rrbracket^E \transforms #2 }
+\newcommand{\Ttransf}[2]{ \llbracket #1 \rrbracket_T^R \transforms #2 }
+% %\newcommand{\yytransf}[2]{\llparenthesis #1 \rrparenthesis_{yy}^Y}
+\newcommand{\yytransf}[2]{\left\langle #1 \right\rangle^Y}
+\newcommand{\trone}[1]{\left\llbracket #1 \right\rrbracket}
+\newcommand{\ttrone}[1]{\llbracket #1 \rrbracket}
+\newcommand{\yytr}[1]{\left\llbracket #1 \right\rrbracket}
+\newcommand{\Ttrone}[1]{\llbracket #1 \rrbracket}
+%\newcommand{\yy}[2]{\left\langle #1 \right\rangle_{yy}^{#2}}
+\newcommand{\yy}[2]{\llparenthesis #1 \rrparenthesis^{#2}}
+\newcommand{\yytrone}[1]{\yy{#1}{Y}}
+%\newcommand{\macro}[1]{\left\langle #1 \right\rangle_x^v}
+\newcommand{\macro}[1]{\llparenthesis #1 \rrparenthesis^v}
+%\newcommand{\Func}[2]{#1 \rightarrow #2}
+\newcommand{\Func}[2]{#1 \Rightarrow #2} % Using Scala notation!
+\newcommand{\func}[2]{\lambda#1. #2}
+\newcommand{\poly}[2]{\lambda#1. #2}
+\newcommand{\univ}[2]{\forall#1. #2}
+\newcommand{\exist}[2]{\exists#1. #2}
+%\newcommand{\llet}[3]{let\; #1 = #2 \; in \; #3}
+\newcommand{\llet}[3]{\klet #1 = #2 \kin \; #3}
+\newcommand{\blet}[3]{\klet #1 = #2 \kin \; #3}
+\newcommand{\tctx}[2]{#1 \vdash #2}
+\newcommand{\yctx}[2]{#1 \vdash #2}
+\newcommand{\Rep}[1]{R[#1]}
+\newcommand{\dpow}[2]{\llparenthesis #1 \rrparenthesis^{(#2, d_{pow}, d_{dpow}, R, \{Int\})}}
+\newcommand{\infmacro}[4]{\infrule[#1]{#2}{\yytrone{#3} \rightsquigarrow #4}}
+%\newcommand{\infyy}[4]{\infax[#1]{\trone{\frac{\typesetax{#2}}{\typesetax{#3}}} = #4}}
+%\newcommand{\infyyax}[3]{\infax[#1]{\trone{\typesetax{#2}} = #3}}
+%\newcommand{\infyy}[4]{\infrule[#1]{#2}{\trone{#3} \rightsquigarrow #4}}
+\newcommand{\infyy}[4]{\infrule[#1]{#2}{\trone{#3} = #4}}
+%\newcommand{\infyyax}[3]{\infax[#1]{\trone{\typesetax{#2}} \rightsquigarrow #3}}
+\newcommand{\infyyax}[3]{\infax[#1]{\trone{\typesetax{#2}} = #3}}
+\newcommand{\cod}{\operatorname{cod}}
+\newcommand{\dom}{\operatorname{dom}}
+\newcommand{\vars}[1]{\operatorname{vars(#1)}}
+\newcommand{\trule}[1]{#1}
+
+% typing rules (not used here)
+\newcommand{\ttag}[1]{\mbox{\textsc{\small(#1)}}}
+\newcommand{\infer}[3]{\mbox{#1 }\ba{c} #2 \\ \hline #3 \ea}
+\newcommand{\irule}[2]{{\renewcommand{\arraystretch}{1.2}\ba{c} #1
+                        \\ \hline #2 \ea}}
+\newlength{\trulemargin}
+\newlength{\trulewidth}
+\newlength{\srulewidth}
+\setlength{\trulemargin}{1.75cm}
+\setlength{\trulewidth}{83.7mm}
+\setlength{\srulewidth}{6.0cm}
+\newenvironment{trules}{$\vspace{0.5em}\ba{p{\trulemargin}@{~}p{\trulewidth}@{~}p{\trulemargin}}}{\ea$}
+\newenvironment{srules}{$\vspace{0.5em}\ba{p{\trulemargin}@{~}p{\srulewidth}}}{\ea$}
+\newcommand{\laxiom}[2]{\ttag{#1} & $ #2 \hfill\ }
+\newcommand{\raxiom}[2]{\hfill #2 $& \hfill \ttag{#1}}
+\newcommand{\caxiom}[2]{\ttag{#1} & $\hfill #2 \hfill $& \ }
+\newcommand{\lrule}[3]{\laxiom{#1}{\irule{#2}{#3}}}
+\newcommand{\rrule}[3]{\raxiom{#1}{\irule{#2}{#3}}}
+\newcommand{\crule}[3]{\caxiom{#1}{\irule{#2}{#3}}}
+\newcommand{\lsrule}[3]{\lsaxiom{#1}{\irule{#2}{#3}}}
+\newcommand{\rsrule}[3]{\rsaxiom{#1}{\irule{#2}{#3}}}
+\newcommand{\nl}{\end{trules}\\[0.5em] \begin{trules}}
+\newcommand{\snl}{\end{srules}\\[0.5em] \begin{srules}}
 
 % commas and semicolons
 \newcommand{\comma}{,\,}
 \newcommand{\commadots}{\comma \ldots \comma}
 \newcommand{\semi}{;\mbox{;};}
 \newcommand{\semidots}{\semi \ldots \semi}
-
-% brackets
-\newcommand{\set}[1]{\{#1\}}
-\newcommand{\sbs}[1]{\lquote #1 \rquote}
 
 % spacing
 \newcommand{\gap}{\quad\quad}
@@ -98,6 +230,23 @@
 \newcommand{\tab}{\hspace{\tabwidth}}
 \newcommand{\linesep}{\ \hrulefill \ \smallskip}
 
+% math stuff
+% \newenvironment{myproof}{{\em Proof:}}{$\Box$}
+% \newenvironment{proofsketch}{{\em Proof Sketch:}}{$\Box$}
+% \newcommand{\Case}{{\em Case\ }}
+
+% make ; a delimiter in math mode
+% \mathcode`\;="8000 % Makes ; active in math mode
+% {\catcode`\;=\active \gdef;{\;}}
+% \mathchardef\semicolon="003B
+
+% reserved words
+\newcommand{\mathem}{\bf}
+
+% brackets
+\newcommand{\set}[1]{\{#1\}}
+\newcommand{\sbs}[1]{\lquote #1 \rquote}
+
 % arrays
 \newcommand{\ba}{\begin{array}}
 \newcommand{\ea}{\end{array}}
@@ -106,6 +255,72 @@
 \newcommand{\ei}{\end{array}}
 \newcommand{\bcases}{\left\{\begin{array}{ll}}
 \newcommand{\ecases}{\end{array}\right.}
+
+% \cal ids
+\renewcommand{\AA}{{\cal A}}
+\newcommand{\BB}{{\cal B}}
+\newcommand{\CC}{{\cal C}}
+\newcommand{\DD}{{\cal D}}
+\newcommand{\EE}{{\cal E}}
+\newcommand{\FF}{{\cal F}}
+\newcommand{\GG}{{\cal G}}
+\newcommand{\HH}{{\cal H}}
+\newcommand{\II}{{\cal I}}
+\newcommand{\JJ}{{\cal J}}
+\newcommand{\KK}{{\cal K}}
+\newcommand{\LL}{{\cal L}}
+\newcommand{\MM}{{\cal M}}
+\newcommand{\NN}{{\cal N}}
+\newcommand{\OO}{{\cal O}}
+\newcommand{\PP}{{\cal P}}
+\newcommand{\QQ}{{\cal Q}}
+\newcommand{\RR}{{\cal R}}
+\newcommand{\TT}{{\cal T}}
+\newcommand{\UU}{{\cal U}}
+\newcommand{\VV}{{\cal V}}
+\newcommand{\WW}{{\cal W}}
+\newcommand{\XX}{{\cal X}}
+\newcommand{\YY}{{\cal Y}}
+\newcommand{\ZZ}{{\cal Z}}
+
+% misc symbols
+\newcommand{\dhd}{\!\!\!\!\!\rightarrow}
+\newcommand{\Dhd}{\!\!\!\!\!\Rightarrow}
+\newcommand{\la}{\langle}
+\newcommand{\ra}{\rangle}
+\newcommand{\eg}{{\em e.g.}}
+
+% misc identifiers
+\newcommand{\fn}{\mbox{\sl fn}}
+\newcommand{\bn}{\mbox{\sl bn}}
+\newcommand{\sig}{\mbox{\sl sig}}
+\newcommand{\IF}{\mbox{\mathem if}}
+\newcommand{\OTHERWISE}{\mbox{\mathem otherwise}}
+\newcommand{\expand}{\prec}
+\newcommand{\weakexpand}{\prec^W}
+\newcommand{\spcomma}{~,~}
+
+%\newcommand{\inst}{\mbox{\mathem inst}}
+\newcommand{\trans}[1]{\la\!\la#1\ra\!\ra}
+%\newcommand{\J}{\justifies}
+%\newcommand{\U}{\using}
+
+% names
+\newcommand{\Scala}{\mbox{\textsc{Scala}}}
+\newcommand{\Java}{\mbox{\textsc{Java}}}
+\newcommand{\sedsl}{Direct \edsl}
+\newcommand{\sedsls}{Direct \edsls}
+\newcommand{\dedsl}{Deep \edsl}
+\newcommand{\dedsls}{Deep \edsls}
+\newcommand{\edsl}{EDSL\xspace}
+\newcommand{\edsls}{EDSLs\xspace}
+\newcommand{\THE}{the}
+\newcommand{\A}{a}
+
+
+%\renewcommand\textfraction{.05}
+%\renewcommand\floatpagefraction{.9}
+%\renewcommand\topfraction{.8}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Language abstraction commands     %
@@ -116,10 +331,13 @@
 \newcommand{\sub}{<:}
 % Type assignment
 \newcommand{\typ}{:}
+\newcommand{\approxtyp}{:_{<:}}
 % reduction
 \newcommand{\reduces}{\;\rightarrow\;}
+\newcommand{\transforms}{\;\rightsquigarrow \;}
 % well-formedness
 \newcommand{\wf}{\;\mbox{\textbf{wf}}}
+\newcommand{\wfe}{\;\mbox{\textbf{wfe}}}
 
 %% Operators
 % Type selection
@@ -136,7 +354,7 @@
 
 %% Syntax
 % Header for typing rules
-\newcommand{\judgement}[2]{{\bf #1} \hfill \fbox{#2}}
+\newcommand{\judgement}[2]{{\bf #1} \hfill #2}
 % Refinement
 \newcommand{\refine}[2]{\left\{#1 \Rightarrow #2 \right\}}
 % Field definitions
@@ -148,63 +366,45 @@
 \newcommand{\abs}[3]{\lambda #1\!:\!#2.#3}
 % Application
 \newcommand{\app}[2]{#1\;#2}
+% Method Application
+\newcommand{\mapp}[3]{#1.#2(#3)}
 % Substitution
 \newcommand{\subst}[3]{[#1/#2]#3}
 % Object creation
 \newcommand{\new}[3]{\textbf{val }#1 = \textbf{new }#2 ;\; #3}
+\newcommand{\anfmapp}[5]{\textbf{val }#1 = {#2.#3(#4)} ;\; #5}
+\newcommand{\anfmexe}[5]{\textbf{val }#1 = {#2.#3\ldots\;#4} ;\; #5}
 %\renewcommand{\new}[3]{#1 \leftarrow #2 \,\textbf{in}\, #3}
 % Field declaration
-\newcommand{\Ldecl}[3]{#1 \typ #2..#3}%{#1 \operatorname{>:} #2 \operatorname{<:} #3}
-\newcommand{\ldecl}[2]{#1 \typ #2}
+\newcommand{\Ldecl}[3]{#1 : #2..#3}%{#1 \operatorname{>:} #2 \operatorname{<:} #3}
+\newcommand{\ldecl}[2]{#1 : #2}
+\newcommand{\mdecl}[3]{#1 : #2 \tfun #3}
 % Top and Bottom
 \newcommand{\Top}{\top}%{\textbf{Top}}
 \newcommand{\Bot}{\bot}%\textbf{Bot}}
 % Environment extension
-\newcommand{\envplus}[1]{\uplus \{ #1 \}}
-
-\newcommand{\reduction}[4]{#1, #2 \reduces #3, #4}
-\newcommand{\reducebig}[6]{#1, #2, #3 \;\Downarrow\; #4, #5, #6}
-\newcommand{\evaluate}[5]{#1, #2, #3 \;\Downarrow\; #4, #5}
-\newcommand{\evalcap}[8]{#1, #2, #3, #4 \;\Downarrow\; #5, #6, #7, #8}
-\newcommand{\evalcapbreak}[8]{#1, #2, #3, #4 \;\Downarrow\; \\ #5, #6, #7, #8}
-\newcommand{\evalcapfin}[9]{#2, #3, #4, #5 \;\Downarrow_{#1}\; #6, #7, #8, #9}
-
-\newcommand{\sframe}[3]{\langle #1, #2, #3 \rangle}
-\newcommand{\stack}[4]{#1 \sframe {#2} {#3} {#4}}
-\newcommand{\reduce}[4]{#1, #2 \;\longrightarrow\; #3, #4}
-\newcommand{\reducebreak}[4]{#1, #2 \\ \;\longrightarrow\; #3, #4}
-
-\newcommand{\sreduce}[6]{#1, #2, #3 \;\longrightarrow\; #4, #5, #6}
-\newcommand{\sreducebreak}[6]{#1, #2, #3 \\ \;\longrightarrow\; #4, #5, #6}
-\newcommand{\sreducestar}[6]{#1, #2, #3 \;\longrightarrow^{\ast}\; #4, #5, #6}
-\newcommand{\sreducestarbreak}[6]{#1, #2, #3 \\ \;\longrightarrow^{\ast}\; #4, #5, #6}
-
-% misc identifiers
-\newcommand{\dom}{\mbox{\sl dom}}
-\newcommand{\fn}{\mbox{\sl fn}}
-\newcommand{\bn}{\mbox{\sl bn}}
-\newcommand{\sig}{\mbox{\sl sig}}
-\newcommand{\IF}{\mbox{\mathem if}}
-\newcommand{\OTHERWISE}{\mbox{\mathem otherwise}}
-\newcommand{\strongexpand}{\prec\!\!\prec}
-\newcommand{\weakexpand}{\prec}
-\newcommand{\spcomma}{~,~}
-
-% definitions/properties
-\newtheorem{theorem}{Theorem}[section]
-\newtheorem{definition}{Definition}[section]
-\newtheorem{lemma}{Lemma}[section]
-
-\theoremstyle{definition}
-\newmdtheoremenv[hidealllines=true,topline=true,bottomline=true,skipabove=\baselineskip,skipbelow=\baselineskip]{defn}{Definition}[section]
-
-\theoremstyle{definition}
-\newmdtheoremenv[hidealllines=true,topline=true,bottomline=true,skipabove=\baselineskip,skipbelow=\baselineskip]{prop}{Property}[section]
+%\newcommand{\envplus}[1]{\uplus \{ #1 \}}
+\newcommand{\envplus}[1]{, #1}
+% Reduction
+\newcommand{\reduction}[2]{#1 \reduces #2 }
+\DeclareMathOperator{\klet}{\mathbf{let}} % Used in examples
+\DeclareMathOperator{\tlet}{\mathbf{let}} % Used in text
 
 
-\makeatletter
-\newcommand{\customlabel}[2]{%
-   \protected@write \@auxout {}{\string \newlabel {#1}{{#2}{\thepage}{#2}{#1}{}} }%
-   \hypertarget{#1}{}
-}
-\makeatother
+\DeclareMathOperator{\kin}{\mathbf{in}} % Used in examples
+\DeclareMathOperator{\tin}{\mathbf{in}} % Used in text
+
+\DeclareMathOperator{\kfix}{\mathbf{fix}}
+\DeclareMathOperator{\tfix}{\mathbf{fix}} % Used in text
+\DeclareMathOperator{\kif}{\mathbf{if}}
+\DeclareMathOperator{\kthen}{\mathbf{then}}
+\DeclareMathOperator{\kelse}{\mathbf{else}}
+\DeclareMathOperator{\kint}{\mathbf{Int}}
+\DeclareMathOperator{\kbool}{\mathbf{Bool}}
+\DeclareMathOperator{\ktrue}{\mathbf{true}}
+\DeclareMathOperator{\kfalse}{\mathbf{false}}
+%\newcommand{\btyp}{B}
+\newcommand{\btyp}{\iota}
+
+\newcommand{\calculus}{the calculus\xspace}
+
