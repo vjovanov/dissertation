@@ -419,7 +419,7 @@ Since the translation is type-directed it requires reflection that supports \emp
 \begin{multicols}{2}
 \begin{subfigure}[b]{1\linewidth}
 \centering
-
+\vspace{1.4em}
 \begin{listingtiny}
 import vector._; import math.pow;
 val n = 100; val exp = 6;
@@ -430,6 +430,7 @@ vectorDSL {
   } else 0
 }
 \end{listingtiny}
+\vspace{1.4em}
 \caption{A program in direct embedding for calculating $\sum_{i=0}^n i^{exp}$.}
 \label{lst:direct-embedding}
 \end{subfigure}
@@ -452,9 +453,9 @@ vectorDSL {
 \label{lst:desugaring}
 \end{subfigure}
 
+\end{multicols}
 
 \begin{subfigure}[b]{1\linewidth}
-\vspace{8.1pt}
 \begin{listingtiny}
 val n = 100; val exp = 6;
 new VectorDSL with IfOps
@@ -478,9 +479,8 @@ new VectorDSL with IfOps
 \end{listingtiny}
 \caption{The \tool translation of the program from \figref{lst:desugaring}.}
 \label{lst:transformed_program}
-\vspace{8.1pt}
+
 \end{subfigure}
-\end{multicols}
 \caption{\label{fig:translation-example} Transformation of an EDSL program for calculating $\sum_{i=0}^n i^{exp}$.}
 \end{figure*}
 
@@ -534,6 +534,7 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
     \infyy{}
           {\tctx{\Gamma}{\mathbf{try}\;t_1\;\mathbf{catch}\;t_2\;\mathbf{finally}\;t_3\; }}
           {\mathbf{try}\;t_1\;\mathbf{catch}\;t_2\;\mathbf{finally}\;t_3\; }{\mathtt{tryCatch}[T](\ttrone{t_1},\;\ttrone{t_2},\;\ttrone{t_3})}
+    \vspace{0.05em}
 
 \begin{multicols}{2}
     \infyyax{}
@@ -620,54 +621,56 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
 \vspace{1em}
 \judgement{Methods on the \code{AnyRef} type}{}
 
- % *   t eq t1                =>       infix_eq(t, t1)
  \begin{multicols}{2}
-   \infyyax{}
-     {t_1\;\mathtt{eq}\;t_2}{\mathtt{infix\_eq}(\trone{t_1},\;\trone{t_2})}
-
+% *   t.equals t1            =>       infix_equals(t, t1)
+ \infyyax{}
+     {t_1\;\mathtt{equals}\;t_2}{\mathtt{infix\_equals}(\trone{t_1},\;\trone{t_2})}
  % *   t ne t1                =>       infix_ne(t, t1)
    \infyyax{}
      {t_1\;\mathtt{ne}\;t_2}{\mathtt{infix\_ne}(\trone{t_1},\;\trone{t_2})}
 \end{multicols}
 
-% *   t.synchronized[T](t1)  =>       infix_synchronized(t, t1)
-   \infyyax{}
-     {t_1.\mathtt{synchronized}[T](t_2)}{\mathtt{infix\_synchronized}[T](\trone{t_1},\;\trone{t_2})}
-
 \begin{multicols}{2}
- % *   t.notify               =>       infix_notify(t)
+% *   t.wait(t1, l)          =>       infix_wait(t, t1, l)
    \infyyax{}
-     {t.\mathtt{notify}}{\mathtt{infix\_notify}(\trone{t})}
+      {t_1.\mathtt{wait}(t_2,\;t_3)}{\mathtt{infix\_wait}(\trone{t_1},\;\trone{t_2},\;\trone{t_3})}
 
- % *   t.notifyAll            =>       infix_notifyAll(t)
+% *   t eq t1                =>       infix_eq(t, t1)
    \infyyax{}
-     {t.\mathtt{notifyAll}}{\mathtt{infix\_notifyAll}(\trone{t})}
+     {t_1\;\mathtt{eq}\;t_2}{\mathtt{infix\_eq}(\trone{t_1},\;\trone{t_2})}
 \end{multicols}
-
+\vspace{-2.7em}
 \begin{multicols}{2}
- % *   t.wait                 =>       infix_wait(t)
-   \infyyax{}
-     {t.\mathtt{wait}}{\mathtt{infix\_wait}(\trone{t})}
-
  % *   t.wait(l)              =>       infix_wait(t, l)
   \infyyax{}
      {t_1.\mathtt{wait}(t_2)}{\mathtt{infix\_wait}(\trone{t_1},\;\trone{t_2})}
 
+ % *   t.wait                 =>       infix_wait(t)
+   \infyyax{}
+     {t.\mathtt{wait}}{\mathtt{infix\_wait}(\trone{t})}
 \end{multicols}
-% *   t.wait(t1, l)          =>       infix_wait(t, t1, l)
+
+\begin{multicols}{2}
+ % *   t.notifyAll            =>       infix_notifyAll(t)
+   \infyyax{}
+     {t.\mathtt{notifyAll}}{\mathtt{infix\_notifyAll}(\trone{t})}
+
+ % *   t.notify               =>       infix_notify(t)
+   \infyyax{}
+     {t.\mathtt{notify}}{\mathtt{infix\_notify}(\trone{t})}
+
+\end{multicols}
+
+% *   t.synchronized[T](t1)  =>       infix_synchronized(t, t1)
   \infyyax{}
-     {t_1.\mathtt{wait}(t_2,\;t_3)}{\mathtt{infix\_wait}(\trone{t_1},\;\trone{t_2},\;\trone{t_3})}
+     {t_1.\mathtt{synchronized}[T](t_2)}{\mathtt{infix\_synchronized}[T](\trone{t_1},\;\trone{t_2})}
+
 \caption{Rules for virtualization of methods on \code{Any} and \code{AnyRef}.}
 \label{fig:virt-any}
 \end{figure}
 
 % TODO
-  % equals
-  % try/catch
-  % partial function
-  % organize tables
-  % recurse
-  % for completeness
+  % test one more time for completeness
 
   % Talk about the infix notation.
   % Discuss the `def f` struggle.
