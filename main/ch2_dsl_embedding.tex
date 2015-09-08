@@ -331,21 +331,21 @@ debugging mode this does not convey any useful information to the user.
 Furthermore, debugging generated code or an interpreter is extremely difficult.
 Users cannot relate the debugger position and the original line of code.
 
-\paragraph{Complicated Type Errors.} The \code{Rep[_]} types leak to the user through type errors. Even for simple type errors the user is exposed to non-standard error messages. In certain cases (e.g., incorrect call to an overloaded function), the error messages can become hard to understand. To illustrate, we present a typical type error for invalid method invocation:\vspace{3pt}
-\begin{listingtiny}
+\paragraph{Complicated type errors.} The \code{Rep[_]} types leak to the user through type errors. Even for simple type errors the user is exposed to non-standard error messages. In certain cases (e.g., incorrect call to an overloaded function), the error messages can become hard to understand. To illustrate, we present a typical type error for invalid method invocation:
+\begin{lstparagraph}
   found   : Int(1)
   required: Vector[Int]
        x + 1
            ^
-\end{listingtiny}\vspace{3pt}
-In the deep embedding the corresponding type error contains \code{Rep} types and the \code{this} qualifier:\vspace{3pt}
-\begin{listingtiny}
+\end{lstparagraph}
+In the deep embedding the corresponding type error contains \code{Rep} types and the \code{this} qualifier:
+\begin{lstparagraph}
   found   : Int(1)
   required: this.Rep[this.Vector[Int]]
        (which expands to) this.Rep[vect.Vector[Int]]
        x + 1
            ^
-\end{listingtiny}
+\end{lstparagraph}
 This example represents one of the  most common type errors. For more complicated type errors cf.~\cite{techrep}.
 \paragraph{Unrestricted host language constructs.} In the deep embedding all
 generic constructs of a host language can be used arbitrarily. For example,
@@ -486,7 +486,9 @@ new VectorDSL with IfOps
 
 To illustrate the core translation, we use an example program for calculating $\sum_{i=0}^n i^{exp}$ using the vector \edsl defined in \figref{lst:vector}. \figref{fig:translation-example} contains three versions of the program: Figure \ref{lst:direct-embedding} depicts the direct embedding version, Figure \ref{lst:desugaring} represents the program after type checking (as the translation sees it), and Figure \ref{lst:transformed_program} shows the result of the translation.
 
-{\bf \emph{Language virtualization}} allows to redefine intrinsic constructs of the
+\subsection{Language Virtualization}
+
+Language virutalization allows to redefine intrinsic constructs of the
 host language, such as \code{if} and \code{while} statements. This can be
 achieved by translating them into suitable method invocations as shown by Rompf
 et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-virtualized:_2009}.
@@ -501,28 +503,181 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
  unmodified Scala we must virtualize all methods on \code{Any} and \code{AnyRef}.
 
 \begin{figure}
-  \footnotesize
+%
+%  Functions
+%
+    \judgement{Function Virtualization}{}
+
+\begin{multicols}{2}
     \infyy{}
-    {\tctx{\Gamma}{t: T_2}}
-    {x: T_1 \Rightarrow t}{\mathtt{lam}[T_1,T_2](x: T_1 \Rightarrow \trone{t})}\vspace{1em}
+      {\tctx{\Gamma}{t: T_2}}
+      {x: T_1 \Rightarrow t}{\mathtt{lam}[T_1,T_2](x: T_1 \Rightarrow \trone{t})}
 
     \infyy{}
-    {\tctx{\Gamma}{t_1.f: [T_1](\Func{T_2}{T_3})}}
-    {t_1.f[T_1](t_2)}{\mathtt{app}[T_2,T_3](\ttrone{t_1}.f[T_1],\ttrone{t_2})}\vspace{1em}
+      {\tctx{\Gamma}{t_1.f: [T_1](\Func{T_2}{T_3})}}
+      {t_1.f[T_1](t_2)}{\mathtt{app}[T_2,T_3](\ttrone{t_1}.f[T_1],\ttrone{t_2})}
+\end{multicols}
 
-  \infyyax{}
-  {\mathbf{def}\;f[T_1](x:T_2):T_3 {=} t}{\mathbf{def}\;f[T_1]:(T_2 {\Rightarrow} T_3){=}\trone{x:T_2 {\Rightarrow} t}}\vspace{1em}
+    \infyyax{}
+      {\mathbf{def}\;f[T_1](x:T_2):T_3 {=} t}{\mathbf{def}\;f[T_1]:(T_2 {\Rightarrow} T_3){=}\trone{x:T_2 {\Rightarrow} t}}
 
-  \infyyax{}
-  {\mathbf{val}\;x:T = t}{\mathbf{val}\;x:T = \mathtt{valDef}[T](t)}\vspace{1em}
 
-  \infyy{}
-  {\tctx{\Gamma}{\mathbf{if}(t_1) \;t_2\; \mathbf{else}\;t_3: T}}
-  {\mathbf{if}(t_1) \;t_2\; \mathbf{else}\;t_3}{\text{\texttt{ifThenElse}}[T](\ttrone{t_1}, \ttrone{t_2}, \ttrone{t_3})}
+%
+% Control constructs
+%
+\vspace{1em}
+\judgement{Control Constructs}{}
+    \infyy{}
+      {\tctx{\Gamma}{\mathbf{if}(t_1) \;t_2\; \mathbf{else}\;t_3: T}}
+      {\mathbf{if}(t_1) \;t_2\; \mathbf{else}\;t_3}{\mathtt{ifThenElse}[T](\ttrone{t_1}, \ttrone{t_2}, \ttrone{t_3})}
 
-\caption{Subset of rules for language virtualization.}
-\label{fig:virt}
+    \infyy{}
+          {\tctx{\Gamma}{\mathbf{try}\;t_1\;\mathbf{catch}\;t_2\;\mathbf{finally}\;t_3\; }}
+          {\mathbf{try}\;t_1\;\mathbf{catch}\;t_2\;\mathbf{finally}\;t_3\; }{\mathtt{tryCatch}[T](\ttrone{t_1},\;\ttrone{t_2},\;\ttrone{t_3})}
+
+\begin{multicols}{2}
+    \infyyax{}
+      {\mathbf{while}(c)\;b}{\mathtt{whileDo}(\ttrone{c},\;\ttrone{b})}
+
+    \infyyax{}
+      {\mathbf{do}\; b \;\mathbf{while}(c)}{\mathtt{doWhile}(\ttrone{c},\;\ttrone{b})}
+\end{multicols}
+
+    \infyyax{}
+      {\mathbf{return}\; t}{\mathtt{ret}(\ttrone{t})}
+
+\vspace{1em}
+
+%
+% Varibles
+%
+\judgement{Variables}{}
+\begin{multicols}{2}
+    \infyyax{}
+      {\mathbf{val}\;x:T = t}{\mathbf{val}\;x:T = \mathtt{valDef}[T](t)}
+
+    \infyyax{}
+      {\mathbf{var}\;x:T = t}{\mathbf{val}\;x:T = \mathtt{newVar}[T](\ttrone{t})}
+\end{multicols}
+
+\begin{multicols}{2}
+    \infyy{}
+      {\tctx{\Gamma}{x: T} \quad \;\; x \; \text{is\;a\;variable}}
+      {x}{\mathtt{readVar}[T](\ttrone{x})}
+
+    \infyy{}
+      {\tctx{\Gamma}{x: T} \quad \;\; x \; \text{is\;a\;variable}}
+      {x = t}{\mathtt{assign}[T](x, \ttrone{t})}
+\end{multicols}
+    \infyyax{}
+      {\mathbf{lazy\;val}\;x:T = t}{\mathbf{val}\;x:T = \mathtt{lazyVal}[T](\ttrone{t})}
+
+\caption{Rules for virtualization of Scala language intrinsics.}
+\label{fig:virt-core}
 \end{figure}
+
+
+\begin{figure}
+%
+% Virtualization of `Any` methods
+%
+% *   t == t1                =>       infix_==(t, t1)
+\judgement{Methods on the \code{Any} type}{}
+\begin{multicols}{2}
+    \infyyax{}
+      {t_1\; == \;t_2}{\mathtt{infix\_==}(\trone{t_1},\;\trone{t_2})}
+
+% *   t != t1                =>       infix_!=(t, t1)
+    \infyyax{}
+      {t_1\;!=\;t_2}{\mathtt{infix\_!=}(\trone{t_1},\;\trone{t_2})}
+\end{multicols}
+
+% *   t.##                   =>       infix_##(t)
+\begin{multicols}{2}
+    \infyyax{}
+      {t.\#\#}{\mathtt{infix\_\#\#}(\trone{t})}
+
+% *   t.hashCode             =>       infix_hashCode(t)
+    \infyyax{}
+      {t.\mathtt{hashCode}}{\mathtt{infix\_hashCode}(\trone{t})}
+\end{multicols}
+
+% *   t.asInstanceOf[T]      =>       infix_asInstanceOf[T](t)
+    \infyyax{}
+      {t.\mathtt{asInstanceOf[T]}}{\mathtt{infix\_asInstanceOf[T]}(\trone{t})}
+
+% *   t.isInstanceOf[T]      =>       infix_isInstanceOf[T](t)
+    \infyyax{}
+      {t.\mathtt{isInstanceOf[T]}}{\mathtt{infix\_isInstanceOf[T]}(\trone{t})}
+
+% *   t.toString             =>       infix_toString(t)
+    \infyyax{}
+      {t.\mathtt{toString}}{\mathtt{infix\_toString}(\trone{t})}
+
+%
+% Virtualization of `AnyRef` methods
+%
+\vspace{1em}
+\judgement{Methods on the \code{AnyRef} type}{}
+
+ % *   t eq t1                =>       infix_eq(t, t1)
+ \begin{multicols}{2}
+   \infyyax{}
+     {t_1\;\mathtt{eq}\;t_2}{\mathtt{infix\_eq}(\trone{t_1},\;\trone{t_2})}
+
+ % *   t ne t1                =>       infix_ne(t, t1)
+   \infyyax{}
+     {t_1\;\mathtt{ne}\;t_2}{\mathtt{infix\_ne}(\trone{t_1},\;\trone{t_2})}
+\end{multicols}
+
+% *   t.synchronized[T](t1)  =>       infix_synchronized(t, t1)
+   \infyyax{}
+     {t_1.\mathtt{synchronized}[T](t_2)}{\mathtt{infix\_synchronized}[T](\trone{t_1},\;\trone{t_2})}
+
+\begin{multicols}{2}
+ % *   t.notify               =>       infix_notify(t)
+   \infyyax{}
+     {t.\mathtt{notify}}{\mathtt{infix\_notify}(\trone{t})}
+
+ % *   t.notifyAll            =>       infix_notifyAll(t)
+   \infyyax{}
+     {t.\mathtt{notifyAll}}{\mathtt{infix\_notifyAll}(\trone{t})}
+\end{multicols}
+
+\begin{multicols}{2}
+ % *   t.wait                 =>       infix_wait(t)
+   \infyyax{}
+     {t.\mathtt{wait}}{\mathtt{infix\_wait}(\trone{t})}
+
+ % *   t.wait(l)              =>       infix_wait(t, l)
+  \infyyax{}
+     {t_1.\mathtt{wait}(t_2)}{\mathtt{infix\_wait}(\trone{t_1},\;\trone{t_2})}
+
+\end{multicols}
+% *   t.wait(t1, l)          =>       infix_wait(t, t1, l)
+  \infyyax{}
+     {t_1.\mathtt{wait}(t_2,\;t_3)}{\mathtt{infix\_wait}(\trone{t_1},\;\trone{t_2},\;\trone{t_3})}
+\caption{Rules for virtualization of methods on \code{Any} and \code{AnyRef}.}
+\label{fig:virt-any}
+\end{figure}
+
+% TODO
+  % equals
+  % try/catch
+  % partial function
+  % organize tables
+  % recurse
+  % for completeness
+
+  % Talk about the infix notation.
+  % Discuss the `def f` struggle.
+  % Discuss All vs final members?
+  % Discuss dynamic dispatch with infix methods.
+  % Interaction with the pattern matcher.
+  % Discuss partial functions and pattern matching.
+  % Unique strings for avoiding collisions.
+  % Pattern matcher example for try/catch.
+  % Add the zero+ monad to the game.
 
  \figref{fig:translation-example} illustrates this process and \figref{fig:virt}
 lists a subset of the translation rules used to virtualize the Scala intrinsics,
@@ -552,7 +707,13 @@ Constructs that are not virtualized are class and trait definitions, including
 \newcommand{\ttother}[1][]{\ttname \ifempty{#1}{}{(#1)}}
 
 
-\paragraph{DSL intrinsification} maps directly embedded versions
+\subsection{DSL Intrinsification}
+
+% TODO
+% Introduce the interfaces for both translations.
+% null goes to constants
+
+DSL intrinsification maps directly embedded versions
 of the DSL intrinsics to their deep counterparts.  The constructs that
 need to be converted are: \emph{i)} DSL types, \emph{ii)} DSL
 operations, \emph{iii)} constant literals, and \emph{iv)} captured
@@ -915,7 +1076,7 @@ trait VectorOps extends SeqOps with
 \caption{\label{lst:vector_deep_fx} Direct and deep embedding for Vector with side-effects.}
 \end{figure}
 
-\subsection{Lowering High-Level IR Nodes to their Low-Level Implementation}
+\subsection{Lowering High-Level IR Nodes to Their Low-Level Implementation}
 \label{sec:yy-impl-lower}
 
 Having domain-specific optimizations on the high-level representation is not
