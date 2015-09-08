@@ -102,14 +102,14 @@
 % Code
 \lstnewenvironment{listing}{\lstset{language=Scala}}{}
 \lstnewenvironment{listingsmall}{\lstset{language=Scala,basicstyle=\small\ttfamily}}{}
-\lstnewenvironment{listingtiny}{\lstset{language=Scala,basicstyle=\footnotesize\ttfamily}}{}
+\lstnewenvironment{listingtiny}{\lstset{language=Scala,basicstyle=\ttfamily}}{}
 
 \newcommand{\scode}[1]{\lstinline[language=Scala,columns=fixed,basicstyle=\ttfamily,keywordstyle=\ttfamily]|#1|}
 \newcommand{\jcode}[1]{\lstinline[language=Java,flexiblecolumns=true,basicstyle=\ttfamily]{#1}}
 
 \newcommand{\code}[1]{\scode{#1}}
 \newcommand{\sct}[1]{\S \ref{#1}}
-\lstnewenvironment{lstparagraph}{\lstset{language=Scala}\vspace{1.8mm}}{\vspace{1.8mm}}
+\lstnewenvironment{lstparagraph}{\lstset{language=Scala,basicstyle=\ttfamily}\vspace{2.4mm}}{\vspace{2.4mm}}
 
 % Helper macro that returns #2 if #1 is empty, #3 otherwise.  The
 % macro will misbehave if #1=\\.

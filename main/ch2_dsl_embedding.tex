@@ -379,7 +379,7 @@ instead during DSL program execution:\vspace{3pt}
     try Vector.fill(1000, 1) / 0
     catch { case _ => Vector.fill(1000, 0) }
   }
-\end{listingtiny}\vspace{3pt}
+\end{listingtiny}
 
 Here, the resulting program always throws a \code{DivisionByZero}
 exception.
@@ -748,21 +748,18 @@ reports two kinds of error messages:
 
 \begin{itemize}
 \item Generic messages for unsupported methods:
-\begin{listingtiny}
-
+\begin{lstparagraph}
 List.fill(1000, Vector.fill(1000,1)).reduce(_+_)
 ^
 Method List.fill[T] is unsupported in VectorDSL.
-\end{listingtiny}
+\end{lstparagraph}
 %\vfill %% sstucki: hack!
 
-\item Custom messages for unsupported host language constructs:
-\begin{listingtiny}
-
+\item Custom messages for unsupported host language constructs:\begin{lstparagraph}
 try Vector.fill(1000, 1) / 0
 ^
 Construct try/catch is unsupported in VectorDSL.
-\end{listingtiny}
+\end{lstparagraph}
 \end{itemize}
 %
 % Restricting the language is a piece of cake.

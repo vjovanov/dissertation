@@ -108,8 +108,7 @@ Since, vector elements are polymorphic the result
  that can be further used for compile-time computations. The binding time of the return type
  of \code{dot} will match the binding time of vector elements:
 
-\vspace{1.8mm}
-\begin{listing}[mathescape]
+\begin{lstparagraph}
   // [el1, el2, el3, el4] are dynamic decimals
   dot(Vector(el1, el2), Vector(el3, el4))
     $\hookrightarrow$ (el1 * el3 + el2 * el4): Double
@@ -122,8 +121,7 @@ Since, vector elements are polymorphic the result
   dot(Vector(ct(2), ct(4)),
       Vector(ct(1), ct(10)))
     $\hookrightarrow$ 42: Double@ct
-\end{listing}
-\vspace{1.8mm}
+\end{lstparagraph}
 
 In this paper we contribute to the state of the art:
 \begin{itemize}
@@ -162,13 +160,13 @@ To the user, \tool exposes a minimal interface (\figref{fig:interface}) with
 a single annotation \code{ct} and a single function \code{ct}.
 
 \begin{figure}
-\begin{listing}
+\begin{listingtiny}
 package object scalact {
   final class ct extends StaticAnnotation
 
   @compileTimeOnly def ct[T](body: => T): T = ???
 }
-\end{listing}
+\end{listingtiny}
 \label{fig:interface}
 \caption{Interface of \tool.}
 \end{figure}
@@ -448,7 +446,7 @@ methods is dispatched, at compile-time, by the \code{min} method which checks if
 arguments are statically known. Desugaring of \code{min} is shown in \figref{fig:min}.
 
 \begin{figure}
-\begin{listing}
+\begin{listingtiny}
 def min(vs: Int*): Int = macro
   if (isVarargs(vs)) q"min_CT(vs)"
   else q"min_D(vs)"
@@ -462,7 +460,7 @@ def min_D(vs: Seq[Int]): Int =
   vs.tail.foldLeft(vs.head) {
     (min, el) => if (el < min) el else min
   }
-\end{listing}
+\end{listingtiny}
 \caption{Function \code{min} is desugared into a \code{min} macro that based on the
 binding time of the arguments dispatches to the partially evaluated version (\code{min_CT})
 for statically known varargs or to the original min function for dynamic arguments \code{min_D}.}
@@ -485,7 +483,7 @@ type \code{Double} (\code{DoubleNumeric}). The \code{DoubleNumeric} is than pass
 as an implicit argument \code{dnum} to all methods that use it (\eg, \code{zero}).
 
 \begin{figure}
-\begin{listing}
+\begin{listingtiny}
 object Numeric {
   implicit def dnum: Numeric[Double]@ct =
     ct(DoubleNumeric)
@@ -504,7 +502,7 @@ object DoubleNumeric extends Numeric[Double] {
   def times(x: Double, y: Double): Double = x * y
   def zero: Double = 0.0
 }
-\end{listing}
+\end{listingtiny}
 \caption{\label{fig:numeric} Removing abstraction overheads of type classes.}
 \end{figure}
 
