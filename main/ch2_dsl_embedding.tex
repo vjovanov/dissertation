@@ -497,7 +497,6 @@ achieved by translating them into suitable method invocations as shown by Rompf
 et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-virtualized:_2009}.
 
 % TODO
-  % Function/method virtualization
   % test one more time for completeness
   % Talk about the infix notation.
   % Discuss the `def f` struggle.
@@ -512,11 +511,10 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
   % Discuss control constructs.
 
  \tool follows the ideas of Carette et al.~\cite{carette_finally_2009}
- and Scala-Virtualized but uses macros of unmodified Scala
- to virtualize Scala intrinsics which are required to write direct DSL programs. This design
- decision makes adoption of \tool easier. Practice has shown that DSL authors are reluctant to
- use a modified compiler and that for the wide adoption of embedded DSLs it is important
- to provide a solution based on unmodified Scala.
+ and Scala-Virtualized but virtualizes all Scala expressions and uses macros to virtualize Scala intrinsics
+  which are required to write direct DSL programs. Practice has shown that DSL
+  authors are reluctant to use a modified compiler and that for the wide adoption
+  of embedded DSLs it is important to provide a solution based on unmodified Scala.
 
  Compared to Scala-Virtualized we translate additional language constructs:
   function/method definition and function application, exception handling, and all kinds of value-binding constructs
@@ -525,56 +523,7 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
   the original types are introspected and used as a type argument of the corresponding virtualized method. These
   generic types are later translated to the deep embedding during the DSL intrinsification phase.
 
-% Binding taken care of by DSL intrinsification.
- Defined translation rules convert language constructs into method calls where each language construct has
-  a corresponding method. The signature of each method is partially defined by \tool. Method names, the number of
-  type parameters and the number of type arguments are predefined while types of arguments and return types
-  are open for the DSL author to define. \todo{link to the signature}
-
- Binding of the translated language constructs to the corresponding methods
-  in the deep embedding is achieved during DSL intrinsification; language virtualization is
-  agnostic of this binding. Further, in the implementation, all method names are prepended with $\$$
-  \footnote{In Scala it is a convention that user defined method's names should not contain $\$$ characters as those are reserved for the name mangling performed by the Scala compiler.} which avoids collisions with other user functions.
-
- % Discuss the function translation.
- \paragraph{Functions.} We virtualize function definition and application to support full abstraction over the host
-  language expressions. This allows DSL authors to define how functions are treated by
-  reifying them and optionally providing analysis and transformations over them. For example, DSL authors
-  can define different inlining strategies, perform call graph analysis, or instrument all function calls. With Scala-Virtualized
-  this is not possible as functions are not translated and thus it is impossible to
-  abstract over them.
-
-
-% Discuss method translations.
- \paragraph{Methods.} Method definitions follow a similar philosophy as functions.
-  The difference is that in Scala, the \code{def} keyword is used to define universal quantification and possibly recursion.
-  This is similar to the \code{let} and \code{letrec} constructs in other functional languages. This translation is optional
-  as in some DSLs it is more concise to reuse method application of the host language.
-
-
-% Discuss control structure.
- \paragraph{Control constructs.} We translate all Scala control constructs (e.g.,\code{if} and \code{try} to method calls.
-  Scala's type system supports parametric polymorphism, by-name parameters, and partial functions that can model
-  the semantics of all constructs.
-
-% Discuss variables.
- \paragraph{Value bindings.} \todo{}
-
-
- \paragraph{Universal methods.} Scala is designed such that the types \code{Any} and
- \code{AnyRef}, which reside at the top of the Scala class hierarchy, contain
- \code{final} methods. Through inheritance, these methods are defined on all
- types making it impossible to override their functionality without translation.
-
- \tool visualizes all methods on types \code{Any} and \code{AnyRef}. Method calls on objects
-  are translated into the representation where the this pointer is passed as the first argument.
-
-
-  % The adequate method is chosen by overloading resolution.
-
-  % The virtual dispatch must be handled
-
-\begin{figure}
+  \begin{figure}
 %
 %  Functions
 %
@@ -632,6 +581,10 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
 \vspace{1.5em}
 \judgement{Value Bindings}{}
 \vspace{1em}
+
+\infyyax{}
+      {\mathbf{lazy\;val}\;x:T = t}{\mathbf{val}\;x:T = \mathtt{lazyVal}[T](\ttrone{t})}
+
 \begin{multicols}{2}
     \infyyax{}
       {\mathbf{val}\;x:T = t}{\mathbf{val}\;x:T = \mathtt{valDef}[T](t)}
@@ -642,22 +595,79 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
 
 \begin{multicols}{2}
     \infyy{}
-      {\tctx{\Gamma}{x: T} \quad \;\; x \; \text{is\;a\;variable}}
-      {x}{\mathtt{readVar}[T](\ttrone{x})}
+      {\tctx{\Gamma}{x: T}}
+      {x}{\mathtt{read}[T](\ttrone{x})}
 
     \infyy{}
-      {\tctx{\Gamma}{x: T} \quad \;\; x \; \text{is\;a\;variable}}
+      {\tctx{\Gamma}{x: T}}
       {x = t}{\mathtt{assign}[T](x, \ttrone{t})}
 \end{multicols}
-    \infyyax{}
-      {\mathbf{lazy\;val}\;x:T = t}{\mathbf{val}\;x:T = \mathtt{lazyVal}[T](\ttrone{t})}
 
 \caption{Rules for virtualization of Scala language intrinsics.}
 \label{fig:virt-core}
 \end{figure}
 
 
-\begin{figure}
+% Binding taken care of by DSL intrinsification.
+ Defined translation rules convert language constructs into method calls where each language construct has
+  a corresponding method. The signature of each method is partially defined by \tool. Method names, the number of
+  type parameters and the number of type arguments are predefined while types of arguments and return types
+  are open for the DSL author to define. \todo{link to the signature}
+
+ Binding of the translated language constructs to the corresponding methods
+  in the deep embedding is achieved during DSL intrinsification; language virtualization is
+  agnostic of this binding. Further, in the implementation, all method names are prepended with $\$$
+  \footnote{In Scala it is a convention that user defined method's names should not contain $\$$ characters as those are reserved for the name mangling performed by the Scala compiler.} which avoids collisions with other user functions.
+
+ % Discuss the function translation.
+ \paragraph{Functions.} We virtualize function definition and application to support full abstraction over the host
+  language expressions. This allows DSL authors to define how functions are treated by
+  reifying them and optionally providing analysis and transformations over them. For example, DSL authors
+  can define different inlining strategies, perform call graph analysis, or instrument all function calls. With Scala-Virtualized
+  this is not possible as functions are not translated and thus it is impossible to
+  abstract over them.
+
+% Discuss method translations.
+ \paragraph{Methods.} Method definitions follow a similar philosophy as functions.
+  The difference is that in Scala, the \code{def} keyword is used to define universal quantification and possibly recursion.
+  This is similar to the \code{let} and \code{letrec} constructs in other functional languages. This translation is optional
+  as in some DSLs it is more concise to reuse method application of the host language.
+  \todo{Name collision.}
+
+% Discuss control structures.
+ \paragraph{Control constructs.} We translate all Scala control constructs (e.g.,\code{if} and \code{try} to method calls.
+  Scala's type system supports parametric polymorphism, by-name parameters, and partial functions that can model
+  the semantics of all constructs. How these features are used to model the original constructs is presented~\todo{}.
+
+% Discuss variables.
+ \paragraph{Value bindings.} Scala has multiple constructs for value binding: values, variables, and lazy values. \tool translates
+  definition of values into methods as well as all accesses. Abstraction over values accesses is
+  necessary for tracking effects in case of variables, access order in case of lazy values, and instrumentation
+  in case of simple values.
+
+ \paragraph{Universal methods.} Scala is designed such that the types \code{Any} and
+ \code{AnyRef}, which reside at the top of the Scala class hierarchy, contain
+ \code{final} methods. Through inheritance, these methods are defined on all
+ types making it impossible to override their functionality without translation.
+
+ \tool virtualizes all methods on types \code{Any} and \code{AnyRef}. Method calls on objects
+  are translated into the representation where the \code{this} pointer is passed as the first argument and, by convention, all methods start
+  with a prefix \code{infix_}.
+
+  This representation is convenient for methods that are defined once for the whole hierarchy as
+  the DSL author needs to define this method only once, as opposed to adding it to each data type. The caveat with
+  this approach is that in case of methods that are overridden the virtual dispatch must be
+  performed manually by the DSL author.
+
+  For DSLs that require extension of these methods we provide an alternative translation
+  of universal methods into the name mangled infix form:
+
+  \infyyax{}
+      {t_1\; == \;t_2}{(\trone{t_1},\;\mathtt{\_\_==}\;\trone{t_2})}
+
+  \todo{new}
+
+  \begin{figure}
 %
 % Virtualization of `Any` methods
 %
@@ -749,10 +759,25 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
 \end{figure}
 
 
+ \paragraph{Not virtualizing class definitions.} \tool does not virtualize class and trait definitions, including the \emph{case class}
+  definitions. For the given set of DSL compiler frameworks that use \tool it was hard to identify
+  an abstraction that would allow virtualization of Scala classes.
 
-\todo{define why classes are not virtualized}
-Constructs that are not virtualized are class and trait definitions, including
- \emph{case class} definitions.
+  This limitation, however, does not preclude class virtualization for embedded DSLs. We allow extensions to \tool that virtualize classes and traits
+  through the use of the reflection API. The drawback of this approach is that DSL authors are required
+  to know the reflection API compared to the simple interface of language virtualization. For now, each framework that uses \tool defines
+  its own translation scheme. Extending \tool to achieve class virtualization is described in \todo{cf. extensions}.
+
+ \paragraph{Configuring method virtualization.} When we virtualize methods and their application
+   we effectively override all expressions of Scala. In this case the DSL author has to:
+   \emph{i)} write the DSL definition in a way that corresponds to the translation and is not idiomatic to Scala,
+   and \emph{ii)} do additional transformation that removes all combinations of applications over domain-specific operations.
+
+   This can be cumbersome and we leave method virtualization as a configuration option that is
+    disabled by default. This way DSL authors can write DSLs in the
+    Scala idiomatic way and the \code{app}/\code{lam} pairs for DSL operations never appear in the
+    DSL intermediate representation.
+
 
 % Name of type translation.
 \newcommand{\ttname}{\tau}
