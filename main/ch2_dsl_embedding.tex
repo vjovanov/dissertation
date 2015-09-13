@@ -879,7 +879,7 @@ Pair.unapply(p).flatMap(x2: (Int, Int) => {
 })
 \end{lstparagraph}
 
-Finally the pattern guards are translated into the \code{guard} call that executes the
+Finally the pattern guards are translated into the call to the \code{guard} function that executes the
 by-name body of the case if the \code{cond} statement is satisfied.
 
 % Explain how we leave it for DSL intrinsification to virtualize.
