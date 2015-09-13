@@ -498,17 +498,10 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
 
 % TODO
   % test one more time for completeness
-  % Talk about the infix notation.
-  % Discuss the `def f` struggle.
   % Discuss All vs final members?
-  % Discuss dynamic dispatch with infix methods.
   % Interaction with the pattern matcher.
   % Discuss partial functions and pattern matching.
-  % Unique strings for avoiding collisions.
-  % Implement the try/catch construct
-  % Reynolds
   % Link better to the example and explain what is going on.
-  % Discuss control constructs.
 
  \tool follows the ideas of Carette et al.~\cite{carette_finally_2009}
  and Scala-Virtualized but virtualizes all Scala expressions and uses macros to virtualize Scala intrinsics
@@ -793,6 +786,104 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
 
 \subsubsection{Virtualizing Pattern Matching}
 \label{sct:virtpatmat}
+
+% Define how it works.
+The Scala compiler has a virtual pattern matcher that allows for changing the semantics
+ of the construct. The semantics can be changed to reify the pattern match for its use
+ in DSLs or to provide alternative \tool reuses the functionality of this pattern matcher
+ in combination with DSL intrinsification to allow reasoning about it in DSL compilers.
+ In this section, for purposes of explaining DSL intrinsification, we explain the functioning
+ of the virtualized pattern matcher.
+
+% Semantics of Scala pattern matching: alternatives are interpreted with a plus and failures with a zero, and guards as filters. We also need a constructor one. Example of Option.
+Scala's pattern matching can be interpreted with deconstructors and operations on the \code{Option}
+ type of Scala. The successful match is represented with the \code{Some} type which is
+ a constructed the monadic return of the \code{Option} monad; failures failures with the
+ \code{None} type which is a monadic \emph{zero} operation.
+ The pattern nesting is represented with the monadic \emph{bind} operation \code{flatMap}; alternation is represented with the
+ \code{orElse} combinator on the \code{Option} monad which represents monadic addition. The semantics
+ of Scala pattern matching can be represented completely with the operations of the zero-plus monad.
+
+
+% Based on the fact that Scala pattern matching can be interpreted as a zero+ monad.
+The virtual pattern matcher converts Scala pattern matching to the operations on a user-defined zero-plus monad.
+A pattern match is virtualized if the object \code{__match} is defined in the scope. For the original
+semantics of Scala pattern matching is defined by the object \code{__match} defined in \figref{fig:match-default}. To
+virtualize pattern matching users can provide their own type signatures and implementations in \code{__match},
+on implementations of the zero-plus monad, and implementations and signatures of the deconstructors.
+
+% Basic Scala
+\begin{figure}
+\begin{listingtiny}
+object __match {
+  def zero: Option[Nothing] = None
+  def one[T](x: T): Option[T] = Some(x)
+  def guard[T](cond: Boolean, then: => T): Option[T] =
+    if(cond) one(then) else zero
+  def runOrElse[T, U](x: T)(f: T => Option[U]): U =
+    f(x) getOrElse (throw new MatchError(x))
+}
+\end{listingtiny}
+\label{fig:match-default}
+\end{figure}
+
+
+% Example of a single pattern.
+If the object \code{__match} is in scope a simple pattern match\begin{lstparagraph}
+p match {
+  case Pair(l, r) => f(l,r)
+}
+\end{lstparagraph}
+
+is translated into\begin{lstparagraph}
+__match.runOrElse(p) { x1: Any =>
+  Pair.unapply(x1).flatMap(x2: (Int, Int) => {
+    val l: Int = x2._1; val r: Int = x2._2;
+    __match.one(f(l, r))
+  })
+}
+\end{lstparagraph}
+
+% Example of alternation.
+In case of multiple case clauses\begin{lstparagraph}
+p match {
+  case Pair(l, r) => f(l,r)
+  case Tuple2(l, r) => f(l,r)
+}
+\end{lstparagraph}
+the monadic addition \code{orElse} is used for matching alternative statements in order:\begin{lstparagraph}
+Pair.unapply(p).flatMap(x2: (Int, Int) => {
+  val l: Int = x2._1; val r: Int = x2._2;
+  __match.one(f(l, r))
+}).orElse(
+  Tuple2.unapply(p).flatMap(x3: (Int, Int) => {
+    val l: Int = x3._1; val r: Int = x3._2;
+    __match.one(f(l, r))
+}))
+\end{lstparagraph}
+
+% Example of guards.
+Nested pattern matches\begin{lstparagraph}
+p match {
+  case Pair(Pair(ll, lr), r) => f(f(ll,lr), r)
+}
+\end{lstparagraph}
+
+are translated into nested calls to \code{flatMap}:\begin{lstparagraph}
+Pair.unapply(p).flatMap(x2: (Int, Int) => {
+  val r: Int = x2._2;
+  Pair.unapply(x2._1).flatMap(x4: (Int, Int) => {
+    val ll: Int = x4._1; val lr: Int = x4._2;
+    __match.one(f(f(ll, lr), r))
+  })
+})
+\end{lstparagraph}
+
+Finally the pattern guards are translated into the \code{guard} call that executes the
+by-name body of the case if the \code{cond} statement is satisfied.
+
+% Explain how we leave it for DSL intrinsification to virtualize.
+\todo{here add a link to later sections}
 
 \subsection{DSL Intrinsification}
 \label{sct:dsl-intrinsification}
