@@ -1,3 +1,4 @@
+%!TEX root = ../phd.tex
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %		Thesis Settings
@@ -31,7 +32,6 @@
 \usepackage{stmaryrd}
 
 % PL Formulas
-\usepackage{fleqn}
 \usepackage{latexsym}
 \usepackage{bcprules}
 \usepackage{prooftree}
@@ -47,7 +47,6 @@
 \usepackage{booktabs}
 \usepackage{tabularx}
 
-\usepackage{cite}
 \usepackage{natbib}
 
 % Replace all cites with citeps for the thesis
@@ -140,8 +139,7 @@
 \reportfalse
 
 % paper specific commands
-\newcommand{\tool}{Yin-Yang\xspace}
-
+\renewcommand{\sout}[1]{}
 
 
 
@@ -168,7 +166,7 @@
 \newcommand{\yytr}[1]{\left\llbracket #1 \right\rrbracket}
 \newcommand{\Ttrone}[1]{\llbracket #1 \rrbracket}
 %\newcommand{\yy}[2]{\left\langle #1 \right\rangle_{yy}^{#2}}
-\newcommand{\yy}[2]{\llparenthesis #1 \rrparenthesis^{#2}}
+
 \newcommand{\yytrone}[1]{\yy{#1}{Y}}
 %\newcommand{\macro}[1]{\left\langle #1 \right\rangle_x^v}
 \newcommand{\macro}[1]{\llparenthesis #1 \rrparenthesis^v}
@@ -421,3 +419,7 @@
 % ScalaCT
 \newcommand{\smartparagraph}[1]{{\bf #1}}
 \newcommand{\tabref}[1]{Table~\ref{#1}}
+
+% Yin-Yang
+\newcommand{\yy}{Yin-Yang\xspace}
+\newcommand{\ct}{ScalaCT\xspace}

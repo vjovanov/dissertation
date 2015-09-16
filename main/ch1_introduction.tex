@@ -1,9 +1,11 @@
+%!TEX root = ../phd.tex
+
 \chapter{Introduction}
 
 \section{Background}
 \label{sec:background}
-
-In this section we provide background information necessary for understanding \tool's
+\todo{remove tool}
+In this section we provide background information necessary for understanding \yy's
 implementation in Scala. We briefly explain the core concepts of Lightweight Modular Staging
 \cite{rompf_lightweight_2012,rompf_optimizing_2013} and Scala Macros
 \cite{burmako_scala_2013}. Throughout the paper we assume familiarity with
@@ -71,9 +73,10 @@ of type \code{T} during \edsl execution.
 % Operations
 Operations on \code{Rep[T]} terms are added by implicit conversions that are introduced in the \edsl scope. For example, the implicit class \code{VectorOps} introduces the \code{+} operation on every term of type \code{Rep[Vector[T]]}. In the example, the type class \code{Numeric} ensures that vectors contain only numerical values.
 
+\todo{remove tool}
 % Statement about successful use
 LMS has been successfully used by in project Delite~\cite{brown_heterogeneous_2011,composition-ecoop2013} for building DSLs that support heterogeneous parallel computing. \edsls developed with Delite cover domains
-such as machine learning, graph processing, data mining, etc. Due to its wide use and high performance we choose Delite as a back-end for \tool.
+such as machine learning, graph processing, data mining, etc. Due to its wide use and high performance we choose Delite as a back-end for \yy.
 
 
 \subsection{Scala Macros}
@@ -87,7 +90,7 @@ Macro programs can use common functionality of the Scala compiler like
 error-reporting, type checking, transformations, traversals, and implicit
 search.
 
-\tool uses a particular flavor of Scala macros called \emph{def
+\yy uses a particular flavor of Scala macros called \emph{def
   macros}, though we will often drop the prefix ``def'' for the
 sake of brevity.  From a programmer's point of view, def macros
 are invoked just like regular Scala methods.  However, macro
@@ -99,13 +102,14 @@ represented to the user as regular methods while macro definitions
 operate on Scala ASTs.  The arguments of macro method definitions are
 the type-checked ASTs of the macro arguments.
 
+\todo{remove tool}
 %Users / Usage
-For DSLs based on \tool we use a macro that accepts a single block of
+For DSLs based on \yy we use a macro that accepts a single block of
 code as its input. At compile time, this block is first type checked
-against the interface of the direct embedding. Then, \tool applies the
+against the interface of the direct embedding. Then, \yy applies the
 generic transformation to translate the directly embedded AST to the
 corresponding deeply embedded AST.  For example, given the following
-DSL snippet, \tool produces the \code{VectorDSL} program in
+DSL snippet, \yy produces the \code{VectorDSL} program in
 \figref{lst:lms}:\vspace{3pt}
 \begin{listingtiny}
   vectorDSL {

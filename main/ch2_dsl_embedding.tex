@@ -1,5 +1,6 @@
-\chapter{Support for Embedding Domain-Specific Language }
+%!TEX root = ../phd.tex
 
+\chapter{Support for Embedding Domain-Specific Language }
 
 % High-level of abstraction, good user interface, great performance, portable code.
 Domain-specific languages (DSLs) provide a restricted,
@@ -143,7 +144,7 @@ others and discuss their trade-offs.
 
 % What does Yin-Yang do?
 Together with a corresponding translation on terms, the type
-translation forms the core of \tool, a generic framework for DSL
+translation forms the core of \yy, a generic framework for DSL
 embedding, that uses Scala's macros~\cite{burmako_scala_2013} to
 reliably translate directly embedded DSL programs into corresponding
 deeply embedded DSL programs.  The virtues of the direct embedding are
@@ -151,14 +152,14 @@ used during program development when performance is not of importance;
 the translation is applied when performance is essential or
 alternative interpretations of a program are required (e.g., for
 hardware generation).  To avoid error prone maintenance of
-synchronized direct and deep embeddings \tool reuses the core
+synchronized direct and deep embeddings \yy reuses the core
 translation to generate the deep embeddings based on the definition of
 direct embeddings. Since the same translation is applied both for the
 \edsl definition and the \edsl program the equivalence between the
 embeddings is assured.
 
 % Contributions
-\tool{} contributes to the state of the art as follows:
+\yy{} contributes to the state of the art as follows:
 \begin{itemize}
 
 \item It completely conceals leaky abstractions of deep EDSLs from the users.
@@ -183,7 +184,7 @@ definition~(\sct{sec:deep-gen}).
 %
 % Evaluation summary
 %
-We evaluate \tool by generating 3 deep \edsls from their direct
+We evaluate \yy by generating 3 deep \edsls from their direct
 embedding, and providing interfaces for 2 existing \edsls. The effects
 of concealing the deep embedding and reliability of the translation
 were evaluated on 21 programs (1284 LOC), from EDSLs
@@ -191,12 +192,12 @@ OptiGraph~\cite{composition-ecoop2013} and
 OptiML~\cite{sujeeth_optiml:_2011}. In all programs combined the
 direct implementation obviates 101 type annotations related to the
 deep embedding. The complete evaluation is presented in
-\sct{sec:evaluation}.
+\sct{sec:ch2-evaluation}.
 
 Throughout the paper, we target the LMS~\cite{rompf_lightweight_2012}
 framework as a deep embedding back-end due to the plethora of existing
 LMS \edsls.  Consequently, we will assume that deep embeddings use
-LMS' extensible IR.  However, \tool is applicable to other types of IR
+LMS' extensible IR.  However, \yy is applicable to other types of IR
 (e.g., polymorphic embeddings~\cite{hofer_polymorphic_2008}) and
 possibly other statically typed languages (\sct{sec:other-languages}).
 
@@ -392,7 +393,7 @@ exception.
 
 % Set up the problem.
 
-The purpose of the core \tool translation is to reliably and automatically make
+The purpose of the core \yy translation is to reliably and automatically make
 a transition from a directly embedded DSL program to its deeply embedded
 counterpart. The transition requires a translation for the following reasons:
 \emph{i)} host language constructs such as \code{if} statements are strongly
@@ -480,7 +481,7 @@ new VectorDSL with IfOps
   }
 )}
 \end{listingtiny}
-\caption{The \tool translation of the program from \figref{lst:desugaring}.}
+\caption{The \yy translation of the program from \figref{lst:desugaring}.}
 \label{lst:transformed_program}
 
 \end{subfigure}
@@ -503,7 +504,7 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
   % Discuss partial functions and pattern matching.
   % Link better to the example and explain what is going on.
 
- \tool follows the ideas of Carette et al.~\cite{carette_finally_2009}
+ \yy follows the ideas of Carette et al.~\cite{carette_finally_2009}
  and Scala-Virtualized but virtualizes all Scala expressions and uses macros to virtualize Scala intrinsics
   which are required to write direct DSL programs. Practice has shown that DSL
   authors are reluctant to use a modified compiler and that for the wide adoption
@@ -603,7 +604,7 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
 
 % Binding taken care of by DSL intrinsification.
  Defined translation rules convert language constructs into method calls where each language construct has
-  a corresponding method. The signature of each method is partially defined by \tool. Method names, the number of
+  a corresponding method. The signature of each method is partially defined by \yy. Method names, the number of
   type parameters and the number of type arguments are predefined while types of arguments and return types
   are open for the DSL author to define. \todo{link to the signature}
 
@@ -633,7 +634,7 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
   the semantics of all constructs. How these features are used to model the original constructs is presented~\todo{}.
 
 % Discuss variables.
- \paragraph{Value bindings.} Scala has multiple constructs for value binding: values, variables, and lazy values. \tool translates
+ \paragraph{Value bindings.} Scala has multiple constructs for value binding: values, variables, and lazy values. \yy translates
   definition of values into methods as well as all accesses. Abstraction over values accesses is
   necessary for tracking effects in case of variables, access order in case of lazy values, and instrumentation
   in case of simple values.
@@ -644,7 +645,7 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
  \code{final} methods. Through inheritance, these methods are defined on all
  types making it impossible to override their functionality without translation.
 
- \tool virtualizes all methods on types \code{Any} and \code{AnyRef}. Method calls on objects
+ \yy virtualizes all methods on types \code{Any} and \code{AnyRef}. Method calls on objects
   are translated into the representation where the \code{this} pointer is passed as the first argument and, by convention, all methods start
   with a prefix \code{infix_}.
 
@@ -753,14 +754,14 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
 \end{figure}
 
 
- \paragraph{Not virtualizing class definitions.} \tool does not virtualize class and trait definitions, including the \emph{case class}
-  definitions. For the given set of DSL compiler frameworks that use \tool it was hard to identify
+ \paragraph{Not virtualizing class definitions.} \yy does not virtualize class and trait definitions, including the \emph{case class}
+  definitions. For the given set of DSL compiler frameworks that use \yy it was hard to identify
   an abstraction that would allow virtualization of Scala classes.
 
-  This limitation, however, does not preclude class virtualization for embedded DSLs. We allow extensions to \tool that virtualize classes and traits
+  This limitation, however, does not preclude class virtualization for embedded DSLs. We allow extensions to \yy that virtualize classes and traits
   through the use of the reflection API. The drawback of this approach is that DSL authors are required
-  to know the reflection API compared to the simple interface of language virtualization. For now, each framework that uses \tool defines
-  its own translation scheme. Extending \tool to achieve class virtualization is described in \todo{cf. extensions}.
+  to know the reflection API compared to the simple interface of language virtualization. For now, each framework that uses \yy defines
+  its own translation scheme. Extending \yy to achieve class virtualization is described in \todo{cf. extensions}.
 
  \paragraph{Configuring method virtualization.} When we virtualize methods and their application
    we effectively override all expressions of Scala. In this case the DSL author has to:
@@ -791,7 +792,7 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
 % Define how it works.
 The Scala compiler has a virtual pattern matcher that allows for changing the semantics
  of the construct. The semantics can be changed to reify the pattern match for its use
- in DSLs or to provide alternative \tool reuses the functionality of this pattern matcher
+ in DSLs or to provide alternative \yy reuses the functionality of this pattern matcher
  in combination with DSL intrinsification to allow reasoning about it in DSL compilers.
  In this section, for purposes of explaining DSL intrinsification, we explain the functioning
  of the virtualized pattern matcher.
@@ -825,6 +826,8 @@ object __match {
     f(x) getOrElse (throw new MatchError(x))
 }
 \end{listingtiny}
+\caption{The implementation of the virtualized pattern matcher with the original
+ Scala semantics and with \code{Option} as the zero-plus monad.}
 \label{fig:match-default}
 \end{figure}
 
@@ -908,9 +911,7 @@ DSL intrinsification maps directly embedded versions
   virtualized, term body to an equivalent type in the deep embedding.
   In other words, the type translation is a function on
   types.  Note that this function is inherently DSL-specific, and
-  hence needs to be configurable by the DSL author.  We discuss
-   aspects of different type translation in more detail in
-  \sct{sec:alternative-type-translations}.
+  hence needs to be configurable by the DSL author.
 
   % The type mapping depends on the input type and the context. For all practical type mappings we only had to distinguish between the type-argument position (\code{arg}), e.g. \code{Int} in \code{lam[Int, Int]}, and the others (\code{other}). We define this function as $\tau: \mathbb{T} \times \mathbb{C} \rightarrow \mathbb{T}$ where $\mathbb{T}$ is the set of all types and $\mathbb{C} = \{\mathtt{arg}, \mathtt{other}\}$ denotes whether the type appears in the type-argument position. In \figref{fig:translation-example} this function transforms all types \code{T} that are not in the type-argument position to \code{Rep[T]}.
 
@@ -1011,7 +1012,7 @@ Interestingly, just by changing the type translation, the \edsl author can modif
    (0 and 1 in \figref{fig:translation-example}).
   The identifiers are later sorted and passed as arguments to the Scala function that is a result
   of \edsl compilation. The DSL author is required to ensure that the position and the type
-  of the resulting function matches the order and types of the sorted identifiers passed by \tool.
+  of the resulting function matches the order and types of the sorted identifiers passed by \yy.
 
 \subsection{Operation Translation}
 \label{sec:operation-translation}
@@ -1036,7 +1037,7 @@ The \emph{operation translation} maps directly embedded versions of the
     \todo{exact rules}
 
   \paragraph{Operation \code{inject}.} The injection of the deep DSL definitions into the scope can be achieved in multiple ways.
-    For \tool we chose to inject the body of our DSLs into the refinement of the Scala
+    For \yy we chose to inject the body of our DSLs into the refinement of the Scala
     component that contains all deep DSL definitions.
 
     \todo{continue}   For deep embeddings based on LMS, or polymorphic embeddings~\cite{hofer_polymorphic_2008}
@@ -1051,7 +1052,7 @@ The \emph{operation translation} maps directly embedded versions of the
 
   % Of course, other approaches, such as name mangling or importing
   % definitions from a different module, are also possible. In the current
-  % implementation of \tool, the \code{opMap} function is fixed to simply inject the
+  % implementation of \yy, the \code{opMap} function is fixed to simply inject the
   % \code{this} prefix.
 
   % Talk about additional implicit parameters.
@@ -1093,7 +1094,7 @@ Here, the \code{id} function expects \code{Rep[_]} type but the argument is \cod
 \item The \emph{Dynamic} type supports all operations and, thus, static type errors will not occur. Here, the DSL author is responsible for providing a back-end where dynamic type errors will not occur.
 
 \item \emph{Custom types} can cause custom type errors since \edsl authors can
-arbitrarily redefine types (e.g., \code{type Int = String}. \tool provides
+arbitrarily redefine types (e.g., \code{type Int = String}. \yy provides
 \emph{no guarantees} for this type of the translation.
 
 \end{itemize}
@@ -1123,11 +1124,11 @@ messages will contain virtualized language constructs and types. This is not des
 as users should not be exposed to the internals of the deep embedding.
 
 % Custom type checking!
-\tool avoids leakage of the deep embedding internals in error messages by performing an
+\yy avoids leakage of the deep embedding internals in error messages by performing an
 additional verification step that, in a fine grained way, checks if a method
 from the direct program exists in the deep embedding. This step traverses the
 tree generated by the core translation and verifies for each method call if it
-correctly type-checks in the deep embedding. If the type checking fails \tool
+correctly type-checks in the deep embedding. If the type checking fails \yy
 reports two kinds of error messages:
 
 \begin{itemize}
@@ -1146,7 +1147,7 @@ Construct try/catch is unsupported in VectorDSL.
 \end{itemize}
 %
 % Restricting the language is a piece of cake.
-With \tool the DSL author can arbitrarily restrict virtualized constructs in an
+With \yy the DSL author can arbitrarily restrict virtualized constructs in an
 embedded language by simply omitting corresponding method definitions from the
 deep embedding. Due to the additional verification step all error messages are
 clearly shown to the user. This allows easy construction of embedded DSLs that
@@ -1162,7 +1163,7 @@ support only a subset of the host language.
 \section{Automatic Generation of the Deep Embedding}
 \label{sec:deep-gen}
 \todo{add the Amir's system}
-So far, we have seen how \tool translates programs written in the
+So far, we have seen how \yy translates programs written in the
 direct embedding to the deep embedding.
 %This makes the development task of an
 This arguably simplifies life for \edsl users by allowing them to work
@@ -1176,7 +1177,7 @@ be a tedious and error prone task.
 %to the deep EDSL as well.
 
 % Two steps
-To alleviate this issue, \tool automatically generates the deep embedding from
+To alleviate this issue, \yy automatically generates the deep embedding from
 the implementation of the direct embedding. This happens in two steps: First, we
 generate high-level IR nodes and methods that construct them through a
 systematic conversion of methods declared in a direct embedding to their
@@ -1206,19 +1207,19 @@ optimizations when changing the direct embedding of the \edsl.
 % modified. Therefore, the DSL author is only responsible for
 % maintaining analysis and optimizations in the deep embedding. A change
 % in the direct embedding interface should affect only optimizations
-% related to that change. However, this is back-end dependent so \tool
+% related to that change. However, this is back-end dependent so \yy
 % does not provide any guarantees.
 
 % Devil is in the details
 
-For further information on how to use \tool's code generation together
+For further information on how to use \yy's code generation together
 with the core translation, and how to specify rewrite rules,
 cf.~\cite{techrep}.\todo{fix this, this is the tech rep}
 
 \subsection{Constructing High-Level IR Nodes}
 \label{sec:yy-impl-def}
 
-To make the generation regular \tool provides a corresponding IR node and
+To make the generation regular \yy provides a corresponding IR node and
 construction method for every operation in the direct embedding. By using
 reflection, we extract the method signatures from the direct embedding. From
 these, we generate the interface, implementation, and code generation traits as
@@ -1347,7 +1348,7 @@ trait VectorLowLevel extends VectorOps
 Generating the low-level implementation is achieved by transforming the
 implementation of each direct embedding method. This is done in two steps.
 First, the expression given as the implementation of a method is converted to
-a Scala AST of the deep embedding by core translation of \tool. Second, the
+a Scala AST of the deep embedding by core translation of \yy. Second, the
 code represented by the Scala AST must be injected back to the corresponding
 trait. To this effect, we implemented Sprinter~\cite{sprinter}, a library that generates
 correct and human readable code out of Scala ASTs. The generated source code
@@ -1366,14 +1367,14 @@ is used to represent the lowering specification of every IR node.
 % We will generate
 
 \section{Evaluation}
-\label{sec:evaluation}
+\label{sec:ch2-evaluation}
 
-We compared the deep embedding generation of \tool with Forge on three Delite-based
+We compared the deep embedding generation of \yy with Forge on three Delite-based
  deep \edsls: OptiML, OptiQL, and Vector~(\sct{subsec:eval-deepgen}).
 Then, we measured the effect of concealing the deep embedding by counting the
 number of obviated annotations related to deep embedding in the test suites of OptiML
 and OptiGraph EDSLs~(\sct{subsec:correctness}). Finally, we evaluated the ease
-of adopting \tool for the existing deep \edsl Slick~\cite{slick}
+of adopting \yy for the existing deep \edsl Slick~\cite{slick}
 ~(\sct{subsec:slick}) and compare the effort of designing the interface with
 the current version of the interface. We do not report on execution speed since performance
 benefits of the deep embedding have been studied previously~\cite{rompf_optimizing_2013,forge}.
@@ -1403,11 +1404,11 @@ the direct embedding, Forge specification, and deep embedding for three \edsls:
 We are careful with measuring lines-of-code (LOC) with Forge and the deep EDSLs: we only
 count the parts which are generated out of the given direct EDSL.
 
-Overall, \tool requires roughly the same number of LOC as Forge to specify the DSL.
+Overall, \yy requires roughly the same number of LOC as Forge to specify the DSL.
 This can be viewed as positive result since Forge relies on a specific meta-language
- for defining the two embeddings. \tool, however, uses Scala itself
+ for defining the two embeddings. \yy, however, uses Scala itself
 for this purpose and is thus much easier to use. In case of OptiML, Forge
-slightly outperforms \tool. This is because Forge supports meta-programming at
+slightly outperforms \yy. This is because Forge supports meta-programming at
 the level of classes while Scala does not.
 
 \begin{table}[h]
@@ -1424,7 +1425,7 @@ Vector      &   70          &     71      &   369       \\
 \end{tabularx}
 \end{table}
 
-We did not compare the efforts required to specify the DSL with \tool and Forge. The
+We did not compare the efforts required to specify the DSL with \yy and Forge. The
 reason is twofold:
 \begin{itemize}
 
@@ -1459,11 +1460,11 @@ for lifting literals when implicit conversions fail. In 21 applications
 the direct embedding obviated 96 \code{Rep[T]} annotations and 5
 \code{lift(t)} annotations.
 
-\subsection{Case Study: \tool for Slick}
+\subsection{Case Study: \yy for Slick}
 \label{subsec:slick}
 Slick is a deeply embedded Scala \edsl for database querying and access. Slick
 is not based on LMS, but still uses \code{Rep} types to achieve reification.
-To improve the complicated interface of Slick we used \tool.
+To improve the complicated interface of Slick we used \yy.
 However, since the deep embedding of Slick already exists, we first designed the new
 interface (direct embedding). The new interface has dummy method
 implementations since semantics of different database back-ends can not be
@@ -1473,20 +1474,20 @@ documentation. The interface is completely new, covers all the functionality of 
 
 Slick has complicated method signatures that do not correspond to the simple new
 interface. In order to preserve backward compatibility, the redesign of Slick to
-fit \tool's core translation was not possible. We addressed this by adding a
+fit \yy's core translation was not possible. We addressed this by adding a
 wrapper for the deep embedding of Slick that fits the required signature.
 The wrapper contains only 240 lines of straightforward code.
 
-We compare the effort required for the interface design with \tool and with
+We compare the effort required for the interface design with \yy and with
 traditional type system based approaches. The development of the previous Slick
-interface required more than a year of development while the \tool version was
+interface required more than a year of development while the \yy version was
 developed in less than one month. The new front-end passes all 54 tests that cover the
 most important functionalities of Slick. When using Slick all error messages are
 idiomatic to Scala and resemble typical error messages from the standard
 library.
 
 This study was performed by only two users and, thus, is not statistically
-significant. Still, we find the difference in required effort large enough to indicate that \tool
+significant. Still, we find the difference in required effort large enough to indicate that \yy
 simplifies front-end development of \edsls.
 
 \subsection{Compilation Times}
@@ -1497,18 +1498,18 @@ simplifies front-end development of \edsls.
 
 % Staging and partial evaluation
 
-\tool consistently translates terms to the embedded domain and, thus, postpones
+\yy consistently translates terms to the embedded domain and, thus, postpones
 DSL compilation to run-time. Although, compilation happens in a different
-compilation stage, \tool does not allow staging~\cite{taha_multi-stage_1997}.
+compilation stage, \yy does not allow staging~\cite{taha_multi-stage_1997}.
 \edsls can, however, achieve partial evaluation~\cite{jones1993partial} if their
 implementation supports it.
 
 % Yin-Yang requires a few things.
-We implemented \tool in Scala, however the underlying principles are applicable
-in the wider context. \tool operates in the domain of statically typed languages
+We implemented \yy in Scala, however the underlying principles are applicable
+in the wider context. \yy operates in the domain of statically typed languages
 based on the Hindley-Milner calculus with a type system that is advanced enough
 to support deep EDSL embedding. The type inference mechanism, purity, laziness,
-and sub-typing, do not affect the operation of \tool. Different aspects of \tool
+and sub-typing, do not affect the operation of \yy. Different aspects of \yy
 require different language features, which we discuss separately below.
 
 % For the translation (nice interface) type introspection. For the library macros.
@@ -1521,7 +1522,7 @@ at run-time and compile-time.
 \paragraph{Semantic equivalence} between the direct embedding and deep embedding
 is required for debugging and prototyping. If there is a \emph{semantic mismatch}~\cite{czarnecki_dsl_2004}
  between the two embeddings, e.g., the host language is lazy and the embedded
- language is strict, \tool can not be used for debugging. In this scenario the
+ language is strict, \yy can not be used for debugging. In this scenario the
  direct embedding can be implemented as stub which is used only for its user
  friendly interface and error reporting.
 
@@ -1530,11 +1531,11 @@ is required for debugging and prototyping. If there is a \emph{semantic mismatch
 \label{sec:related-work}
 
 % Context: Hudak, finally tagless, polymorphic embedding LMS
-\tool is a framework for developing embedded DSLs in the spirit of
+\yy is a framework for developing embedded DSLs in the spirit of
 Hudak~\cite{Hudak96csur,Hudak98sr}: embedded DSLs are \emph{Scala
   libraries} and DSL programs are just \emph{Scala programs} that do
 not, in general, require pre- or post-processing using external tools.
-\tool translates directly embedded DSL programs into
+\yy translates directly embedded DSL programs into
 finally-tagless~\cite{carette_finally_2009} deep embeddings.  Our
 approach supports (but is not limited to)
 polymorphic~\cite{hofer_polymorphic_2008} deep embeddings, and -- as
@@ -1543,8 +1544,8 @@ particularly well-adapted for deep EDSLs using an LMS-type
 IR~\cite{rompf_scala-virtualized:_2009,rompf_optimizing_2013}.
 
 % Forge
-As discussed in \sct{sec:introduction}, Sujeeth et al. propose
-Forge~\cite{forge}, a Scala based meta-EDSL for generating equivalent
+
+Sujeeth et al. propose Forge~\cite{forge}, a Scala based meta-EDSL for generating equivalent
 shallow and deep embeddings from a single specification.  DSLs
 generated by Forge provide a common abstract interface for both
 shallow and deep embeddings through the use of abstract \code{Rep}
@@ -1561,14 +1562,14 @@ the deep embedding.  This means that some seemingly well-typed DSL
 programs become ill-typed once the transition from the shallow to the
 deep embedding is made, forcing users to manually fix type errors in
 the deeply embedded program. Finally, DSL authors must learn a new
-language for EDSL design whereas with \tool this language is Scala
+language for EDSL design whereas with \yy this language is Scala
 itself.
 
 % Lancet
 Project Lancet~\cite{lancet} by Rompf et al. and work of Scherr and
 Chiba~\cite{scherr_ecoop_2014} interpret Java bytecode to extract
 domain-specific knowledge from directly embedded
-DSL programs compiled to bytecode. These solutions are similar to \tool
+DSL programs compiled to bytecode. These solutions are similar to \yy
 in that the direct embedding is translated to the deep
 embedding, however, they do not provide functionality to
 generate a deep embedding out of a direct one.

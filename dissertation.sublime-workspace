@@ -48,20 +48,84 @@
 	"buffers":
 	[
 		{
-			"file": "main/ch2_asynchronous_computation.aux",
+			"file": "main/ch3_polyvariant_staging.tex",
 			"settings":
 			{
-				"buffer_size": 9634,
+				"buffer_size": 34903,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "head/settings_epfl_template.tex",
+			"settings":
+			{
+				"buffer_size": 6426,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "head/settings_custom.tex",
+			"settings":
+			{
+				"buffer_size": 12852,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "Searching 21 files for \"begin listing\" (case sensitive)\n\n0 matches across 0 files\n\n\nSearching 21 files for \"begin{list\" (case sensitive)\n\n/home/vjovanov/dissertation/main/ch1_introduction.tex:\n   36  \n   37  \\begin{figure}\n   38: \\begin{listingtiny}\n   39  // The EDSL declaration\n   40  trait VectorDSL extends NumericOps with Base {\n   ..\n  108  DSL snippet, \\tool produces the \\code{VectorDSL} program in\n  109  \\figref{lst:lms}:\\vspace{3pt}\n  110: \\begin{listingtiny}\n  111    vectorDSL {\n  112      Vector.fill(1,3) + Vector.fill(2,3)\n\n/home/vjovanov/dissertation/main/ch2_dsl_embedding.tex:\n   84    be applied in other statically typed languages.  Cf.~\\cite{carette_finally_2009,awesome,svenningsson_combining_2012}.}.\n   85  The direct version of the interface is declared as: \\vspace{3pt}\n   86: \\begin{listingtiny}\n   87  trait Vector[T] {\n   88    def map[U](fn: T => U): Vector[U]\n   ..\n   96  we chose the abstract, higher-kinded type \\code{Rep[T]} to represent\n   97  values of type \\code{T} in the deep embedding: \\vspace{3pt}\n   98: \\begin{listingtiny}\n   99  trait Vector[T] {\n  100    def map[U](fn: Rep[T => U]): Rep[Vector[U]]\n  ...\n  212  \n  213  \\begin{figure}\n  214: \\begin{listingtiny}\n  215  object Vector {\n  216    def fromSeq[T: Numeric](seq: Seq[T]): Vector[T] =\n  ...\n  267  \n  268  \\begin{figure}\n  269: \\begin{listingtiny}\n  270  trait VectorDSL extends Base {\n  271    object Vector {\n  ...\n  333  \n  334  \\paragraph{Complicated Type Errors.} The \\code{Rep[_]} types leak to the user through type errors. Even for simple type errors the user is exposed to non-standard error messages. In certain cases (e.g., incorrect call to an overloaded function), the error messages can become hard to understand. To illustrate, we present a typical type error for invalid method invocation:\\vspace{3pt}\n  335: \\begin{listingtiny}\n  336    found   : Int(1)\n  337    required: Vector[Int]\n  ...\n  340  \\end{listingtiny}\\vspace{3pt}\n  341  In the deep embedding the corresponding type error contains \\code{Rep} types and the \\code{this} qualifier:\\vspace{3pt}\n  342: \\begin{listingtiny}\n  343    found   : Int(1)\n  344    required: this.Rep[this.Vector[Int]]\n  ...\n  359  performs meta-programming over the IR of the deep embedding:\\vspace{3pt}\n  360  \n  361: \\begin{listingtiny}\n  362    new VectorDSL {\n  363      List.fill(1000, Vector.fill(1000,1)).reduce(_+_)\n  ...\n  375  instead during DSL program execution:\\vspace{3pt}\n  376  \n  377: \\begin{listingtiny}\n  378    new VectorDSL {\n  379      try Vector.fill(1000, 1) / 0\n  ...\n  421  \\centering\n  422  \n  423: \\begin{listingtiny}\n  424  import vector._; import math.pow;\n  425  val n = 100; val exp = 6;\n  ...\n  437  \\begin{subfigure}[b]{1\\linewidth}\n  438  \\centering\n  439: \\begin{listingtiny}\n  440  val n = 100; val exp = 6;\n  441  vectorDSL {\n  ...\n  456  \\begin{subfigure}[b]{1\\linewidth}\n  457  \\vspace{8.1pt}\n  458: \\begin{listingtiny}\n  459  val n = 100; val exp = 6;\n  460  new VectorDSL with IfOps\n  ...\n  702  \n  703  For the intuition why type arguments can not contain function types consider passing an increment function to the generic identity function:\n  704: \\begin{listingtiny}\n  705    id[T => T](lam[T, T](x => x + 1))\n  706  \\end{listingtiny}\n  ...\n  749  \\begin{itemize}\n  750  \\item Generic messages for unsupported methods:\n  751: \\begin{listingtiny}\n  752  \n  753  List.fill(1000, Vector.fill(1000,1)).reduce(_+_)\n  ...\n  758  \n  759  \\item Custom messages for unsupported host language constructs:\n  760: \\begin{listingtiny}\n  761  \n  762  try Vector.fill(1000, 1) / 0\n  ...\n  852  \n  853  \\begin{figure}\n  854: \\begin{listingtiny}\n  855  trait VectorOps extends SeqOps with\n  856    NumericOps with Base {\n  ...\n  903  \n  904  \\begin{figure}\n  905: \\begin{listingtiny}\n  906  class Vector[T: Numeric](val data: Seq[T]) {\n  907    // effect annotations not necessary\n  ...\n  944  \n  945  \\begin{figure}\n  946: \\begin{listingtiny}\n  947  trait VectorLowLevel extends VectorOps\n  948    with SeqLowLevel {\n\n/home/vjovanov/dissertation/main/ch3_polyvariant_staging.tex:\n  161  \n  162  \\begin{figure}\n  163: \\begin{listingtiny}\n  164  package object scalact {\n  165    final class ct extends StaticAnnotation\n  ...\n  447  \n  448  \\begin{figure}\n  449: \\begin{listingtiny}\n  450  def min(vs: Int*): Int = macro\n  451    if (isVarargs(vs)) q\"min_CT(vs)\"\n  ...\n  484  \n  485  \\begin{figure}\n  486: \\begin{listingtiny}\n  487  object Numeric {\n  488    implicit def dnum: Numeric[Double]@ct =\n\n22 matches across 3 files\n\n\nSearching 21 files for \"lstparagraph\" (case sensitive)\n\n/home/vjovanov/dissertation/head/settings_custom.tex:\n  110  \\newcommand{\\code}[1]{\\scode{#1}}\n  111  \\newcommand{\\sct}[1]{\\S \\ref{#1}}\n  112: \\lstnewenvironment{lstparagraph}{\\lstset{language=Scala,basicstyle=\\ttfamily}\\vspace{2.4mm}}{\\vspace{2.4mm}}\n  113  \n  114  % Helper macro that returns #2 if #1 is empty, #3 otherwise.  The\n\n/home/vjovanov/dissertation/main/ch2_dsl_embedding.tex:\n  749  \\begin{itemize}\n  750  \\item Generic messages for unsupported methods:\n  751: \\begin{lstparagraph}\n  752  List.fill(1000, Vector.fill(1000,1)).reduce(_+_)\n  753  ^\n  754  Method List.fill[T] is unsupported in VectorDSL.\n  755: \\end{lstparagraph}\n  756  %\\vfill %% sstucki: hack!\n  757  \n  758  \\item Custom messages for unsupported host language constructs:\n  759: \\begin{lstparagraph}\n  760  try Vector.fill(1000, 1) / 0\n  761  ^\n  762  Construct try/catch is unsupported in VectorDSL.\n  763: \\begin{lstparagraph}\n  764  \\end{itemize}\n  765  %\n\n/home/vjovanov/dissertation/main/ch3_polyvariant_staging.tex:\n   22  \n   23   We show an example of how staging is used for partial evaluation of a function\n   24:  for computing the inner product of two vectors\\footnotemark[1]:\\begin{lstparagraph}\n   25  def dot[T:Numeric](v1: Vector[T], v2: Vector[T]): T =\n   26    (v1 zip v2).foldLeft(zero[T]) {\n   27      case (prod, (cl, cr)) => prod + cl * cr\n   28    }\n   29:  \\end{lstparagraph}\n   30  \n   31  In function \\code{dot}, if vector sizes are constant, the inner product can\n   ..\n   36   or by parametric types \\code{Rep}~(in LMS). In LMS marking\n   37   that the vector size is statically known is achieved by annotating only vector elements with\n   38:  a \\code{Rep} type\\footnotemark[2]:\\begin{lstparagraph}\n   39  def dot[T:Numeric]\n   40    (v1: Vector[Rep[T]], v2: Vector[Rep[T]]): Rep[T]\n   41:  \\end{lstparagraph}\n   42  \n   43  Here the \\code{Rep} annotations on \\code{Rep[T]} denote that elements of vectors will be known\n   ..\n   99  With compile-time views, to require that vectors \\code{v1} and \\code{v2} are\n  100   static and to partially evaluate the function, a programmer needs to make\n  101:  a simple modification of the \\code{dot} signature:\\begin{lstparagraph}\n  102  def dot[V: Numeric@ct]\n  103    (v1: Vector[V]@ct, v2: Vector[V]@ct): V\n  104: \\end{lstparagraph}\n  105  \n  106  Since, vector elements are polymorphic the result\n  ...\n  109   of \\code{dot} will match the binding time of vector elements:\n  110  \n  111: \\begin{lstparagraph}\n  112    // [el1, el2, el3, el4] are dynamic decimals\n  113    dot(Vector(el1, el2), Vector(el3, el4))\n  ...\n  122        Vector(ct(1), ct(10)))\n  123      $\\hookrightarrow$ 42: Double@ct\n  124: \\end{lstparagraph}\n  125  \n  126  In this paper we contribute to the state of the art:\n  ...\n  211  Annotation \\code{ct} can be used to achieve simple inlining of statically\n  212   known methods and functions. This is achieved by putting the annotation of the method/function\n  213:  definition:\\begin{lstparagraph}\n  214   def dot[V: Numeric]\n  215    (v1: Vector[V], v2: Vector[V]): V\n  216: \\end{lstparagraph}\n  217: Annotated methods will have an annotated method type\\begin{lstparagraph}\n  218  ((v1: Vector[V], v2: Vector[V]) => V)@ct\n  219: \\end{lstparagraph} which can not be written by the users. This is not the first time\n  220  that inlining is achieved through partial evaluation~\\cite{monnier2003inlining}.\n  221  \n  ...\n  267    % What are the static terms\n  268  In \\tool language literals, functions, direct class constructor calls with static arguments, and static method\n  269:  calls with static arguments are marked as static. Examples of static terms are\\begin{lstparagraph}\n  270  1.0, \"1\", (x: Int => x), new Cons(1, Nil), List(1,2,3)\n  271: \\end{lstparagraph}\n  272  \n  273  \\subsection{Least Upper Bounds}\n  ...\n  278   a \\code{static} type is a more specific \\code{dynamic} as it is statically known\n  279   and that \\code{ct} is more specific than \\code{static} as its operations are executed\n  280:  at compile time. Therefore we establish that\\begin{lstparagraph}\n  281                   ct <: static <: dynamic\n  282: \\end{lstparagraph}\n  283  \n  284   The use of subtyping simplifies tracking binding times of terms as in all cases\n  285   where least upper bounds are calculated we can use the same mechanism for binding-times.\n  286:  An interesting example are the binding times of type parameters:\\begin{lstparagraph}\n  287  ct(List)(1, ct(2)): List[Int@static]@ct\n  288  ct(List)(ct(1), ct(2)): List[Int@ct]@ct\n  289  ct(List)((x: Int@dynamic), ct(2)): List[Int@dynamic]@ct\n  290: \\end{lstparagraph}\n  291  \n  292  Notable exception are control flow constructs for which the original Scala rules for least\n  ...\n  311   types~(\\eg, polymorphic types, function types, record types, etc.) is always\n  312   a subtype of the binding time of their components. In the following example,\n  313:  we show malformed types and examples of terms that are inconsistent:\\begin{lstparagraph}\n  314  xs: List[Int@ct]     => ct(Predef).println(xs.head)\n  315  fn: (Int@ct=>Int@ct) => ct(Predef).println(fn(ct(1)))\n  316: \\end{lstparagraph}\n  317  \n  318  In the first example the program would, according to the semantics of \\code{@ct}, print a head of the list at compile time.\n  ...\n  342   the value of each static term, we disallow implicit conversions of terms with static variables.\n  343  \n  344: For example, for a factorial function \\begin{lstparagraph}\n  345  def fact(n: Int @ct): Int@ct =\n  346    if (n == 0) 1 else fact(n - 1)\n  347:  \\end{lstparagraph} we will not require promotions of literals \\code{0}, and \\code{1}. Furthermore,\n  348:  the function can be invoked without promoting the argument into it's compile-time view:\\begin{lstparagraph}\n  349  fact(5)\n  350    $\\hookrightarrow$ 120\n  351:  \\end{lstparagraph}\n  352  \n  353: Without implicit conversions the factorial functions would be more verbose \\begin{lstparagraph}\n  354  def fact(n: Int @ct): Int@ct =\n  355    if (n == ct(0)) ct(1) else fact(n - ct(1))\n  356:  \\end{lstparagraph} as well as each function application (\\code{fact(ct(5))}).\n  357  \n  358  \n  ...\n  375  Function inlining can be expressed as staged computation~\\cite{monnier2003inlining}.\n  376   Inlining is achieved when a statically known function body is applied with symbolic\n  377:  arguments. In \\tool we use the \\code{ct} annotation on functions and methods to achieve inlining:\\begin{lstparagraph}\n  378  @ct def zero[T](implicit num: Numeric[T]) = num.zero\n  379  \n  380  zero[Double]\n  381    $\\hookrightarrow$ num.zero\n  382: \\end{lstparagraph}\n  383  \n  384  \n  ...\n  388  The canonical example in staging literature is partial evaluation of the power function\n  389   where exponent is an integer:\n  390: \\begin{lstparagraph}\n  391  def pow(base: Double, exp: Int): Double =\n  392    if (exp == 0) 1 else base * pow(base, exp - 1)\n  393: \\end{lstparagraph} When the exponent (\\code{exp}) is statically known this function can be partially\n  394  evaluated into \\code{exp} multiplications of the \\code{base} argument, significantly\n  395  improving performance~\\cite{calcagno2003implementing}.\n  ...\n  397  With compile-time views making \\code{pow} partially evaluated requires adding only one annotation:\n  398  \n  399: \\begin{lstparagraph}\n  400  def pow(base: Double, exp: Int@ct): Double =\n  401    if (exp == 0) 1 else base * pow(base, exp - 1)\n  402: \\end{lstparagraph}\n  403  \n  404  % TODO cite infinite recursion\n  ...\n  414   exponent will produce:\n  415  \n  416: \\begin{lstparagraph}\n  417  pow(base, 4)\n  418    $\\hookrightarrow$ base * base * base * base * 1\n  419: \\end{lstparagraph}\n  420  \n  421  Constant 4 is promoted to \\code{ct} by the implicit conversions (\\sct{sct:implicits}).\n  ...\n  430   data-structure is statically known and all operations on them can be partially\n  431   evaluated. However, sometimes, the function is called with arguments of dynamic size.\n  432:  For example, function \\code{min} that accepts multiple integers\\begin{lstparagraph}\n  433  def min(vs: Int*): Int = vs.tail.foldLeft(vs.head) {\n  434    (min, el) => if (el < min) el else min\n  435  }\n  436: \\end{lstparagraph}can be called either with statically known arguments\n  437:  (\\eg, \\code{min(1,2)}) or with dynamic arguments:\\begin{lstparagraph}\n  438  val values: Seq[Int] = ... // dynamic value\n  439  min(values: _*)\n  440: \\end{lstparagraph}\n  441  \n  442  Ideally, we would be able to achieve partial evaluation if the arguments are of statically\n  ...\n  515  compile-time execution is shown in the following snippet\n  516  \n  517: \\begin{lstparagraph}\n  518  Numeric.zero[Double]\n  519    $\\hookrightarrow$ Numeric.zero[Double](DoubleNumeric)\n  ...\n  521    $\\hookrightarrow$ (ct(0.0): Double)\n  522    $\\hookrightarrow$ 0.0\n  523: \\end{lstparagraph}\n  524  \n  525  \\subsection{Inner Product of Vectors}\n  ...\n  530  function~(\\ie, all implicit operations are shown):\n  531  \n  532: \\begin{lstparagraph}\n  533   def dot[V](v1: Vector[V]@ct, v2: Vector[V]@ct)\n  534    (implicit num: Numeric[V]@ct): V =\n  ...\n  536      case (prod, (cl, cr)) => prod + cl * cr\n  537    }\n  538: \\end{lstparagraph}\n  539  \n  540  Function \\code{dot} is generic in the type of vector elements. This will reflect\n  ...\n  542  \\code{dot} function with static arguments we will get the vector with static elements back:\n  543  \n  544: \\begin{lstparagraph}\n  545  dot[Double@static](\n  546    ct(Vector)(2.0, 4.0), ct(Vector)(1.0, 10.0))(\n  ...\n  552      }\n  553  $\\hookrightarrow$ (2.0 * 1.0 + 4.0 * 10.0): Double@static\n  554: \\end{lstparagraph}\n  555  \n  556  When \\code{dot} is evaluated with the \\code{ct} elements the last step will further\n  557  execute to a single compile-time value that can further be used in compile-time computations:\n  558: \\begin{lstparagraph}\n  559  dot[Double@ct](\n  560    ct(Vector)(ct(2.0), ct(4.0)),\n  ...\n  562  $\\hookrightarrow$ ct(2.0) * ct(1.0) + ct(4.0) * ct(10.0)\n  563  $\\hookrightarrow$ 42.0: Double@ct\n  564: \\end{lstparagraph}\n  565  \n  566  \n\n51 matches across 3 files\n\n\nSearching 21 files for \"virtualized\" (case sensitive)\n\n/home/vjovanov/dissertation/main/ch2_dsl_embedding.tex:\n  405  \n  406  % Overview of the solution:\n  407: Since the translation is type-directed it requires reflection that supports \\emph{type introspection} and \\emph{type transformation}. The translation is based on the idea of representing language constructs as method calls~\\cite{carette_finally_2009,rompf_scala-virtualized:_2009} and systematically intrinsifying direct DSL operations and types of the direct embedding to their deep counterparts~\\cite{carette_finally_2009}. The translation operates in two main steps:\n  408  \\begin{description}\n  409  \\item[Language virtualization] converts host language intrinsics into\n  ...\n  492  host language, such as \\code{if} and \\code{while} statements. This can be\n  493  achieved by translating them into suitable method invocations as shown by Rompf\n  494: et al. in the modified Scala compiler named Scala-Virtualized~\\cite{rompf_scala-virtualized:_2009}.\n  495  \n  496   \\tool follows the same approach as Scala-Virtualized but uses macros of unmodified Scala\n  ...\n  638  (possibly recursive) methods. This is similar to the \\code{let} and \\code{letrec}\n  639   constructs in other functional languages.} need to be translated into\n  640: function definitions in order to be virtualized. In all expressions the original\n  641: types are introspected and used as a type argument of the virtualized method.\n  642  These generic types are translated later during the DSL intrinsification phase\n  643  in order to avoid type inference in future stages of the translation.\n  644  \n  645: Constructs that are not virtualized are class and trait definitions, including\n  646   \\emph{case class} definitions, and pattern matching. We are planning to add the\n  647   latter in future versions of \\tool.\n  ...\n  672  \\begin{itemize}\n  673  \\item The \\emph{type translation} maps every DSL type in the, already\n  674:   virtualized, term body to an equivalent type in the deep embedding.\n  675    In other words, the type translation is a function on\n  676    types.  Note that this function is inherently DSL-specific, and\n  ...\n  753  \\end{alignat*}\n  754  \n  755: By choosing the virtualized methods to operate on the IR-types in the\n  756  appropriate way, one obtains an embedding that \\emph{preserves\n  757    well-typedness}, irrespective of the particular DSL it implements.\n  ...\n  804  well typed after the translation to the deep embedding\n  805  \\cite{carette_finally_2009}. Here the deep embedding is the direct embedding\n  806: with virtualized host language intrinsics.\n  807  \n  808  \\item \\emph{Generic polymorphic embedding} preserves well-typedness~\\cite{carette_finally_2009}.\n  ...\n  848  Unfortunately, naively restricting the language by detecting type-checking\n  849  failures is leaking information about the deep embedding. The reported error\n  850: messages will contain virtualized language constructs and types. This is not desirable\n  851  as users should not be exposed to the internals of the deep embedding.\n  852  \n  ...\n  876  %\n  877  % Restricting the language is a piece of cake.\n  878: With \\tool the DSL author can arbitrarily restrict virtualized constructs in an\n  879  embedded language by simply omitting corresponding method definitions from the\n  880  deep embedding. Due to the additional verification step all error messages are\n  ...\n 1251  should be apparent from the examples used in this paper -- is\n 1252  particularly well-adapted for deep EDSLs using an LMS-type\n 1253: IR~\\cite{rompf_scala-virtualized:_2009,rompf_optimizing_2013}.\n 1254  \n 1255  % Forge\n\n/home/vjovanov/dissertation/tail/bibliography.bib:\n  710  },\n  711  \n  712: @inproceedings{moors_scala-virtualized_2012,\n  713:   title = {Scala-virtualized},\n  714    urldate = {2012-12-06},\n  715    booktitle = {Proceedings of the {ACM} {SIGPLAN} 2012 workshop on Partial evaluation and program manipulation},\n  ...\n  909  },\n  910  \n  911: @article{rompf_scala-virtualized:_2009,\n  912:   title = {Scala-virtualized: Linguistic reuse for deep embeddings},\n  913:   shorttitle = {Scala-virtualized},\n  914    urldate = {2013-11-11},\n  915    journal = {Higher-Order and Symbolic Computation},\n  ...\n  917    year = {2013},\n  918    pages = {1–43},\n  919:   file = {[PDF] from epfl.ch:/home/vjovanov/.zotero/zotero/fwqxvpuo.default/zotero/storage/G7843U38/Rompf et al. - 2009 - Scala-virtualized Linguistic reuse for deep embed.pdf:application/pdf;Snapshot:/home/vjovanov/.zotero/zotero/fwqxvpuo.default/zotero/storage/BQMVWBE8/s10990-013-9096-9.html:text/html}\n  920  },\n  921  \n  ...\n 1028  \n 1029  \n 1030: @inproceedings{moors_scala-virtualized_2012-1,\n 1031:   title = {Scala-virtualized},\n 1032    booktitle = {Proceedings of the {ACM} {SIGPLAN} 2012 workshop on Partial evaluation and program manipulation},\n 1033    author = {Moors, A. and Rompf, T. and Haller, P. and Odersky, M.},\n\n19 matches across 2 files\n\n\nSearching 21 files for \"of the program\" (case sensitive)\n\n/home/vjovanov/dissertation/main/ch2_dsl_embedding.tex:\n  477  )}\n  478  \\end{listingtiny}\n  479: \\caption{The \\tool translation of the program from \\figref{lst:desugaring}.}\n  480  \\label{lst:transformed_program}\n  481  \\vspace{8.1pt}\n  ...\n  485  \\end{figure*}\n  486  \n  487: To illustrate the core translation, we use an example program for calculating $\\sum_{i=0}^n i^{exp}$ using the vector \\edsl defined in \\figref{lst:vector}. \\figref{fig:translation-example} contains three versions of the program: Figure \\ref{lst:direct-embedding} depicts the direct embedding version, Figure \\ref{lst:desugaring} represents the program after type checking (as the translation sees it), and Figure \\ref{lst:transformed_program} shows the result of the translation.\n  488  \n  489  \\subsection{Language Virtualization}\n\n/home/vjovanov/dissertation/tail/bibliography.bib:\n  686    title = {Twister: a runtime for iterative {MapReduce}},\n  687    shorttitle = {Twister},\n  688:   abstract = {{MapReduce} programming model has simplified the implementation of many data parallel applications. The simplicity of the programming model and the quality of services provided by many implementations of {MapReduce} attract a lot of enthusiasm among distributed computing communities. From the years of experience in applying {MapReduce} to various scientific applications we identified a set of extensions to the programming model and improvements to its architecture that will expand the applicability of {MapReduce} to more classes of applications. In this paper, we present the programming model and the architecture of Twister an enhanced {MapReduce} runtime that supports iterative {MapReduce} computations efficiently. We also show performance comparisons of Twister with other similar runtimes such as Hadoop and {DryadLINQ} for large scale data parallel applications.},\n  689    urldate = {2012-06-11},\n  690    booktitle = {Proceedings of the 19th {ACM} International Symposium on High Performance Distributed Computing},\n\n3 matches across 2 files\n\n\nSearching 21 files for \"infix_eq\" (case sensitive)\n\n/home/vjovanov/dissertation/main/ch2_dsl_embedding.tex:\n  623  \n  624   \\begin{multicols}{2}\n  625: % *   t.equals t1            =>       infix_equals(t, t1)\n  626   \\infyyax{}\n  627       {t_1\\;\\mathtt{equals}\\;t_2}{\\mathtt{infix\\_equals}(\\trone{t_1},\\;\\trone{t_2})}\n  ...\n  636        {t_1.\\mathtt{wait}(t_2,\\;t_3)}{\\mathtt{infix\\_wait}(\\trone{t_1},\\;\\trone{t_2},\\;\\trone{t_3})}\n  637  \n  638: % *   t eq t1                =>       infix_eq(t, t1)\n  639     \\infyyax{}\n  640       {t_1\\;\\mathtt{eq}\\;t_2}{\\mathtt{infix\\_eq}(\\trone{t_1},\\;\\trone{t_2})}\n\n2 matches in 1 file\n\n\nSearching 21 files for \"scala-virtualized\" (case sensitive)\n\n/home/vjovanov/dissertation/main/ch2_dsl_embedding.tex:\n  405  \n  406  % Overview of the solution:\n  407: Since the translation is type-directed it requires reflection that supports \\emph{type introspection} and \\emph{type transformation}. The translation is based on the idea of representing language constructs as method calls~\\cite{carette_finally_2009,rompf_scala-virtualized:_2009} and systematically intrinsifying direct DSL operations and types of the direct embedding to their deep counterparts~\\cite{carette_finally_2009}. The translation operates in two main steps:\n  408  \\begin{description}\n  409  \\item[Language virtualization] converts host language intrinsics into\n  ...\n  492  host language, such as \\code{if} and \\code{while} statements. This can be\n  493  achieved by translating them into suitable method invocations as shown by Rompf\n  494: et al. in the modified Scala compiler named Scala-Virtualized~\\cite{rompf_scala-virtualized:_2009}.\n  495  \n  496  % TODO\n  ...\n 1306  should be apparent from the examples used in this paper -- is\n 1307  particularly well-adapted for deep EDSLs using an LMS-type\n 1308: IR~\\cite{rompf_scala-virtualized:_2009,rompf_optimizing_2013}.\n 1309  \n 1310  % Forge\n\n/home/vjovanov/dissertation/tail/bibliography.bib:\n  710  },\n  711  \n  712: @inproceedings{moors_scala-virtualized_2012,\n  713    title = {Scala-virtualized},\n  714    urldate = {2012-12-06},\n  ...\n  909  },\n  910  \n  911: @article{rompf_scala-virtualized:_2009,\n  912    title = {Scala-virtualized: Linguistic reuse for deep embeddings},\n  913    shorttitle = {Scala-virtualized},\n  ...\n 1028  \n 1029  \n 1030: @inproceedings{moors_scala-virtualized_2012-1,\n 1031    title = {Scala-virtualized},\n 1032    booktitle = {Proceedings of the {ACM} {SIGPLAN} 2012 workshop on Partial evaluation and program manipulation},\n\n6 matches across 2 files\n\n\nSearching 21 files for \"Virtualized\" (case sensitive)\n\n/home/vjovanov/dissertation/main/ch2_dsl_embedding.tex:\n  492  host language, such as \\code{if} and \\code{while} statements. This can be\n  493  achieved by translating them into suitable method invocations as shown by Rompf\n  494: et al. in the modified Scala compiler named Scala-Virtualized~\\cite{rompf_scala-virtualized:_2009}.\n  495  \n  496  % TODO\n  ...\n  510  \n  511   \\tool follows the ideas of Carette et al.~\\cite{carette_finally_2009} \n  512:  and Scala-Virtualized but uses macros of unmodified Scala\n  513   to virtualize Scala intrinsics required to write direct DSL programs. In addition to\n  514:  Scala-Virtualized we virtualize additional constructs: function definition and application, and\n  515   variable binding. Furthermore, Scala is designed such that the types \\code{Any} and\n  516   \\code{AnyRef}, which reside at the top of the Scala class hierarchy, contain\n\n3 matches in 1 file\n\n\nSearching 21 files for \"Virtualized\" (case sensitive)\n\n/home/vjovanov/dissertation/main/ch2_dsl_embedding.tex:\n  492  host language, such as \\code{if} and \\code{while} statements. This can be\n  493  achieved by translating them into suitable method invocations as shown by Rompf\n  494: et al. in the modified Scala compiler named Scala-Virtualized~\\cite{rompf_scala-virtualized:_2009}.\n  495  \n  496  % TODO\n  ...\n  510  \n  511   \\tool follows the ideas of Carette et al.~\\cite{carette_finally_2009} \n  512:  and Scala-Virtualized but uses macros of unmodified Scala\n  513   to virtualize Scala intrinsics required to write direct DSL programs. In addition to\n  514:  Scala-Virtualized we virtualize additional constructs: function definition and application, and\n  515   variable binding. Furthermore, Scala is designed such that the types \\code{Any} and\n  516   \\code{AnyRef}, which reside at the top of the Scala class hierarchy, contain\n\n3 matches in 1 file\n\n\nSearching 21 files for \"Linguistic Reuse\" (case sensitive)\n\n0 matches across 0 files\n\n\nSearching 21 files for \"Linguistic \" (case sensitive)\n\n/home/vjovanov/dissertation/tail/bibliography.bib:\n  910  \n  911  @article{rompf_scala-virtualized:_2009,\n  912:   title = {Scala-virtualized: Linguistic reuse for deep embeddings},\n  913    shorttitle = {Scala-virtualized},\n  914    urldate = {2013-11-11},\n  ...\n  917    year = {2013},\n  918    pages = {1–43},\n  919:   file = {[PDF] from epfl.ch:/home/vjovanov/.zotero/zotero/fwqxvpuo.default/zotero/storage/G7843U38/Rompf et al. - 2009 - Scala-virtualized Linguistic reuse for deep embed.pdf:application/pdf;Snapshot:/home/vjovanov/.zotero/zotero/fwqxvpuo.default/zotero/storage/BQMVWBE8/s10990-013-9096-9.html:text/html}\n  920  },\n  921  \n\n2 matches in 1 file\n\n\nSearching 21 files for \"the DSL author\" (case sensitive)\n\n/home/vjovanov/dissertation/main/ch2_dsl_embedding.tex:\n  757    In other words, the type translation is a function on\n  758    types.  Note that this function is inherently DSL-specific, and\n  759:   hence needs to be configurable by the DSL author.  We discuss\n  760     aspects of different type translation in more detail in\n  761    \\sct{sec:alternative-type-translations}.\n  ...\n  868  coercions from \\code{Rep[$A$] => Rep[$B$]} to \\code{Rep[$A$ => $B$]} and from \\code{Rep[$A$ => $B$]} to \\code{Rep[$A$] => Rep[$B$]}.\n  869  \n  870: \\paragraph{Untyped backend.} If DSL authors want to avoid complicated types in the back-end (e.g., \\code{Rep[T]}), the $\\ttname$ functions can simply transform all types to the \\code{Dynamic}~\\cite{abadi_dynamic_1991} type. Giving away type safety can make transformations in the back-end easier for the DSL author.\n  871  \n  872  \\paragraph{Custom types.} All previous translations preserved types in the type parameter position. The reason is that the $\\ttname$ functions behaved like a higher-kinded type. If we would like to map some of the base types in a custom way, those types need to be changed in the position of type-arguments as well. This translation is used for \\edsls based on polymorphic embedding~\\cite{hofer_polymorphic_2008} that use \\code{this.T} to represent type \\code{T}.\n  ...\n  901  Here, the \\code{id} function expects \\code{Rep[_]} type but the argument is \\code{Rep[T] => Rep[T]}.\n  902  \n  903: \\item The \\emph{Dynamic} type supports all operations and, thus, static type errors will not occur. Here, the DSL author is responsible for providing a back-end where dynamic type errors will not occur.\n  904  \n  905  \\item \\emph{Custom types} can cause custom type errors since \\edsl authors can\n  ...\n  958  %\n  959  % Restricting the language is a piece of cake.\n  960: With \\tool the DSL author can arbitrarily restrict virtualized constructs in an\n  961  embedded language by simply omitting corresponding method definitions from the\n  962  deep embedding. Due to the additional verification step all error messages are\n  ...\n 1009  % While  these optimizations are not re-generated; only the\n 1010  % components that correspond to the interface and the IR nodes are\n 1011: % modified. Therefore, the DSL author is only responsible for\n 1012  % maintaining analysis and optimizations in the deep embedding. A change\n 1013  % in the direct embedding interface should affect only optimizations\n\n/home/vjovanov/dissertation/tail/bibliography.bib:\n 1201                   performance is important. The reliability of the\n 1202                   translation completely conceals the deep embedding from\n 1203:                  the user. For the DSL author, Yin-Yang automatically\n 1204                   generates the deep DSL embeddings from their shallow\n 1205                   counterparts by reusing the core translation. This\n\n6 matches across 2 files\n\n\nSearching 21 files for \"a DSL author\" (case sensitive)\n\n/home/vjovanov/dissertation/main/ch2_dsl_embedding.tex:\n  523   a method with the corresponding signature. The signature of each method is partially defined by \\tool. Method names, the number of\n  524    type parameters and the number of type arguments are predefined while types of arguments and return types\n  525:   are open for a DSL author to define.\n  526  \n  527   Binding of the translated methods to the\n\n1 match in 1 file\n",
+			"settings":
+			{
+				"buffer_size": 30468,
+				"line_ending": "Unix",
+				"name": "Find Results",
+				"scratch": true
+			}
+		},
+		{
+			"file": "main/ch2_dsl_embedding.tex",
+			"settings":
+			{
+				"buffer_size": 78933,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "Package Control Messages\n========================\n\nLaTeXTools:\n----------\n\n  LaTeXTools Plugin version 2012-09-17 17:03:16\n  \n  Thank you for installing the LaTeXTools plugin!\n  \n  If you have not updated your LaTeXTools plugin in a while, please note:\n  THE KEYBOARD SHORTCUTS HAVE CHANGED!\n  \n  To learn about the features of this plugin, go to the Github page:\n  \n  https://github.com/SublimeText/LaTeXTools\n  \n  and scroll down to the README file. Actually, the Markdown source of that file is in the plugin directory, which you can open using \"Browse Packages...\" in Sublime Text 2.\n  \n  You can also check out my blog at\n  \n  tekonomist.wordpress.com\n  \n  and/or circle me on Google Plus.\n  \n  Happy TeXing!\n  Marciano Siniscalchi\n  \n  \n\nPackage Control:\n---------------\n\n  Version 3.1 Release Notes\n  \n  Package Control continues its focus on polish and fixing edge-case bugs. Some\n  of the changes in this version include:\n  \n   - quick panel for Install Package now stays open on Windows with recent\n     versions of ST3, even when focus is lost\n   - new \"downloader_precedence\" setting to allow users to use specific HTTP\n     backend due to network proxy or SSL issues\n   - added Install Local Dependency command for package developers to more\n     easily deal with dependencies during development\n   - improved handling of git/hg package upgrade errors\n   - better handling of locked .sublime-package files on Windows\n   - performance improvements for users with a large number of open windows\n  \n  For package developers, the list of available dependencies has been growing:\n  https://github.com/wbond/package_control_channel/blob/master/repository/dependencies.json\n  \n  Enjoy!\n  \n",
+			"settings":
+			{
+				"buffer_size": 1695,
+				"line_ending": "Unix",
+				"name": "Package Control Messages",
+				"scratch": true
+			}
+		},
+		{
+			"file": "main/ch1_introduction.tex",
+			"settings":
+			{
+				"buffer_size": 5452,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "tail/bibliography.bib",
+			"settings":
+			{
+				"buffer_size": 94203,
 				"line_ending": "Unix"
 			}
 		}
 	],
-	"build_system": "Packages/User/paper.sublime-build",
+	"build_system": "Packages/User/dissertation.sublime-build",
 	"command_palette":
 	{
-		"height": 75.0,
+		"height": 117.0,
 		"selected_items":
 		[
+			[
+				"Insta",
+				"Package Control: Install Package"
+			],
 			[
 				"kbu",
 				"Preferences: Key Bindings - Default"
@@ -119,7 +183,7 @@
 				"Preferences: Settings - User"
 			]
 		],
-		"width": 575.0
+		"width": 449.0
 	},
 	"console":
 	{
@@ -141,13 +205,56 @@
 	"expanded_folders":
 	[
 		"/home/vjovanov/dissertation",
-		"/home/vjovanov/dissertation/head",
-		"/home/vjovanov/dissertation/images",
-		"/home/vjovanov/dissertation/lineno",
-		"/home/vjovanov/dissertation/main"
+		"/home/vjovanov/dissertation/head"
 	],
 	"file_history":
 	[
+		"/home/vjovanov/dissertation/.gitignore",
+		"/home/vjovanov/dissertation/phd.pyg",
+		"/home/vjovanov/dissertation/dissertation.sublime-project",
+		"/home/vjovanov/dissertation/clean-make.sh",
+		"/home/vjovanov/dissertation/Makefile",
+		"/home/vjovanov/dissertation/head/abstracts.tex",
+		"/home/vjovanov/dissertation/tail/biblio.tex",
+		"/home/vjovanov/dissertation/head/settings_custom.tex",
+		"/home/vjovanov/dissertation/tail/bibliography.bib",
+		"/home/vjovanov/research/yy-pldi/deep_gen.tex",
+		"/home/vjovanov/research/yy-pldi/evaluation.tex",
+		"/home/vjovanov/research/yy-pldi/discussion.tex",
+		"/home/vjovanov/research/yy-pldi/yy_macros.tex",
+		"/home/vjovanov/research/papers/2015-scala-symposium/vjovanov-lib.bib",
+		"/home/vjovanov/dissertation/main/ch1_introduction.tex",
+		"/home/vjovanov/research/papers/2015-scala-symposium/partial-evaluator.tex",
+		"/home/vjovanov/research/papers/2015-scala-symposium/case-studies.tex",
+		"/home/vjovanov/research/papers/2015-scala-symposium/discussion.tex",
+		"/home/vjovanov/research/papers/2015-scala-symposium/limitations.tex",
+		"/home/vjovanov/research/papers/2015-scala-symposium/related.tex",
+		"/home/vjovanov/research/papers/2015-scala-symposium/conclusion.tex",
+		"/home/vjovanov/dissertation/main/ch2_dsl_embedding.tex",
+		"/home/vjovanov/research/yy-pldi/motivation.tex",
+		"/home/vjovanov/dissertation/phd.tex",
+		"/home/vjovanov/dissertation/main/ch3_polyvariant_staging.tex",
+		"/home/vjovanov/dissertation/main/ch5_conclusion.tex",
+		"/home/vjovanov/dissertation/main/ch4_dynamic_compilation_of_staged_DSLs.tex",
+		"/home/vjovanov/research/papers/2015-scala-symposium/macros.tex",
+		"/home/vjovanov/.config/sublime-text-3/Packages/User/dissertation.sublime-build",
+		"/home/vjovanov/research/papers/2015-scala-symposium/paper.tex",
+		"/home/vjovanov/research/yy-pldi/background.tex",
+		"/home/vjovanov/research/yy-pldi/core_translation.tex",
+		"/home/vjovanov/research/yy-pldi/intro.tex",
+		"/home/vjovanov/dissertation/head/preface.tex",
+		"/home/vjovanov/research/papers/2015-scala-symposium/bcprules.sty",
+		"/home/vjovanov/research/papers/2015-scala-symposium/Makefile",
+		"/home/vjovanov/research/papers/2015-scala-symposium/math.sty",
+		"/home/vjovanov/research/papers/2015-scala-symposium/calculus.tex",
+		"/home/vjovanov/research/papers/2015-scala-symposium/intro.tex",
+		"/home/vjovanov/research/yy-pldi/paper.tex",
+		"/home/vjovanov/dissertation/head/settings_epfl_template.tex",
+		"/home/vjovanov/research/yy-pldi/sigplanconf.cls",
+		"/home/vjovanov/research/yy-pldi/paper.sublime-project",
+		"/home/vjovanov/dissertation/head/acknowledgements.tex",
+		"/home/vjovanov/dissertation/head/titlepage.tex",
+		"/home/vjovanov/dissertation/lineno/SRCFILEs.txt",
 		"/home/vjovanov/dissertation/phd.aux",
 		"/home/vjovanov/code/vjovanov.github.io/dsldi-summer-school/ins_qdsl.html",
 		"/home/vjovanov/code/vjovanov.github.io/dsldi-summer-school/contact.html",
@@ -229,57 +336,11 @@
 		"/home/vjovanov/code/scala/META-INF/MANIFEST.MF",
 		"/home/vjovanov/code/scala/test/files/pos/inline-access-levels.flags",
 		"/home/vjovanov/code/scala/test/simplejson/encoder.py",
-		"/home/vjovanov/code/scala/test/files/res/t831/NewScalaParserXXX.scala",
-		"/home/vjovanov/code/scala/test/files/pos/erasure-nsquared.scala",
-		"/home/vjovanov/code/scala/src/library/scala/Symbol.scala",
-		"/home/vjovanov/code/scala/tools/new-starr",
-		"/home/vjovanov/code/scala/test/files/jvm/actor-normal-exit.check",
-		"/home/vjovanov/code/scala/src/library/scala/inline.scala",
-		"/home/vjovanov/code/scala/src/library/scala/concurrent/Lock.scala",
-		"/home/vjovanov/code/scala/src/compiler/scala/tools/nsc/backend/icode/BasicBlocks.scala",
-		"/home/vjovanov/code/scala/test/files/run/macro-term-declared-in-block.check",
-		"/home/vjovanov/code/scala/src/library/scala/concurrent/BlockContext.scala",
-		"/home/vjovanov/code/scala/tools/binary-repo-lib.sh",
-		"/home/vjovanov/code/scala-inline/project/Build.scala",
-		"/home/vjovanov/code/scala/test/files/neg/virtpatmat_unreach_select.check",
-		"/home/vjovanov/code/scala/test/files/run/spec-self.check",
-		"/home/vjovanov/code/scala/test/benchmarks/src/scala/collection/parallel/benchmarks/parallel_array/SameElementsLong.scala",
-		"/home/vjovanov/code/scala/test/files/run/caseClassEquality.scala",
-		"/home/vjovanov/code/scala/test/files/run/compiler-asSeenFrom.check",
-		"/home/vjovanov/code/scala/CONTRIBUTING.md",
-		"/home/vjovanov/code/scala/test/files/run/t4841-isolate-plugins/t4841-isolate-plugin.scala",
-		"/home/vjovanov/code/scala-inline/project/plugins.sbt",
-		"/home/vjovanov/code/scala-inline/resources/scalac-plugin.xml",
-		"/home/vjovanov/code/scala/test/files/run/t4841-isolate-plugins.check",
-		"/home/vjovanov/code/scala/src/library/scala/collection/IterableProxyLike.scala",
-		"/home/vjovanov/code/scala/test/files/neg/import-precedence.check",
-		"/home/vjovanov/code/scala/src/build/maven/scala-library-all-pom.xml",
-		"/home/vjovanov/code/scala/test/files/pos/caseClassInMethod.scala",
-		"/home/vjovanov/code/scala/test/files/pos/implicit-unwrap-tc.scala",
-		"/home/vjovanov/code/scala/test/files/pos/ilya2/Nullable.java",
-		"/home/vjovanov/code/scala/test/files/neg/quasiquotes-unliftable-not-found.check",
-		"/home/vjovanov/code/scala-inline/interpreter/project/target/resolution-cache/reports/default-interpreter-module-build-compile-internal.xml",
-		"/home/vjovanov/code/scala/test/files/run/interpolationMultiline1.check",
-		"/home/vjovanov/code/scala/test/files/run/macro-invalidusage-partialapplication.check",
-		"/home/vjovanov/code/scala/test/files/pos/isApplicableSafe.scala",
-		"/home/vjovanov/code/scala/test/disabled/run/applet-prop.scala",
-		"/home/vjovanov/code/scala/tools/abspath",
-		"/home/vjovanov/code/scala/pull-binary-libs.sh",
-		"/home/vjovanov/code/scala-inline/src/ch/epfl/inline/plugin/InlinePlugin.scala",
-		"/home/vjovanov/code/scala/test/files/neg/logImplicits.check",
-		"/home/vjovanov/code/scala-inline/LICENCE",
-		"/home/vjovanov/code/scala/spec/_layouts/default.yml",
-		"/home/vjovanov/code/scala/test/files/run/deprecate-early-type-defs.check",
-		"/home/vjovanov/code/scala/dbuild-meta.json",
-		"/home/vjovanov/code/scala/test/files/run/t5225_2.check",
-		"/home/vjovanov/code/scala/test/files/pos/t2741/2741_2.scala",
-		"/home/vjovanov/code/scala/test/files/pos/t4205/2.scala",
-		"/home/vjovanov/code/scala/test/pending/script/error-messages.check",
-		"/home/vjovanov/code/scala/test/files/scalacheck/parallel-collections/ParallelVectorCheck.scala"
+		"/home/vjovanov/code/scala/test/files/res/t831/NewScalaParserXXX.scala"
 	],
 	"find":
 	{
-		"height": 50.0
+		"height": 35.0
 	},
 	"find_in_files":
 	{
@@ -301,6 +362,114 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"parag",
+			"Tuple",
+			"Some",
+			"pattern matching",
+			"method virtualization",
+			"Method Virtualization",
+			"Value Binding",
+			"Value Bindings",
+			"valDef",
+			"subse",
+			"subsection",
+			"let",
+			"\\vspace{3em}",
+			"\\vspace{1em}",
+			"virtualizatio",
+			"$",
+			"code",
+			"a DSL author",
+			"the DSL author",
+			"intrinsificationsecond",
+			"virtualization",
+			"Linguistic ",
+			"Linguistic Reuse",
+			"Virtualized",
+			"scala-virtualized",
+			"infix_eq",
+			"of the program",
+			"catch",
+			"to their",
+			"finally",
+			"\\vspace{0.15em}",
+			" \\vspace{1em}",
+			"try/catch",
+			"\\vspace{1em}",
+			"virtualized",
+			"Transformation of an EDSL",
+			"notify",
+			"eq",
+			"while",
+			"mathtt",
+			"virtualization",
+			"listingtiny",
+			"lstparagraph",
+			"listingtiny",
+			"try",
+			"Virtualiz",
+			"lstparagraph",
+			"listingtiny",
+			"begin{list",
+			"begin listing",
+			"\\end{listing}",
+			"\\begin{listing}",
+			"listing}",
+			"lstparagraph",
+			"1.8",
+			"Removing abst",
+			"Removing abstraction",
+			"lstparagraph",
+			"begin{listing",
+			"listingtiny",
+			"evaluation",
+			"2004",
+			"natbib",
+			"2004",
+			"czarnecki_dsl_2004",
+			"2004",
+			"\\cite",
+			"2004}",
+			"2004",
+			"natbib",
+			"cite",
+			"{\\scode",
+			"{\\code",
+			"\\code",
+			"tabularx",
+			"tabularX",
+			"tabularx",
+			"\\ie",
+			"ie",
+			"{ie",
+			"d{ie",
+			"\\code{dot",
+			"twofig",
+			"medskip",
+			"figurebox",
+			"medskip",
+			"smartparagraph",
+			"smartparagraphs",
+			"\\code",
+			"{code",
+			"t{code",
+			"all numeric types",
+			"\\code{dot",
+			"\\code{Rep[Int]}",
+			"t{lstpar",
+			"{lstpar",
+			"[lstpar",
+			"lstpar",
+			"Settings",
+			"proofsketch",
+			"inputenc",
+			"fontenc",
+			"\\usepackage[T1]{fontenc}",
+			"listings",
+			"graphicx",
+			"mathtools",
+			"math",
+			"amssymb",
 			">\n",
 			"Program",
 			"<li><a href=\"program.html\" class=\"button\">Program</a></li>",
@@ -320,115 +489,7 @@
 			"Array",
 			"155",
 			"null",
-			"def until",
-			"def update",
-			"assign",
-			"IR:",
-			"def <",
-			"def infix_<",
-			"Int",
-			"fromDyn",
-			"Matrix",
-			"quote(",
-			"null",
-			"GenDynMatrixOps",
-			"DynamicExp",
-			"Gen",
-			"Rep[Matrix]",
-			"def test()",
-			"manifest[Int]",
-			"def test(): Rep[Int]",
-			"with IMpl",
-			"unit",
-			"def >",
-			"def infix_<",
-			"def infix_>",
-			"assert",
-			"println(",
-			"Matrix",
-			"1",
-			"DynMatrixOps",
-			"==",
-			" ==",
-			"Equals",
-			"= Equals",
-			"= Equals(",
-			"Equals(",
-			"Equals",
-			"Equals(",
-			"Equals",
-			"equals",
-			"__equals",
-			"infix_==",
-			"infix_equals",
-			"unary_",
-			"Long",
-			"extends",
-			"Int",
-			"Double",
-			"Int",
-			"allArgsDynamic",
-			"cond1",
-			"ScalaGenBooleanOps",
-			"GenericCodeGen",
-			"DynamicGen",
-			"DynamicExp",
-			"type Rep[+T] = Exp",
-			"def unit",
-			"case Const",
-			"def infix_&&",
-			"def &&",
-			"def unit",
-			"def reifyBlock",
-			"compile(test",
-			"Compile",
-			"def emitSource",
-			"trait Compile",
-			"emitSource",
-			"def emitSource",
-			"emitSource",
-			"def emitSource",
-			"StaticData",
-			"ScalaCompile",
-			"DynCompile",
-			"def compile",
-			"TestMisc",
-			"selectDynamicMac",
-			"(\n      implicit r: c.WeakTypeTag[R])",
-			"[R: c.WeakTypeTag]",
-			"Expr[R]",
-			"[R](",
-			"def emitSource",
-			"def compile",
-			"globalDefs",
-			"val globalDefs",
-			"def globa",
-			"def globalDef",
-			"def globalDefsCache",
-			"def findDefinition",
-			"findDefinition",
-			"\\sigma",
-			"infrule",
-			"kbool",
-			"constructor",
-			"constru",
-			"\\;",
-			"Interface of",
-			"@compileTimeOnly",
-			"@compileTimeOonly",
-			"dussart1995polymorphic",
-			"henglein1994polymorphic",
-			"polymorphic",
-			"PEPM",
-			"article",
-			"rytz1992polyvariant",
-			"CVector",
-			"Long",
-			"LONG_MINUS_LONG",
-			"LONG_PLUS_LONG",
-			"LONG_EQEQ_INT",
-			"LONG_EQEQ_LONG",
-			"LONG_EQEQ_LONG\n"
+			"def until"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -436,6 +497,8 @@
 		"regex": false,
 		"replace_history":
 		[
+			"\\end{listingtiny}",
+			"\\begin{listingtiny}",
 			"Nil"
 		],
 		"reverse": false,
@@ -447,35 +510,731 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 5,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "main/ch2_asynchronous_computation.aux",
-					"semi_transient": true,
+					"file": "main/ch3_polyvariant_staging.tex",
+					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 9634,
+						"buffer_size": 34903,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								8,
-								8
+								19533,
+								19533
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
+							"syntax": "Packages/LaTeX/LaTeX.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 5576.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "head/settings_epfl_template.tex",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6426,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6426,
+								6426
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/LaTeX/LaTeX.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1683.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "head/settings_custom.tex",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 12852,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2266,
+								2266
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/LaTeX/LaTeX.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1267.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 30468,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										231,
+										241
+									],
+									[
+										453,
+										463
+									],
+									[
+										806,
+										816
+									],
+									[
+										1050,
+										1060
+									],
+									[
+										1191,
+										1201
+									],
+									[
+										1336,
+										1346
+									],
+									[
+										1833,
+										1843
+									],
+									[
+										2087,
+										2097
+									],
+									[
+										2280,
+										2290
+									],
+									[
+										2463,
+										2473
+									],
+									[
+										2587,
+										2597
+									],
+									[
+										2753,
+										2763
+									],
+									[
+										2901,
+										2911
+									],
+									[
+										3155,
+										3165
+									],
+									[
+										3334,
+										3344
+									],
+									[
+										3510,
+										3520
+									],
+									[
+										3617,
+										3627
+									],
+									[
+										3755,
+										3765
+									],
+									[
+										3915,
+										3925
+									],
+									[
+										4109,
+										4119
+									],
+									[
+										4253,
+										4263
+									],
+									[
+										4396,
+										4406
+									],
+									[
+										4735,
+										4747
+									],
+									[
+										5055,
+										5067
+									],
+									[
+										5202,
+										5214
+									],
+									[
+										5342,
+										5354
+									],
+									[
+										5471,
+										5483
+									],
+									[
+										5751,
+										5763
+									],
+									[
+										5942,
+										5954
+									],
+									[
+										6270,
+										6282
+									],
+									[
+										6381,
+										6393
+									],
+									[
+										6742,
+										6754
+									],
+									[
+										6847,
+										6859
+									],
+									[
+										7024,
+										7036
+									],
+									[
+										7238,
+										7250
+									],
+									[
+										7536,
+										7548
+									],
+									[
+										7633,
+										7645
+									],
+									[
+										7713,
+										7725
+									],
+									[
+										7787,
+										7799
+									],
+									[
+										8217,
+										8229
+									],
+									[
+										8305,
+										8317
+									],
+									[
+										8614,
+										8626
+									],
+									[
+										8688,
+										8700
+									],
+									[
+										8974,
+										8986
+									],
+									[
+										9157,
+										9169
+									],
+									[
+										9536,
+										9548
+									],
+									[
+										9682,
+										9694
+									],
+									[
+										10005,
+										10017
+									],
+									[
+										10110,
+										10122
+									],
+									[
+										10306,
+										10318
+									],
+									[
+										10379,
+										10391
+									],
+									[
+										10490,
+										10502
+									],
+									[
+										10607,
+										10619
+									],
+									[
+										10998,
+										11010
+									],
+									[
+										11148,
+										11160
+									],
+									[
+										11331,
+										11343
+									],
+									[
+										11462,
+										11474
+									],
+									[
+										11846,
+										11858
+									],
+									[
+										11980,
+										11992
+									],
+									[
+										12099,
+										12111
+									],
+									[
+										12202,
+										12214
+									],
+									[
+										12583,
+										12595
+									],
+									[
+										12726,
+										12738
+									],
+									[
+										12856,
+										12868
+									],
+									[
+										12956,
+										12968
+									],
+									[
+										13168,
+										13180
+									],
+									[
+										13367,
+										13379
+									],
+									[
+										13520,
+										13532
+									],
+									[
+										13713,
+										13725
+									],
+									[
+										13950,
+										13962
+									],
+									[
+										14142,
+										14154
+									],
+									[
+										14370,
+										14382
+									],
+									[
+										14569,
+										14581
+									],
+									[
+										15051,
+										15062
+									],
+									[
+										15624,
+										15635
+									],
+									[
+										15965,
+										15976
+									],
+									[
+										16075,
+										16086
+									],
+									[
+										16297,
+										16308
+									],
+									[
+										16599,
+										16610
+									],
+									[
+										16862,
+										16873
+									],
+									[
+										17226,
+										17237
+									],
+									[
+										17577,
+										17588
+									],
+									[
+										17855,
+										17866
+									],
+									[
+										18225,
+										18236
+									],
+									[
+										18394,
+										18405
+									],
+									[
+										18436,
+										18447
+									],
+									[
+										18655,
+										18666
+									],
+									[
+										18698,
+										18709
+									],
+									[
+										18779,
+										18790
+									],
+									[
+										19076,
+										19087
+									],
+									[
+										19328,
+										19339
+									],
+									[
+										19372,
+										19383
+									],
+									[
+										19798,
+										19812
+									],
+									[
+										20160,
+										20174
+									],
+									[
+										20765,
+										20779
+									],
+									[
+										21900,
+										21908
+									],
+									[
+										22196,
+										22204
+									],
+									[
+										22762,
+										22779
+									],
+									[
+										23335,
+										23352
+									],
+									[
+										23546,
+										23563
+									],
+									[
+										23715,
+										23732
+									],
+									[
+										23856,
+										23873
+									],
+									[
+										24050,
+										24067
+									],
+									[
+										24598,
+										24609
+									],
+									[
+										24781,
+										24792
+									],
+									[
+										24936,
+										24947
+									],
+									[
+										25562,
+										25573
+									],
+									[
+										25745,
+										25756
+									],
+									[
+										25900,
+										25911
+									],
+									[
+										26475,
+										26486
+									],
+									[
+										26792,
+										26803
+									],
+									[
+										27292,
+										27306
+									],
+									[
+										27897,
+										27911
+									],
+									[
+										28627,
+										28641
+									],
+									[
+										28905,
+										28919
+									],
+									[
+										29323,
+										29337
+									],
+									[
+										29761,
+										29775
+									],
+									[
+										30368,
+										30380
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								30373,
+								30373
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 13,
+							"result_base_dir": "",
+							"result_file_regex": "^([A-Za-z\\\\/<].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 11458.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "main/ch2_dsl_embedding.tex",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 78933,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								10722,
+								10722
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/LaTeX/LaTeX.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2992.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1695,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1695,
+								1695
+							]
+						],
+						"settings":
+						{
+							"auto_indent": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"word_wrap": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 901.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "main/ch1_introduction.tex",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5452,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5452,
+								5452
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/LaTeX/LaTeX.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1241.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "tail/bibliography.bib",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 94203,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1180,
+								1180
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/LaTeX/Bibtex.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 7,
 					"type": "text"
 				}
 			]
@@ -514,7 +1273,7 @@
 	"menu_visible": true,
 	"output.exec":
 	{
-		"height": 382.0
+		"height": 289.0
 	},
 	"output.find_results":
 	{
@@ -536,6 +1295,154 @@
 		"selected_items":
 		[
 			[
+				"",
+				"main/ch2_dsl_embedding.tex"
+			],
+			[
+				"ch",
+				"main/ch2_dsl_embedding.tex"
+			],
+			[
+				"ch1",
+				"main/ch1_introduction.tex"
+			],
+			[
+				"ch2",
+				"main/ch2_dsl_embedding.tex"
+			],
+			[
+				"ch3",
+				"main/ch3_polyvariant_staging.tex"
+			],
+			[
+				"settin",
+				"head/settings_custom.tex"
+			],
+			[
+				"settings",
+				"head/settings_epfl_template.tex"
+			],
+			[
+				"in",
+				"main/ch1_introduction.tex"
+			],
+			[
+				"bibli",
+				"tail/bibliography.bib"
+			],
+			[
+				"int",
+				"main/ch1_introduction.tex"
+			],
+			[
+				"ch2.",
+				"main/ch2_dsl_embedding.tex"
+			],
+			[
+				"bib",
+				"tail/biblio.tex"
+			],
+			[
+				"bibl",
+				"tail/bibliography.bib"
+			],
+			[
+				"dis",
+				"dissertation/dissertation.sublime-project"
+			],
+			[
+				"vjov",
+				"2015-scala-symposium/vjovanov-lib.bib"
+			],
+			[
+				"macros",
+				"~/research/yy-pldi/yy_macros.tex"
+			],
+			[
+				"phd",
+				"dissertation/phd.tex"
+			],
+			[
+				"con",
+				"2015-scala-symposium/conclusion.tex"
+			],
+			[
+				"relat",
+				"2015-scala-symposium/related.tex"
+			],
+			[
+				"limit",
+				"2015-scala-symposium/limitations.tex"
+			],
+			[
+				"case",
+				"2015-scala-symposium/case-studies.tex"
+			],
+			[
+				"partial",
+				"2015-scala-symposium/partial-evaluator.tex"
+			],
+			[
+				"paer",
+				"2015-scala-symposium/paper.tex"
+			],
+			[
+				"set",
+				"dissertation/head/settings_custom.tex"
+			],
+			[
+				"setting",
+				"dissertation/head/settings_custom.tex"
+			],
+			[
+				"phd.te",
+				"dissertation/phd.tex"
+			],
+			[
+				"yy_",
+				"yy-pldi/yy_macros.tex"
+			],
+			[
+				"evalua",
+				"yy-pldi/evaluation.tex"
+			],
+			[
+				"deep_",
+				"yy-pldi/deep_gen.tex"
+			],
+			[
+				"paper",
+				"yy-pldi/paper.tex"
+			],
+			[
+				"core_",
+				"yy-pldi/core_translation.tex"
+			],
+			[
+				"moti",
+				"yy-pldi/motivation.tex"
+			],
+			[
+				"back",
+				"yy-pldi/background.tex"
+			],
+			[
+				"into",
+				"yy-pldi/intro.tex"
+			],
+			[
+				"ack",
+				"head/acknowledgements.tex"
+			],
+			[
+				"pre",
+				"head/preface.tex"
+			],
+			[
+				"diss",
+				"dissertation.sublime-project"
+			],
+			[
 				"prog",
 				"program.html"
 			],
@@ -550,10 +1457,6 @@
 			[
 				"basi",
 				"test-out/epfl/test15-dynamic-basic"
-			],
-			[
-				"",
-				"test-src/epfl/test15-dynamic-compilation/TestDynamicCompilation.scala"
 			],
 			[
 				"test15",
@@ -712,20 +1615,12 @@
 				"yy-pldi/formalization.tex"
 			],
 			[
-				"in",
-				"intro.tex"
-			],
-			[
 				"pa",
 				"partial-evaluator.tex"
 			],
 			[
 				"limi",
 				"limitations.tex"
-			],
-			[
-				"int",
-				"intro.tex"
 			],
 			[
 				"vjo",
@@ -806,10 +1701,6 @@
 			[
 				"numeric",
 				"~/code/scala/src/library/scala/math/Numeric.scala"
-			],
-			[
-				"case",
-				"scala-inline/test/CaseStudies.scala"
 			],
 			[
 				"inlinepl",
@@ -914,138 +1805,6 @@
 			[
 				"list.s",
 				"scala-inline/test/library/List.scala"
-			],
-			[
-				"engin",
-				"scala-inline/interpreter/interpreter/src/main/scala/internal/Engine.scala"
-			],
-			[
-				"545",
-				"scala/test/files/neg/t545.check"
-			],
-			[
-				"52",
-				"scala/test/scaladoc/resources/SI_5287.scala"
-			],
-			[
-				"engine.",
-				"scala-inline/interpreter/interpreter/src/main/scala/internal/Engine.scala"
-			],
-			[
-				"inlineplugin",
-				"scala-inline/src/ch/epfl/inline/plugin/InlinePlugin.scala"
-			],
-			[
-				"interp",
-				"scala/test/files/jvm/interpreter.scala"
-			],
-			[
-				"trees.ca",
-				"scala/src/reflect/scala/reflect/api/Trees.scala"
-			],
-			[
-				"en",
-				"interpreter/interpreter/src/main/scala/internal/Engine.scala"
-			],
-			[
-				"emulators.",
-				"interpreter/interpreter/src/main/scala/internal/Emulators.scala"
-			],
-			[
-				"emulators.s",
-				"interpreter/interpreter/src/main/scala/internal/Emulators.scala"
-			],
-			[
-				"eng",
-				"interpreter/interpreter/src/main/scala/internal/Engine.scala"
-			],
-			[
-				"inte",
-				"~/code/interpreter/interpreter/src/main/scala/Interpreter.scala"
-			],
-			[
-				"inlinep",
-				"~/code/scala-inline/src/ch/epfl/inline/plugin/InlinePlugin.scala"
-			],
-			[
-				"buil",
-				"~/code/scala-inline/project/Build.scala"
-			],
-			[
-				"interpreter.scala",
-				"~/code/interpreter/interpreter/src/main/scala/Interpreter.scala"
-			],
-			[
-				"numer",
-				"~/code/scala/src/library/scala/math/Numeric.scala"
-			],
-			[
-				"specl",
-				"~/code/scala-inline/test/InlineSpec.scala"
-			],
-			[
-				"innlineplu",
-				"~/code/scala-inline/src/ch/epfl/inline/plugin/InlinePlugin.scala"
-			],
-			[
-				"b",
-				"~/code/scala-inline/project/Build.scala"
-			],
-			[
-				"build",
-				"~/code/interpreter/project/build.scala"
-			],
-			[
-				"types.s",
-				"scala/src/reflect/scala/reflect/internal/Types.scala"
-			],
-			[
-				"universe",
-				"scala/src/reflect/scala/reflect/macros/Universe.scala"
-			],
-			[
-				"univers.e",
-				"scala/src/reflect/scala/reflect/api/Universe.scala"
-			],
-			[
-				"build.",
-				"interpreter/project/build.scala"
-			],
-			[
-				"build.s",
-				"scala-inline/project/Build.scala"
-			],
-			[
-				"global.scala",
-				"scala/src/compiler/scala/tools/nsc/Global.scala"
-			],
-			[
-				"global",
-				"scala/src/compiler/scala/tools/nsc/Global.scala"
-			],
-			[
-				"types.",
-				"scala/src/reflect/scala/reflect/api/Types.scala"
-			],
-			[
-				"types.scala",
-				"scala/src/reflect/scala/reflect/internal/Types.scala"
-			],
-			[
-				"types.sca",
-				"scala/src/reflect/scala/reflect/internal/Types.scala"
-			],
-			[
-				"inlines",
-				"scala-inline/test/InlineSpec.scala"
-			],
-			[
-				"typers",
-				"scala/src/compiler/scala/tools/nsc/typechecker/Typers.scala"
-			],
-			[
-				"typers.s",
-				"scala/src/compiler/scala/tools/nsc/typechecker/Typers.scala"
 			]
 		],
 		"width": 0.0
@@ -1073,7 +1832,7 @@
 	"show_minimap": true,
 	"show_open_files": false,
 	"show_tabs": true,
-	"side_bar_visible": true,
+	"side_bar_visible": false,
 	"side_bar_width": 387.0,
 	"status_bar_visible": true,
 	"template_settings":
