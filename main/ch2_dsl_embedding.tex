@@ -892,10 +892,6 @@ by-name body of the case if the \code{cond} statement is satisfied.
 \subsection{DSL Intrinsification}
 \label{sct:dsl-intrinsification}
 
-% TODO
-% Introduce the interfaces for both translations.
-% null goes to constants
-
 DSL intrinsification maps directly embedded versions
  of the DSL intrinsics to their deep counterparts.  The constructs that
  need to be converted are: \emph{i)} DSL types, \emph{ii)} constant literals,
@@ -997,7 +993,15 @@ Interestingly, just by changing the type translation, the \edsl author can modif
 
  \emph{Constants} can be intrinsified in the deep embedding in multiple ways.
  They can be converted to a method call for each constant (e.g., $\trone{\mathtt{1}} = \mathtt{\_\_1}$),
-  type (e.g., $\trone{\mathtt{1}} = \,$\code{liftInt(1)}), or with a unified polymorphic function (e.g., $\trone{\mathtt{1}} = \,$\code{lift[Int](1)}). In the example, we use the polymorphic function approach for the constants.
+  type (e.g., $\trone{\mathtt{1}} = \,$\code{liftInt(1)}), or with a unified polymorphic function (e.g., $\trone{\mathtt{1}} = \,$\code{lift[Int](1)}) that
+  uses type classes to define behavior and the return type of \code{lift}.
+
+  % Why do we use type classes.
+
+  In \yy we use the polymorphic function approach for the constants and translate constants
+
+
+  % What are constants in Scala
 
 \emph{Free variables} are external variables captured by a direct \edsl{}
   term.  All that deep embedding knows about these terms is their type and that
@@ -1013,60 +1017,6 @@ Interestingly, just by changing the type translation, the \edsl author can modif
   The identifiers are later sorted and passed as arguments to the Scala function that is a result
   of \edsl compilation. The DSL author is required to ensure that the position and the type
   of the resulting function matches the order and types of the sorted identifiers passed by \yy.
-
-\subsection{Operation Translation}
-\label{sec:operation-translation}
-
-The \emph{operation translation} maps directly embedded versions of the
-  DSL operations into corresponding deep embeddings. To this end, we define a
-  function \code{opMap} on terms that returns a deep operation for each directly
-  embedded operation.
-
-  The \code{opMap} function in Scala injects a direct \edsl body into the context of the deep embedding.
-   \code{opMap} can be defined as a composition of two functions: \emph{i)} function \code{inject} that inserts the direct \edsl body
-    into a context where deep \edsl definitions are visible, and \emph{ii)} \code{rebind}
-    rebinds operations of the direct \edsl to the operations of the deep \edsl. Function \code{opMap} is equivalent to
-    the composition of \code{inject} and \code{rebind} (written in Scala as \code{rebind andThen inject}).
-
-  \paragraph{Operation \code{rebind}.} Operations in Scala are resolved through a \emph{path}. For example, an access to the method
-    \code{println} of the Scala object \code{Predef}\begin{lstparagraph}
-      scala.Predef.println
-    \end{lstparagraph}
-    has a path \code{scala.Predef}\footnote{Scala packages have a hidden prefix \code{_root_} that we always omit for simplicity.}.
-
-    \todo{exact rules}
-
-  \paragraph{Operation \code{inject}.} The injection of the deep DSL definitions into the scope can be achieved in multiple ways.
-    For \yy we chose to inject the body of our DSLs into the refinement of the Scala
-    component that contains all deep DSL definitions.
-
-    \todo{continue}   For deep embeddings based on LMS, or polymorphic embeddings~\cite{hofer_polymorphic_2008}
-  in general, \code{opMap} simply injects operations into the scope of the deep \edsl (i.e.,\ by adding the prefix
-  \code{this}).
-
-
-    % Prefixes that contain `this` are disregarded as they represent values of the
-    % current class that can not be a part of the DSL definition.
-
-  % Important the DSL author can use a convenient interface for DSL designing DSL internals.
-
-  % Of course, other approaches, such as name mangling or importing
-  % definitions from a different module, are also possible. In the current
-  % implementation of \yy, the \code{opMap} function is fixed to simply inject the
-  % \code{this} prefix.
-
-  % Talk about additional implicit parameters.
-
-
- In~\figref{fig:translation-example}, calls to \code{range} on the object
- \code{vector.Vector} and \code{pow} on the package object \code{math.`package`}
- are respectively translated to calls \code{range} and \code{pow} on
- \code{this.Vector} and \code{this.`package`}. For simplicity, passing source
- information (\code{SourceContext}) and type information \code{TypeTag} is
- handled implicitly by the Scala compiler. In absence of implicit parameters
- they should be handled by the translation.
-
-
 
 \subsection{Correctness}
 \label{sec:correctness}
@@ -1153,6 +1103,100 @@ deep embedding. Due to the additional verification step all error messages are
 clearly shown to the user. This allows easy construction of embedded DSLs that
 support only a subset of the host language.
 
+\subsection{Operation Translation}
+\label{sec:operation-translation}
+
+The \emph{operation translation} maps directly embedded versions of the
+  DSL operations into corresponding deep embeddings. To this end, we define a
+  function \code{opMap} on terms that returns a deep operation for each directly
+  embedded operation.
+
+The \code{opMap} function in Scala intrinsifies direct \edsl body in the context of the deep embedding.
+ \code{opMap} can be defined as a composition of two functions: \emph{i)} function \code{inject} that inserts the direct \edsl body
+  into a context where deep \edsl definitions are visible, and \emph{ii)} \code{rebind}
+  rebinds operations of the direct \edsl to the operations of the deep \edsl. Function \code{opMap} is equivalent to
+  the composition of \code{inject} and \code{rebind} (written in Scala as \code{rebind andThen inject}).
+
+\paragraph{Operation \code{rebind}.} Operations in Scala are resolved through a \emph{path}. For example, a call to the \code{println} method
+  of the Scala object \code{Predef}\begin{lstparagraph}
+scala.collection.immutable.Vector.fill(1)(42)
+\end{lstparagraph}
+  has a path \code{scala.collection.immutable.List.fill}\footnote{Scala packages have a hidden prefix \code{_root_} that we always omit for simplicity.}.
+
+This phase of the translation simply translates paths of all operations so they bind
+ to operations in the deep embedding. The translation function can perform an
+ identity operation, prefix addition, name mangling of function names, etc.
+
+
+\paragraph{Operation \code{inject}.} The injection of the deep DSL definitions
+ into the scope can be achieved in multiple ways.
+
+For \yy and polymorphic embeddings~\cite{hofer_polymorphic_2008}
+in general we chose to inject the body of our DSLs into the refinement of the Scala component that
+contains all deep DSL definitions
+
+  \infyyax{}
+   {dsl}{\mathbf{new}\;\;de\;\;\{\;\;\mathbf{def}\;\;\mathtt{main}():\;\;\ttother[T]\;=\;dsl\;\}}
+
+where $dsl$ is the direct DSL program after rebinding and $de$ is the component name
+that is provided by the DSL author that holds all definitions in the deep embedding, and
+$\tau$ is the type translation.
+
+Alternatively the DSLs can be injected into the scope by importing all DSL operations
+ from the object that contains the deep embedding definitions.
+
+  \infyyax{}
+    {dsl}{\mathbf{val}\;\;c \; = \; \mathbf{new}\;\;de;\;\;\;\mathbf{import}\;\;c.\_;\;\;\;dsl}
+
+In both cases the corresponding \code{rebind} function can be left as an
+identity. If the deep embedding has corresponding signatures all operations
+will rebind by re-type-checking the program in the new context, i.e., to the
+operations of the deep embedding.
+
+% Example
+For example in a simple function application\begin{lstparagraph}
+Vector.fill(1)(42)
+\end{lstparagraph}the injection will rebind the operation through the extension methods of Scala. The
+resulting code will contain wrapper classes that extend DSL types with deep operations:\begin{lstparagraph}
+VectorOps(lift(Vector)).fill(lift(1))(lift(42))
+\end{lstparagraph}
+
+% Talk about additional implicit parameters.
+Further injection in the DSL scope allows the deep embedding to introduce additional implicit arguments to
+ all DSL operations. The implicit arguments introduced in the direct embedding are treated
+ as explicit in the deep embedding. For example, the \code{fill} operation can be augmented
+ with the source information from the direct embedding and run-time type representation:\begin{lstparagraph}
+VectorOps(lift(Vector)).fill(lift(1))(lift(42))(
+  sourceContext("example.scala",1,1), typeTag[Int]
+)
+\end{lstparagraph}
+
+% Important the DSL author can use a convenient interface for DSL designing DSL internals.
+In \yy we chose the operation translations that closely match the structure of
+ the direct embeddings. This allows the authors of the deep embedding to use the
+ DSL itself for development of new DSL components. In this case the DSL author can use
+ the deep interface augmented with implicit conversions that all simplify lifting constants,
+ calling operations etc. With such interface the previous example resembles the direct embedding\begin{lstparagraph}
+Vector.fill(1)(42)
+\end{lstparagraph}
+except for the abstraction leaks of the deep embedding (\sct{sec:abstraction-leaks}).
+This approach requires less code than than ``naked'' AST manipulation\todo{cite}, e.g:\begin{lstparagraph}
+VectorFill(Const(1), Const(42))
+\end{lstparagraph}
+
+
+
+\todo{rework this paragraph and also in other places}
+ In~\figref{fig:translation-example}, calls to \code{range} on the object
+ \code{vector.Vector} and \code{pow} on the package object \code{math.`package`}
+ are respectively translated to calls \code{range} and \code{pow} on
+ \code{this.Vector} and \code{this.`package`}. For simplicity, passing source
+ information (\code{SourceContext}) and type information \code{TypeTag} is
+ handled implicitly by the Scala compiler. In absence of implicit parameters
+ they should be handled by the translation.
+
+
+
 \section{Deep Embedding Implementations}
 \label{sec:deep-embedding-implementations}
 
@@ -1162,6 +1206,7 @@ support only a subset of the host language.
 
 \section{Automatic Generation of the Deep Embedding}
 \label{sec:deep-gen}
+
 \todo{add the Amir's system}
 So far, we have seen how \yy translates programs written in the
 direct embedding to the deep embedding.
@@ -1328,8 +1373,7 @@ Furthermore, the low-level implementation uses constructs requiring deep
 embedding of other interfaces. In particular, an implementation of the
 \code{fill} method requires the \code{Seq.fill} method that is provided by
 the \code{SeqLowLevel} trait.
-
-\begin{figure}[h]
+\begin{figure}[ht]
 \begin{listingtiny}
 trait VectorLowLevel extends VectorOps
   with SeqLowLevel {
