@@ -1,6 +1,6 @@
 %!TEX root = ../phd.tex
 
-\chapter{Support for Embedding Domain-Specific Language }
+\chapter{Concealing the Embedding of Deep Domain-Specific Languages}
 
 % High-level of abstraction, good user interface, great performance, portable code.
 Domain-specific languages (DSLs) provide a restricted,
@@ -162,21 +162,21 @@ embeddings is assured.
 \yy{} contributes to the state of the art as follows:
 \begin{itemize}
 
-\item It completely conceals leaky abstractions of deep EDSLs from the users.
-The virtues of the direct embedding are used for prototyping, while the deep
-embedding enables high-performance in production. The reliable translation
-ensures that programs written in the direct embedding will always be correct
-in the deep embedding. The core translation is described in \sct{sec:translation}.
+  \item It completely conceals leaky abstractions of deep EDSLs from the users.
+  The virtues of the direct embedding are used for prototyping, while the deep
+  embedding enables high-performance in production. The reliable translation
+  ensures that programs written in the direct embedding will always be correct
+  in the deep embedding. The core translation is described in \sct{sec:translation}.
 
-\item It restricts host language features in the direct \edsl{} based on the
-supported features of the deep \edsl{}. Specialized type checking of the
-translated direct \edsl{} displays comprehensible error-messages to the user.
-Language restriction is further described in \sct{sec:restricting}.
+  \item It restricts host language features in the direct \edsl{} based on the
+  supported features of the deep \edsl{}. Specialized type checking of the
+  translated direct \edsl{} displays comprehensible error-messages to the user.
+  Language restriction is further described in \sct{sec:restricting}.
 
-\item It simplifies deep \edsl development and guarantees semantic equivalence
-between the direct embedding and the deep embedding by reusing the core
-translation to generate the deep \edsl definition out of the direct \edsl
-definition~(\sct{sec:deep-gen}).
+  \item It simplifies deep \edsl development and guarantees semantic equivalence
+  between the direct embedding and the deep embedding by reusing the core
+  translation to generate the deep \edsl definition out of the direct \edsl
+  definition~(\sct{sec:deep-gen}).
 
 
 \end{itemize}
@@ -350,8 +350,8 @@ In the deep embedding the corresponding type error contains \code{Rep} types and
        x + 1
            ^
 \end{lstparagraph}
-This example represents one of the  most common type errors. For more complicated type errors cf.~\cite{techrep}.
-\paragraph{Unrestricted host language constructs.} In the deep embedding all
+This example represents one of the  most common type errors. For more complicated type errors
+\todo{cf.}~\cite{techrep}. \paragraph{Unrestricted host language constructs.} In the deep embedding all
 generic constructs of a host language can be used arbitrarily. For example,
 \code{scala.List.fill[T](count: Int, el: T)} can, for the argument \code{el}, accept
 both direct and deep terms. This is often undesirable as it can lead
@@ -392,7 +392,6 @@ exception.
 \label{sec:translation}
 
 % Set up the problem.
-
 The purpose of the core \yy translation is to reliably and automatically make
 a transition from a directly embedded DSL program to its deeply embedded
 counterpart. The transition requires a translation for the following reasons:
@@ -408,7 +407,8 @@ straightforward solution: a type-directed program translation from direct to
 deep embeddings.
 
 % Overview of the solution:
-Since the translation is type-directed it requires reflection that supports \emph{type introspection} and \emph{type transformation}. The translation is based on the idea of representing language constructs as method calls~\cite{carette_finally_2009,rompf_scala-virtualized:_2009} and systematically intrinsifying direct DSL operations and types of the direct embedding to their deep counterparts~\cite{carette_finally_2009}. The translation operates in two main steps:
+Since the translation is type-directed it requires reflection that supports
+ \emph{type introspection} and \emph{type transformation}. The translation is based on the idea of representing language constructs as method calls~\cite{carette_finally_2009,rompf_scala-virtualized:_2009} and systematically intrinsifying direct DSL operations and types of the direct embedding to their deep counterparts~\cite{carette_finally_2009}. The translation operates in two main steps:
 \begin{description}
 \item[Language virtualization] converts host language intrinsics into
   function calls, which can then be evaluated to the appropriate IR
@@ -554,7 +554,7 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
       {\mathbf{if}(t_1) \;t_2\; \mathbf{else}\;t_3}{\mathtt{ifThenElse}[T](\ttrone{t_1}, \ttrone{t_2}, \ttrone{t_3})}
 
     \infyy{}
-          {\tctx{\Gamma}{\mathbf{try}\;t_1\;\mathbf{catch}\;t_2\;\mathbf{finally}\;t_3\; }}
+          {\tctx{\Gamma}{\mathbf{try}\;t_1\;\mathbf{catch}\;t_2\;\mathbf{finally}\;t_3:\;T }}
           {\mathbf{try}\;t_1\;\mathbf{catch}\;t_2\;\mathbf{finally}\;t_3\; }{\mathtt{tryCatch}[T](\ttrone{t_1},\;\ttrone{t_2},\;\ttrone{t_3})}
     \vspace{0.05em}
 
@@ -577,14 +577,14 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
 \vspace{1em}
 
 \infyyax{}
-      {\mathbf{lazy\;val}\;x:T = t}{\mathbf{val}\;x:T = \mathtt{lazyVal}[T](\ttrone{t})}
+      {\mathbf{lazy\;val}\;x:T = t}{\mathbf{val}\;x:T = \mathtt{lazyValDef}[T](\ttrone{t})}
 
 \begin{multicols}{2}
     \infyyax{}
       {\mathbf{val}\;x:T = t}{\mathbf{val}\;x:T = \mathtt{valDef}[T](t)}
 
     \infyyax{}
-      {\mathbf{var}\;x:T = t}{\mathbf{val}\;x:T = \mathtt{newVar}[T](\ttrone{t})}
+      {\mathbf{var}\;x:T = t}{\mathbf{val}\;x:T = \mathtt{varDef}[T](\ttrone{t})}
 \end{multicols}
 
 \begin{multicols}{2}
@@ -639,7 +639,6 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
   necessary for tracking effects in case of variables, access order in case of lazy values, and instrumentation
   in case of simple values.
 
- \paragraph{Object construction.}
  \paragraph{Universal methods.} Scala is designed such that the types \code{Any} and
  \code{AnyRef}, which reside at the top of the Scala class hierarchy, contain
  \code{final} methods. Through inheritance, these methods are defined on all
@@ -681,10 +680,8 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
 \begin{multicols}{2}
     \infyyax{}
       {t.\#\#}{\mathtt{infix\_\#\#}(\trone{t})}
-
-% *   t.hashCode             =>       infix_hashCode(t)
     \infyyax{}
-      {t.\mathtt{hashCode}}{\mathtt{infix\_hashCode}(\trone{t})}
+      {t.\mathtt{getClass}}{\mathtt{infix\_getClass}(\trone{t})}
 \end{multicols}
 
 % *   t.asInstanceOf[T]      =>       infix_asInstanceOf[T](t)
@@ -695,9 +692,6 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
     \infyyax{}
       {t.\mathtt{isInstanceOf[T]}}{\mathtt{infix\_isInstanceOf[T]}(\trone{t})}
 
-% *   t.toString             =>       infix_toString(t)
-    \infyyax{}
-      {t.\mathtt{toString}}{\mathtt{infix\_toString}(\trone{t})}
 
 %
 % Virtualization of `AnyRef` methods
@@ -706,9 +700,10 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
 \judgement{Methods on the \code{AnyRef} type}{}
 
  \begin{multicols}{2}
-% *   t.equals t1            =>       infix_equals(t, t1)
- \infyyax{}
-     {t_1\;\mathtt{equals}\;t_2}{\mathtt{infix\_equals}(\trone{t_1},\;\trone{t_2})}
+ % *   t eq t1                =>       infix_eq(t, t1)
+   \infyyax{}
+     {t_1\;\mathtt{eq}\;t_2}{\mathtt{infix\_eq}(\trone{t_1},\;\trone{t_2})}
+
  % *   t ne t1                =>       infix_ne(t, t1)
    \infyyax{}
      {t_1\;\mathtt{ne}\;t_2}{\mathtt{infix\_ne}(\trone{t_1},\;\trone{t_2})}
@@ -718,32 +713,25 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
 % *   t.wait(t1, l)          =>       infix_wait(t, t1, l)
    \infyyax{}
       {t_1.\mathtt{wait}(t_2,\;t_3)}{\mathtt{infix\_wait}(\trone{t_1},\;\trone{t_2},\;\trone{t_3})}
-
-% *   t eq t1                =>       infix_eq(t, t1)
-   \infyyax{}
-     {t_1\;\mathtt{eq}\;t_2}{\mathtt{infix\_eq}(\trone{t_1},\;\trone{t_2})}
+    % *   t.wait(l)              =>       infix_wait(t, l)
+  \infyyax{}
+     {t_1.\mathtt{wait}(t_2)}{\mathtt{infix\_wait}(\trone{t_1},\;\trone{t_2})}
 \end{multicols}
 \vspace{-2.7em}
 \begin{multicols}{2}
- % *   t.wait(l)              =>       infix_wait(t, l)
-  \infyyax{}
-     {t_1.\mathtt{wait}(t_2)}{\mathtt{infix\_wait}(\trone{t_1},\;\trone{t_2})}
-
- % *   t.wait                 =>       infix_wait(t)
+% *   t.wait                 =>       infix_wait(t)
    \infyyax{}
      {t.\mathtt{wait}}{\mathtt{infix\_wait}(\trone{t})}
-\end{multicols}
 
-\begin{multicols}{2}
- % *   t.notifyAll            =>       infix_notifyAll(t)
-   \infyyax{}
-     {t.\mathtt{notifyAll}}{\mathtt{infix\_notifyAll}(\trone{t})}
-
- % *   t.notify               =>       infix_notify(t)
+% *   t.notify               =>       infix_notify(t)
    \infyyax{}
      {t.\mathtt{notify}}{\mathtt{infix\_notify}(\trone{t})}
 
 \end{multicols}
+
+ % *   t.notifyAll            =>       infix_notifyAll(t)
+   \infyyax{}
+     {t.\mathtt{notifyAll}}{\mathtt{infix\_notifyAll}(\trone{t})}
 
 % *   t.synchronized[T](t1)  =>       infix_synchronized(t, t1)
   \infyyax{}
@@ -901,7 +889,70 @@ DSL intrinsification maps directly embedded versions
 
  \todo{pointer to the figure and add lines to the figure, also adapt the figure for the new translation}
 
-\subsection{Type Translation}
+\subsubsection{Constants and Free Variables}
+\label{sec:constants-and-free-variables}
+
+ \paragraph{Constants.} Constant values can be intrinsified in the deep embedding in multiple ways.
+ They can be converted to a method call for each constant (e.g., $\trone{\mathtt{1}} = \mathtt{\_\_1}$),
+  type (e.g., $\trone{\mathtt{1}} = \,$\code{liftInt(1)}), or with a unified polymorphic function (e.g., $\trone{\mathtt{1}} = \,$\code{lift[Int](1)}) that
+  uses type classes to define behavior and the return type of \code{lift}.
+
+  % Why do we use type classes.
+  In \yy we use the polymorphic function approach for to translate constants
+
+      \infyy{}
+          {\tctx{\Gamma}{c:\;T}}
+          {c}{\mathtt{lift}[T](c)}
+
+  where $c$ is a constant. We choose this approach as DSL frameworks
+  commonly have a single IR node for all constants and it is easiest to implement
+  such behavior with a single lift method.
+
+  The deep embedding can, given that Scala supports type-classes, provide an implementation
+  of lift that depends on the type of $c$. The DSL author achieves this
+  by providing a type class instance for lifting a set of types (defined by upper and lower bounds)
+  of constants.
+
+  % What are constants in Scala
+  In \yy we treat as constants:
+  \begin{enumerate}
+
+   \item \emph{Scala literals} of all primitive types \code{Char}, \code{Short},
+     \code{Int}, \code{Long}, \code{Float}, and \code{Double}, as well as literals of
+      type \code{String} (\code{\"...\"}), \code{Unit} (\code{()}), and \code{Null} (\code{null}).
+
+   \item \emph{Scala object accesses} e.g., \code{Vector} in \code{Vector.fill} is viewed as a constant. This allows
+    the DSL authors to re-define the default behavior of object access. Translating objects is optional as
+    leaving their original semantics simplifies the implementation of the deep embedding,
+    but requires special cases in type translation.\todo{link to the examples}
+  \end{enumerate}
+
+
+\paragraph{Free variables.} Free variables are external variables captured by
+  a direct \edsl{} term.  All that deep embedding knows about these terms is
+  their type and that they will become available only during evaluation (i.e., interpretation or
+  execution after code generation).  Hence, free variables need to be treated
+  specially by the translation and the deep embedding needs to provide support
+  for their evaluation.
+
+  \yy tracks free variables in the DSL scope and translates them into a call to the polymorphic function \code{hole[T]}. As the arguments
+  \yy passes the unique identifier for that variable:
+
+    \infyy{}
+          {\tctx{\Gamma}{x:\;T} \quad x\;\mathtt{is}\;\mathtt{a}\;\mathtt{free}\;\mathtt{variable}}
+          {x}{\mathtt{hole}[T](\mathtt{uid}(x))}
+
+  In \figref{fig:translation-example}, the free variables
+  \code{n} and \code{exp} are replaced with calls to the polymorphic method
+  \code{hole[T]}, which handles the evaluation of free variables in the deep
+  embedding. Each captured identifier is assigned with a unique number that
+  is passed as an argument to the \code{hole} method
+   (0 and 1 in \figref{fig:translation-example}).
+  The identifiers are later sorted and passed as arguments to the Scala function that is a result
+  of \edsl compilation. The DSL author is required to ensure that the position and the type
+  of the resulting function matches the order and types of the sorted identifiers passed by \yy.
+
+\subsubsection{Type Translation}
 \label{sec:type-translation}
  The \emph{type translation} maps every DSL type in the, already
   virtualized, term body to an equivalent type in the deep embedding.
@@ -988,71 +1039,97 @@ translation to Slick \cite{slick} with great success (\sct{subsec:slick}).
 
 Interestingly, just by changing the type translation, the \edsl author can modify the behavior of an \edsl.  For example, with the generic polymorphic embedding the \edsl will reify function IR nodes and thus allow for dynamic dispatch. In the same \edsl that uses the eager inlining translation, dynamic dispatch is restricted and all function calls are inlined.
 
-\subsection{Constants and Free Variables}
-\label{sec:constants-and-free-variables}
+\subsubsection{Operation Translation}
+\label{sec:operation-translation}
 
- \emph{Constants} can be intrinsified in the deep embedding in multiple ways.
- They can be converted to a method call for each constant (e.g., $\trone{\mathtt{1}} = \mathtt{\_\_1}$),
-  type (e.g., $\trone{\mathtt{1}} = \,$\code{liftInt(1)}), or with a unified polymorphic function (e.g., $\trone{\mathtt{1}} = \,$\code{lift[Int](1)}) that
-  uses type classes to define behavior and the return type of \code{lift}.
+The \emph{operation translation} maps directly embedded versions of the
+  DSL operations into corresponding deep embeddings. To this end, we define a
+  function \code{opMap} on terms that returns a deep operation for each directly
+  embedded operation.
 
-  % Why do we use type classes.
+The \code{opMap} function in Scala intrinsifies direct \edsl body in the context of the deep embedding.
+ \code{opMap} can be defined as a composition of two functions: \emph{i)} function \code{inject} that inserts the direct \edsl body
+  into a context where deep \edsl definitions are visible, and \emph{ii)} \code{rebind}
+  rebinds operations of the direct \edsl to the operations of the deep \edsl. Function \code{opMap} is equivalent to
+  the composition of \code{inject} and \code{rebind} (written in Scala as \code{rebind andThen inject}).
 
-  In \yy we use the polymorphic function approach for the constants and translate constants
+\paragraph{Operation \code{rebind}.} Operations in Scala are resolved through a \emph{path}. For example, a call to the \code{println} method
+  of the Scala object \code{Predef}\begin{lstparagraph}
+scala.collection.immutable.Vector.fill(1)(42)
+\end{lstparagraph}
+  has a path \code{scala.collection.immutable.List.fill}\footnote{Scala packages have a hidden prefix \code{_root_} that we always omit for simplicity.}.
 
-
-  % What are constants in Scala
-
-\emph{Free variables} are external variables captured by a direct \edsl{}
-  term.  All that deep embedding knows about these terms is their type and that
-  they will become available only during evaluation (i.e., interpretation or
-  execution after code generation).  Hence, free variables need to be treated
-  specially by the translation and the deep embedding needs to provide support
-  for their evaluation.  In \figref{fig:translation-example}, the free variables
-  \code{n} and \code{exp} are replaced with calls to the polymorphic method
-  \code{hole[T]}, which handles the evaluation of free variables in the deep
-  embedding. Each captured identifier is assigned with a unique number that
-  is, together with type information, passed as an argument to the \code{hole} method
-   (0 and 1 in \figref{fig:translation-example}).
-  The identifiers are later sorted and passed as arguments to the Scala function that is a result
-  of \edsl compilation. The DSL author is required to ensure that the position and the type
-  of the resulting function matches the order and types of the sorted identifiers passed by \yy.
-
-\subsection{Correctness}
-\label{sec:correctness}
-To completely conceal the deep embedding all type errors must be captured in the direct embedding or by the translation, i.e., the translation must never produce an ill-typed program. Proving this property is verbose and partially covered by previous work. Therefore, for each version of the type translation we provide references to the previous work and give a high-level intuition:
-\begin{itemize}
-
-\item \emph{The identity translation} ensures that well-typed programs remain
-well typed after the translation to the deep embedding
-\cite{carette_finally_2009}. Here the deep embedding is the direct embedding
-with virtualized host language intrinsics.
-
-\item \emph{Generic polymorphic embedding} preserves well-typedness~\cite{carette_finally_2009}.
- Type \code{T} is uniformly translated to \code{Rep[T]} and thus every term will conform to its expected type.
-
-\item \emph{Eager inlining} preserves well-typedness for programs that are
-not explicitly rejected by the translation. We discuss correctness of eager inlining
-in \cite{techrep} on a Hindley-Milner based calculus similar to the one of Carette et al.~\cite{carette_finally_2009}.
-
-For the intuition why type arguments can not contain function types consider passing an increment function to the generic identity function:
-\begin{listingtiny}
-  id[T => T](lam[T, T](x => x + 1))
-\end{listingtiny}
-Here, the \code{id} function expects \code{Rep[_]} type but the argument is \code{Rep[T] => Rep[T]}.
-
-\item The \emph{Dynamic} type supports all operations and, thus, static type errors will not occur. Here, the DSL author is responsible for providing a back-end where dynamic type errors will not occur.
-
-\item \emph{Custom types} can cause custom type errors since \edsl authors can
-arbitrarily redefine types (e.g., \code{type Int = String}. \yy provides
-\emph{no guarantees} for this type of the translation.
-
-\end{itemize}
+This phase of the translation translates paths of all operations so they bind
+ to operations in the deep embedding. The translation function can perform an
+ identity operation, prefix addition, name mangling of function names, etc.
 
 
-\section{Restricting Host Language Constructs}
+\paragraph{Operation \code{inject}.} For \yy and polymorphic embeddings~\cite{hofer_polymorphic_2008}
+in general we chose to inject the body of our DSLs into the refinement of the Scala component that
+contains all deep DSL definitions
+
+  \infyyax{}
+   {dsl}{\mathbf{new}\;\;de\;\;\{\;\;\mathbf{def}\;\;\mathtt{main}():\;\;\ttother[T]\;=\;dsl\;\}}
+
+where $dsl$ is the direct DSL program after rebinding and $de$ is the component name
+that is provided by the DSL author that holds all definitions in the deep embedding, and
+$\tau$ is the type translation.
+
+Alternatively the DSLs can be injected into the scope by importing all DSL operations
+ from the object that contains the deep embedding definitions.
+
+  \infyyax{}
+    {dsl}{\mathbf{val}\;\;c \; = \; \mathbf{new}\;\;de;\;\;\;\mathbf{import}\;\;c.\_;\;\;\;dsl}
+
+In both cases the corresponding \code{rebind} function can be left as an
+identity. If the deep embedding has all the required methods with corresponding
+ signatures all operations will rebind to the
+operations of the deep embedding by simply re-type-checking the program in the new context.
+
+% Example
+For example in a simple function application\begin{lstparagraph}
+Vector.fill(1)(42)
+\end{lstparagraph}the injection will rebind the operation through the extension methods of Scala. The
+resulting code will contain wrapper classes that extend DSL types with deep operations:\begin{lstparagraph}
+VectorOps(lift(Vector)).fill(lift(1))(lift(42))
+\end{lstparagraph}
+
+% Talk about additional implicit parameters.
+Finally injection in the DSL scope allows the deep embedding to introduce additional implicit arguments to
+ all DSL operations. The implicit arguments introduced in the direct embedding are treated
+ as explicit in the deep embedding. For example, the \code{fill} operation can be augmented
+ with the source information from the direct embedding and run-time type representation:\begin{lstparagraph}
+VectorOps(lift(Vector)).fill(lift(1))(lift(42))(
+  sourceContext("example.scala",1,1), typeTag[Int]
+)
+\end{lstparagraph}
+
+% Important the DSL author can use a convenient interface for DSL designing DSL internals.
+In \yy we chose the operation translations that closely match the structure of
+ the direct embeddings. This allows the authors of the deep embedding to use the
+ DSL itself for development of new DSL components. In this case the DSL author can use
+ the deep interface augmented with implicit conversions that all simplify lifting constants,
+ calling operations etc. With such interface the previous example resembles the direct embedding\begin{lstparagraph}
+Vector.fill(1)(42)
+\end{lstparagraph}
+except for the abstraction leaks of the deep embedding (\sct{sec:abstraction-leaks}).
+This approach requires less code than than ``naked'' AST manipulation\todo{cite}, e.g:\begin{lstparagraph}
+VectorFill(Const(1), Const(42))
+\end{lstparagraph}
+
+
+\todo{rework this paragraph and also in other places}
+ In~\figref{fig:translation-example}, calls to \code{range} on the object
+ \code{vector.Vector} and \code{pow} on the package object \code{math.`package`}
+ are respectively translated to calls \code{range} and \code{pow} on
+ \code{this.Vector} and \code{this.`package`}. For simplicity, passing source
+ information (\code{SourceContext}) and type information \code{TypeTag} is
+ handled implicitly by the Scala compiler. In absence of implicit parameters
+ they should be handled by the translation.
+
+\subsection{Restricting Host Language Constructs}
 \label{sec:restricting}
-
+% TODO restricting constants
 % Rule out unsupported expressions.
 The direct DSL programs can contain well-typed expressions that are not
 supported by the deep embedding. Often, these expressions lead to unexpected program
@@ -1103,98 +1180,36 @@ deep embedding. Due to the additional verification step all error messages are
 clearly shown to the user. This allows easy construction of embedded DSLs that
 support only a subset of the host language.
 
-\subsection{Operation Translation}
-\label{sec:operation-translation}
+\subsubsection{Correctness}
+\label{sec:correctness}
+To completely conceal the deep embedding all type errors must be captured in the direct embedding or by the translation, i.e., the translation must never produce an ill-typed program. Proving this property is verbose and partially covered by previous work. Therefore, for each version of the type translation we provide references to the previous work and give a high-level intuition:
+\begin{itemize}
 
-The \emph{operation translation} maps directly embedded versions of the
-  DSL operations into corresponding deep embeddings. To this end, we define a
-  function \code{opMap} on terms that returns a deep operation for each directly
-  embedded operation.
+\item \emph{The identity translation} ensures that well-typed programs remain
+well typed after the translation to the deep embedding
+\cite{carette_finally_2009}. Here the deep embedding is the direct embedding
+with virtualized host language intrinsics.
 
-The \code{opMap} function in Scala intrinsifies direct \edsl body in the context of the deep embedding.
- \code{opMap} can be defined as a composition of two functions: \emph{i)} function \code{inject} that inserts the direct \edsl body
-  into a context where deep \edsl definitions are visible, and \emph{ii)} \code{rebind}
-  rebinds operations of the direct \edsl to the operations of the deep \edsl. Function \code{opMap} is equivalent to
-  the composition of \code{inject} and \code{rebind} (written in Scala as \code{rebind andThen inject}).
+\item \emph{Generic polymorphic embedding} preserves well-typedness~\cite{carette_finally_2009}.
+ Type \code{T} is uniformly translated to \code{Rep[T]} and thus every term will conform to its expected type.
 
-\paragraph{Operation \code{rebind}.} Operations in Scala are resolved through a \emph{path}. For example, a call to the \code{println} method
-  of the Scala object \code{Predef}\begin{lstparagraph}
-scala.collection.immutable.Vector.fill(1)(42)
-\end{lstparagraph}
-  has a path \code{scala.collection.immutable.List.fill}\footnote{Scala packages have a hidden prefix \code{_root_} that we always omit for simplicity.}.
+\item \emph{Eager inlining} preserves well-typedness for programs that are
+not explicitly rejected by the translation. We discuss correctness of eager inlining
+in \cite{techrep} on a Hindley-Milner based calculus similar to the one of Carette et al.~\cite{carette_finally_2009}.
 
-This phase of the translation simply translates paths of all operations so they bind
- to operations in the deep embedding. The translation function can perform an
- identity operation, prefix addition, name mangling of function names, etc.
+For the intuition why type arguments can not contain function types consider passing an increment function to the generic identity function:
+\begin{listingtiny}
+  id[T => T](lam[T, T](x => x + 1))
+\end{listingtiny}
+Here, the \code{id} function expects \code{Rep[_]} type but the argument is \code{Rep[T] => Rep[T]}.
 
+\item The \emph{Dynamic} type supports all operations and, thus, static type errors will not occur. Here, the DSL author is responsible for providing a back-end where dynamic type errors will not occur.
 
-\paragraph{Operation \code{inject}.} The injection of the deep DSL definitions
- into the scope can be achieved in multiple ways.
+\item \emph{Custom types} can cause custom type errors since \edsl authors can
+arbitrarily redefine types (e.g., \code{type Int = String}. \yy provides
+\emph{no guarantees} for this type of the translation.
 
-For \yy and polymorphic embeddings~\cite{hofer_polymorphic_2008}
-in general we chose to inject the body of our DSLs into the refinement of the Scala component that
-contains all deep DSL definitions
-
-  \infyyax{}
-   {dsl}{\mathbf{new}\;\;de\;\;\{\;\;\mathbf{def}\;\;\mathtt{main}():\;\;\ttother[T]\;=\;dsl\;\}}
-
-where $dsl$ is the direct DSL program after rebinding and $de$ is the component name
-that is provided by the DSL author that holds all definitions in the deep embedding, and
-$\tau$ is the type translation.
-
-Alternatively the DSLs can be injected into the scope by importing all DSL operations
- from the object that contains the deep embedding definitions.
-
-  \infyyax{}
-    {dsl}{\mathbf{val}\;\;c \; = \; \mathbf{new}\;\;de;\;\;\;\mathbf{import}\;\;c.\_;\;\;\;dsl}
-
-In both cases the corresponding \code{rebind} function can be left as an
-identity. If the deep embedding has corresponding signatures all operations
-will rebind by re-type-checking the program in the new context, i.e., to the
-operations of the deep embedding.
-
-% Example
-For example in a simple function application\begin{lstparagraph}
-Vector.fill(1)(42)
-\end{lstparagraph}the injection will rebind the operation through the extension methods of Scala. The
-resulting code will contain wrapper classes that extend DSL types with deep operations:\begin{lstparagraph}
-VectorOps(lift(Vector)).fill(lift(1))(lift(42))
-\end{lstparagraph}
-
-% Talk about additional implicit parameters.
-Further injection in the DSL scope allows the deep embedding to introduce additional implicit arguments to
- all DSL operations. The implicit arguments introduced in the direct embedding are treated
- as explicit in the deep embedding. For example, the \code{fill} operation can be augmented
- with the source information from the direct embedding and run-time type representation:\begin{lstparagraph}
-VectorOps(lift(Vector)).fill(lift(1))(lift(42))(
-  sourceContext("example.scala",1,1), typeTag[Int]
-)
-\end{lstparagraph}
-
-% Important the DSL author can use a convenient interface for DSL designing DSL internals.
-In \yy we chose the operation translations that closely match the structure of
- the direct embeddings. This allows the authors of the deep embedding to use the
- DSL itself for development of new DSL components. In this case the DSL author can use
- the deep interface augmented with implicit conversions that all simplify lifting constants,
- calling operations etc. With such interface the previous example resembles the direct embedding\begin{lstparagraph}
-Vector.fill(1)(42)
-\end{lstparagraph}
-except for the abstraction leaks of the deep embedding (\sct{sec:abstraction-leaks}).
-This approach requires less code than than ``naked'' AST manipulation\todo{cite}, e.g:\begin{lstparagraph}
-VectorFill(Const(1), Const(42))
-\end{lstparagraph}
-
-
-
-\todo{rework this paragraph and also in other places}
- In~\figref{fig:translation-example}, calls to \code{range} on the object
- \code{vector.Vector} and \code{pow} on the package object \code{math.`package`}
- are respectively translated to calls \code{range} and \code{pow} on
- \code{this.Vector} and \code{this.`package`}. For simplicity, passing source
- information (\code{SourceContext}) and type information \code{TypeTag} is
- handled implicitly by the Scala compiler. In absence of implicit parameters
- they should be handled by the translation.
-
+\end{itemize}
 
 
 \section{Deep Embedding Implementations}
@@ -1402,7 +1417,7 @@ is used to represent the lowering specification of every IR node.
 \section{Putting it Together}
 \label{sec:putting-it-together}
 
-% Section will follow the development cycle, dsl author, dsl user
+% Section will follow the development cycle, DSL author, DSL user
 
 % We will define a DSL and the dependencies.
 
@@ -1455,7 +1470,7 @@ for this purpose and is thus much easier to use. In case of OptiML, Forge
 slightly outperforms \yy. This is because Forge supports meta-programming at
 the level of classes while Scala does not.
 
-\begin{table}[h]
+\begin{table}[ht]
 \caption{LOC for direct EDSL, Forge specification, and deep EDSL.}
 \label{tbl:deepgen}
 \centering
@@ -1626,3 +1641,5 @@ switch between dual embeddings while the type classes ensure
 equivalent type checking.  Unfortunately, this approach does not
 extend easily to native language constructs, and requires changing the
 type signatures of common functions.
+
+% Quoted DSLs
