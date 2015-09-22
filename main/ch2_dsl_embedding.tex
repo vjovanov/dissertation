@@ -1,6 +1,6 @@
 %!TEX root = ../phd.tex
 
-\chapter{Concealing the Embedding of Deep Domain-Specific Languages}
+\chapter{Concealing the Deep Embedding of Domain-Specific Languages}
 
 % High-level of abstraction, good user interface, great performance, portable code.
 Domain-specific languages (DSLs) provide a restricted,
@@ -488,6 +488,7 @@ new VectorDSL with IfOps
 \caption{\label{fig:translation-example} Transformation of an EDSL program for calculating $\sum_{i=0}^n i^{exp}$.}
 \end{figure*}
 
+\todo{Tie this example in and fix it and talk more about it after the different back-ends are introduced.}
 To illustrate the core translation, we use an example program for calculating $\sum_{i=0}^n i^{exp}$ using the vector \edsl defined in \figref{lst:vector}. \figref{fig:translation-example} contains three versions of the program: Figure \ref{lst:direct-embedding} depicts the direct embedding version, Figure \ref{lst:desugaring} represents the program after type checking (as the translation sees it), and Figure \ref{lst:transformed_program} shows the result of the translation.
 
 \subsection{Language Virtualization}
@@ -497,16 +498,9 @@ host language, such as \code{if} and \code{while} statements. This can be
 achieved by translating them into suitable method invocations as shown by Rompf
 et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-virtualized:_2009}.
 
-% TODO
-  % test one more time for completeness
-  % Discuss All vs final members?
-  % Interaction with the pattern matcher.
-  % Discuss partial functions and pattern matching.
-  % Link better to the example and explain what is going on.
-
  \yy follows the ideas of Carette et al.~\cite{carette_finally_2009}
- and Scala-Virtualized but virtualizes all Scala expressions and uses macros to virtualize Scala intrinsics
-  which are required to write direct DSL programs. Practice has shown that DSL
+ and Scala-Virtualized but virtualizes all Scala expressions and uses macros of
+  unmodified Scala to virtualize its intrinsics. Practice has shown that DSL
   authors are reluctant to use a modified compiler and that for the wide adoption
   of embedded DSLs it is important to provide a solution based on unmodified Scala.
 
@@ -691,7 +685,6 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
 % *   t.asInstanceOf[T]      =>       infix_asInstanceOf[T](t)
     \infyyax{}
       {t.\mathtt{asInstanceOf[T]}}{\mathtt{infix\_asInstanceOf[T]}(\trone{t})}
-
 
 %
 % Virtualization of `AnyRef` methods
