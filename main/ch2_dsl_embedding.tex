@@ -413,83 +413,23 @@ Since the translation is type-directed it requires reflection that supports
 \item[Language virtualization] converts host language intrinsics into
   function calls, which can then be evaluated to the appropriate IR
   values in the deep embedding.
-\item[\edsl{} intrinsification] converts DSL intrinsics (operations
-  and types) from the direct embedding into their deep counterparts.
+\item[\edsl{} intrinsification] converts DSL intrinsics, such as types and operations,
+ from the direct embedding into their deep counterparts.
 \end{description}
 
+\figref{fig:pipeline} shows the translation pipeline of \yy. Language virualization is covered
+in \sct{sct:langauge-virtualization} and DSL intrinsification
+in \sct{sct:dsl-intrinsification}. The whole translation is explained on a concrete example
+in \sct{sct:translation-example}. Finally we argue for correctness of the translation
+in \sct{sct:correctness}.
+\todo{Does restricting language features fit here.}
 
-
-\begin{figure*}[!ht]
-\begin{multicols}{2}
-\begin{subfigure}[b]{1\linewidth}
+\begin{figure*}[ht]
 \centering
-\vspace{1.4em}
-\begin{listingtiny}
-import vector._; import math.pow;
-val n = 100; val exp = 6;
-vectorDSL {
-  if (n > 0) {
-    val v = Vector.range(0, n)
-    v.map(x => pow(x, exp)).sum
-  } else 0
-}
-\end{listingtiny}
-\vspace{1.4em}
-\caption{A program in direct embedding for calculating $\sum_{i=0}^n i^{exp}$.}
-\label{lst:direct-embedding}
-\end{subfigure}
-
-\begin{subfigure}[b]{1\linewidth}
-\centering
-\begin{listingtiny}
-val n = 100; val exp = 6;
-vectorDSL {
-  if (n > 0) {
-    val v: Vector[Int] =
-      vector.Vector.range(0, n)
-    v.map[Int](x: Int =>
-      math.`package`.pow(x, exp)
-    ).sum[Int](math.Numeric.IntIsIntegral)
-  } else 0
-}
-\end{listingtiny}
-\caption{The original program after desugaring and type inference.}
-\label{lst:desugaring}
-\end{subfigure}
-
-\end{multicols}
-
-\begin{subfigure}[b]{1\linewidth}
-\begin{listingtiny}
-val n = 100; val exp = 6;
-new VectorDSL with IfOps
-  with MathOps { def main() = {
-  ifThenElse[Int](
-    hole[Int](typeTag[Int], 0) > lift[Int](0),{
-    val v: Rep[Vector[Int]] =
-      valDef[Vector[Int]](
-        this.Vector.range(
-          lift[Int](0),
-          hole[Int](typeTag[Int], 0)))
-    v.map[Int](lam[Int, Int](x: Rep[Int] =>
-      this.`package`.pow(
-        x,
-        hole[Int](typeTag[Int], 1))
-    ).sum[Int](this.Numeric.IntIsIntegral)
-  },{
-    lift[Int](0)
-  }
-)}
-\end{listingtiny}
-\caption{The \yy translation of the program from \figref{lst:desugaring}.}
-\label{lst:transformed_program}
-
-\end{subfigure}
-\caption{\label{fig:translation-example} Transformation of an EDSL program for calculating $\sum_{i=0}^n i^{exp}$.}
+\includegraphics{diagrams/pipeline.eps}
+\caption{Translation from the direct to the deep embedding.}
+\label{fig:pipeline}
 \end{figure*}
-
-\todo{Tie this example in and fix it and talk more about it after the different back-ends are introduced.}
-To illustrate the core translation, we use an example program for calculating $\sum_{i=0}^n i^{exp}$ using the vector \edsl defined in \figref{lst:vector}. \figref{fig:translation-example} contains three versions of the program: Figure \ref{lst:direct-embedding} depicts the direct embedding version, Figure \ref{lst:desugaring} represents the program after type checking (as the translation sees it), and Figure \ref{lst:transformed_program} shows the result of the translation.
 
 \subsection{Language Virtualization}
 \label{sct:langauge-virtualization}
@@ -1120,10 +1060,88 @@ VectorFill(Const(1), Const(42))
  handled implicitly by the Scala compiler. In absence of implicit parameters
  they should be handled by the translation.
 
+\subsection{Translation Example}
+\label{sct:translation-example}
+
+To illustrate the core translation, we use an example program for calculating $\sum_{i=0}^n i^{exp}$ using the vector \edsl defined in \figref{lst:vector}. \figref{fig:translation-example} contains three versions of the program: Figure \ref{lst:direct-embedding} depicts the direct embedding version, Figure \ref{lst:desugaring} represents the program after type checking (as the translation sees it), and Figure \ref{lst:transformed_program} shows the result of the translation.
+
+
+\begin{figure*}[!ht]
+\begin{multicols}{2}
+\begin{subfigure}[b]{1\linewidth}
+\centering
+\vspace{1.4em}
+\begin{listingtiny}
+import vector._; import math.pow;
+val n = 100; val exp = 6;
+vectorDSL {
+  if (n > 0) {
+    val v = Vector.range(0, n)
+    v.map(x => pow(x, exp)).sum
+  } else 0
+}
+\end{listingtiny}
+\vspace{1.4em}
+\caption{A program in direct embedding for calculating $\sum_{i=0}^n i^{exp}$.}
+\label{lst:direct-embedding}
+\end{subfigure}
+
+\begin{subfigure}[b]{1\linewidth}
+\centering
+\begin{listingtiny}
+val n = 100; val exp = 6;
+vectorDSL {
+  if (n > 0) {
+    val v: Vector[Int] =
+      vector.Vector.range(0, n)
+    v.map[Int](x: Int =>
+      math.`package`.pow(x, exp)
+    ).sum[Int](math.Numeric.IntIsIntegral)
+  } else 0
+}
+\end{listingtiny}
+\caption{The original program after desugaring and type inference.}
+\label{lst:desugaring}
+\end{subfigure}
+
+\end{multicols}
+
+\begin{subfigure}[b]{1\linewidth}
+\begin{listingtiny}
+val n = 100; val exp = 6;
+new VectorDSL with IfOps
+  with MathOps { def main() = {
+  ifThenElse[Int](
+    hole[Int](typeTag[Int], 0) > lift[Int](0),{
+    val v: Rep[Vector[Int]] =
+      valDef[Vector[Int]](
+        this.Vector.range(
+          lift[Int](0),
+          hole[Int](typeTag[Int], 0)))
+    v.map[Int](lam[Int, Int](x: Rep[Int] =>
+      this.`package`.pow(
+        x,
+        hole[Int](typeTag[Int], 1))
+    ).sum[Int](this.Numeric.IntIsIntegral)
+  },{
+    lift[Int](0)
+  }
+)}
+\end{listingtiny}
+\caption{The \yy translation of the program from \figref{lst:desugaring}.}
+\label{lst:transformed_program}
+
+\end{subfigure}
+\caption{\label{fig:translation-example} Transformation of an EDSL program for calculating $\sum_{i=0}^n i^{exp}$.}
+\end{figure*}
+
+
+
 \subsection{Restricting Host Language Constructs}
 \label{sec:restricting}
 % TODO restricting constants
 % Rule out unsupported expressions.
+
 The direct DSL programs can contain well-typed expressions that are not
 supported by the deep embedding. Often, these expressions lead to unexpected program
 behavior (\sct{sec:motivation}) and we must rule them out by reporting meaningful and
@@ -1173,8 +1191,8 @@ deep embedding. Due to the additional verification step all error messages are
 clearly shown to the user. This allows easy construction of embedded DSLs that
 support only a subset of the host language.
 
-\subsubsection{Correctness}
-\label{sec:correctness}
+\subsection{Correctness}
+\label{sct:correctness}
 To completely conceal the deep embedding all type errors must be captured in the direct embedding or by the translation, i.e., the translation must never produce an ill-typed program. Proving this property is verbose and partially covered by previous work. Therefore, for each version of the type translation we provide references to the previous work and give a high-level intuition:
 \begin{itemize}
 
@@ -1262,7 +1280,6 @@ optimizations when changing the direct embedding of the \edsl.
 % in the direct embedding interface should affect only optimizations
 % related to that change. However, this is back-end dependent so \yy
 % does not provide any guarantees.
-
 % Devil is in the details
 
 For further information on how to use \yy's code generation together

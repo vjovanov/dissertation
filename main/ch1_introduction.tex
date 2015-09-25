@@ -70,7 +70,7 @@ deep embedding.  Its type parameter captures the type underlying the
 IR: \edsl terms of type \code{Rep[T]} evaluate to host language terms
 of type \code{T} during \edsl execution.
 
-% Operations
+% operations
 Operations on \code{Rep[T]} terms are added by implicit conversions that are introduced in the \edsl scope. For example, the implicit class \code{VectorOps} introduces the \code{+} operation on every term of type \code{Rep[Vector[T]]}. In the example, the type class \code{Numeric} ensures that vectors contain only numerical values.
 
 \todo{remove tool}
