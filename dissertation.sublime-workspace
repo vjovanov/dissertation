@@ -51,7 +51,7 @@
 			"file": "main/ch3_polyvariant_staging.tex",
 			"settings":
 			{
-				"buffer_size": 34903,
+				"buffer_size": 41082,
 				"line_ending": "Unix"
 			}
 		},
@@ -67,7 +67,7 @@
 			"file": "head/settings_custom.tex",
 			"settings":
 			{
-				"buffer_size": 12852,
+				"buffer_size": 12849,
 				"line_ending": "Unix"
 			}
 		},
@@ -85,25 +85,50 @@
 			"file": "main/ch2_dsl_embedding.tex",
 			"settings":
 			{
-				"buffer_size": 78933,
+				"buffer_size": 82223,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"contents": "Package Control Messages\n========================\n\nLaTeXTools:\n----------\n\n  LaTeXTools Plugin version 2012-09-17 17:03:16\n  \n  Thank you for installing the LaTeXTools plugin!\n  \n  If you have not updated your LaTeXTools plugin in a while, please note:\n  THE KEYBOARD SHORTCUTS HAVE CHANGED!\n  \n  To learn about the features of this plugin, go to the Github page:\n  \n  https://github.com/SublimeText/LaTeXTools\n  \n  and scroll down to the README file. Actually, the Markdown source of that file is in the plugin directory, which you can open using \"Browse Packages...\" in Sublime Text 2.\n  \n  You can also check out my blog at\n  \n  tekonomist.wordpress.com\n  \n  and/or circle me on Google Plus.\n  \n  Happy TeXing!\n  Marciano Siniscalchi\n  \n  \n\nPackage Control:\n---------------\n\n  Version 3.1 Release Notes\n  \n  Package Control continues its focus on polish and fixing edge-case bugs. Some\n  of the changes in this version include:\n  \n   - quick panel for Install Package now stays open on Windows with recent\n     versions of ST3, even when focus is lost\n   - new \"downloader_precedence\" setting to allow users to use specific HTTP\n     backend due to network proxy or SSL issues\n   - added Install Local Dependency command for package developers to more\n     easily deal with dependencies during development\n   - improved handling of git/hg package upgrade errors\n   - better handling of locked .sublime-package files on Windows\n   - performance improvements for users with a large number of open windows\n  \n  For package developers, the list of available dependencies has been growing:\n  https://github.com/wbond/package_control_channel/blob/master/repository/dependencies.json\n  \n  Enjoy!\n  \n",
+			"contents": "",
+			"file": "/Users/vjovanov/Library/Application Support/Sublime Text 3/Packages/User/Default (OSX).sublime-keymap",
+			"file_size": -1,
+			"file_write_time": -1,
 			"settings":
 			{
-				"buffer_size": 1695,
-				"line_ending": "Unix",
-				"name": "Package Control Messages",
-				"scratch": true
+				"buffer_size": 0,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/vjovanov/Library/Application Support/Sublime Text 3/Packages/LaTeXTools/Default (OSX).sublime-keymap",
+			"settings":
+			{
+				"buffer_size": 14105,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/vjovanov/Library/Application Support/Sublime Text 3/Packages/User/LaTeXTools.sublime-settings",
+			"settings":
+			{
+				"buffer_size": 6372,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "dissertation.sublime-project",
+			"settings":
+			{
+				"buffer_size": 341,
+				"line_ending": "Unix"
 			}
 		},
 		{
 			"file": "main/ch1_introduction.tex",
 			"settings":
 			{
-				"buffer_size": 5452,
+				"buffer_size": 5541,
 				"line_ending": "Unix"
 			}
 		},
@@ -111,17 +136,30 @@
 			"file": "tail/bibliography.bib",
 			"settings":
 			{
-				"buffer_size": 94203,
+				"buffer_size": 95790,
 				"line_ending": "Unix"
 			}
 		}
 	],
 	"build_system": "Packages/User/dissertation.sublime-build",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
 	"command_palette":
 	{
-		"height": 117.0,
+		"height": 127.0,
+		"last_filter": "Migra",
 		"selected_items":
 		[
+			[
+				"Migra",
+				"LaTeXTools: Reconfigure and migrate settings"
+			],
+			[
+				"pack in",
+				"Package Control: Install Package"
+			],
 			[
 				"Insta",
 				"Package Control: Install Package"
@@ -204,8 +242,7 @@
 	},
 	"expanded_folders":
 	[
-		"/home/vjovanov/dissertation",
-		"/home/vjovanov/dissertation/head"
+		"/Users/vjovanov/dissertation"
 	],
 	"file_history":
 	[
@@ -340,7 +377,7 @@
 	],
 	"find":
 	{
-		"height": 35.0
+		"height": 37.0
 	},
 	"find_in_files":
 	{
@@ -362,6 +399,8 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"(\\",
+			"code",
 			"parag",
 			"Tuple",
 			"Some",
@@ -487,9 +526,7 @@
 			"query.sc",
 			"query.",
 			"Array",
-			"155",
-			"null",
-			"def until"
+			"155"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -510,7 +547,7 @@
 	"groups":
 	[
 		{
-			"selected": 5,
+			"selected": 4,
 			"sheets":
 			[
 				{
@@ -519,15 +556,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 34903,
+						"buffer_size": 41082,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								19533,
-								19533
+								0,
+								0
 							]
 						],
 						"settings":
@@ -537,10 +574,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 5576.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
@@ -567,10 +604,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1683.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
@@ -579,15 +616,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 12852,
+						"buffer_size": 12849,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2266,
-								2266
+								0,
+								0
 							]
 						],
 						"settings":
@@ -600,7 +637,7 @@
 						"translation.y": 1267.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
@@ -1115,7 +1152,7 @@
 						"translation.y": 11458.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
@@ -1124,15 +1161,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 78933,
+						"buffer_size": 82223,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								10722,
-								10722
+								6046,
+								6046
 							]
 						],
 						"settings":
@@ -1142,56 +1179,142 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2992.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1695,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1695,
-								1695
-							]
-						],
-						"settings":
-						{
-							"auto_indent": false,
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"word_wrap": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 901.0,
+						"translation.y": 2240.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
-					"file": "main/ch1_introduction.tex",
+					"buffer": 5,
+					"file": "/Users/vjovanov/Library/Application Support/Sublime Text 3/Packages/User/Default (OSX).sublime-keymap",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5452,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5452,
-								5452
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "/Users/vjovanov/Library/Application Support/Sublime Text 3/Packages/LaTeXTools/Default (OSX).sublime-keymap",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 14105,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3235,
+								3235
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1101.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "/Users/vjovanov/Library/Application Support/Sublime Text 3/Packages/User/LaTeXTools.sublime-settings",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6372,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3446,
+								3446
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1065.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "dissertation.sublime-project",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 341,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								143,
+								143
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "main/ch1_introduction.tex",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5541,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1201,27 +1324,27 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1241.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 10,
 					"file": "tail/bibliography.bib",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 94203,
+						"buffer_size": 95790,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1180,
-								1180
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1234,7 +1357,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 10,
 					"type": "text"
 				}
 			]
@@ -1283,6 +1406,7 @@
 	{
 		"height": 112.0
 	},
+	"pinned_build_system": "Packages/LaTeXTools/LaTeX.sublime-build",
 	"project": "dissertation.sublime-project",
 	"replace":
 	{
@@ -1292,8 +1416,13 @@
 	"select_file":
 	{
 		"height": 0.0,
+		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"ch2",
+				"main/ch2_dsl_embedding.tex"
+			],
 			[
 				"",
 				"main/ch2_dsl_embedding.tex"
@@ -1305,10 +1434,6 @@
 			[
 				"ch1",
 				"main/ch1_introduction.tex"
-			],
-			[
-				"ch2",
-				"main/ch2_dsl_embedding.tex"
 			],
 			[
 				"ch3",
@@ -1812,6 +1937,7 @@
 	"select_project":
 	{
 		"height": 500.0,
+		"last_filter": "",
 		"selected_items":
 		[
 		],
@@ -1820,6 +1946,7 @@
 	"select_symbol":
 	{
 		"height": 392.0,
+		"last_filter": "",
 		"selected_items":
 		[
 		],
@@ -1832,7 +1959,7 @@
 	"show_minimap": true,
 	"show_open_files": false,
 	"show_tabs": true,
-	"side_bar_visible": false,
+	"side_bar_visible": true,
 	"side_bar_width": 387.0,
 	"status_bar_visible": true,
 	"template_settings":
