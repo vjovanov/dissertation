@@ -78,6 +78,9 @@
   showstringspaces=false%
 }[keywords,comments,strings]%
 
+\newcommand{\commentstyle}[1]{\slseries{#1}}
+\newcommand{\keywordstyle}[1]{\bfseries{#1}}
+% \renewcommand{\ttdefault}{pcr}
 \lstset{language=Scala,%
   mathescape=true,%
 %  columns=[c]fixed,%
@@ -86,21 +89,19 @@
   belowskip=1pt,%\negsmallskipamount,
   lineskip=-0.2pt,
   basewidth={0.54em, 0.4em},%
-%  basicstyle=\ttfamily,%\scriptsize,%
-  basicstyle=\footnotesize\ttfamily,
-  keywordstyle=\sffamily\bfseries%
-%  keywordstyle=\sffamily\bfseries,%
+  % basicstyle=\ttfamily\scriptsize,%
+  basicstyle=\ttfamily,%\footnotesize
+  keywordstyle=\keywordstyle\bfseries%
+  % commentstyle=\commentstyle
+ % keywordstyle=\sffamily\bfseries,%
 %  xleftmargin=0.5cm
 }
 
 
 
-\newcommand{\commentstyle}[1]{\slseries{#1}}
-\newcommand{\keywordstyle}[1]{\bfseries{#1}}
-
 % Code
 \lstnewenvironment{listing}{\lstset{language=Scala}}{}
-\lstnewenvironment{listingsmall}{\lstset{language=Scala,basicstyle=\small\ttfamily}}{}
+\lstnewenvironment{listingsmall}{\lstset{language=Scala,basicstyle=\small\ttfamily, keywordstyle=\bfseries}}{}
 \lstnewenvironment{listingtiny}{\lstset{language=Scala,basicstyle=\ttfamily}}{}
 
 \newcommand{\scode}[1]{\lstinline[language=Scala,columns=fixed,basicstyle=\ttfamily,keywordstyle=\ttfamily]|#1|}
