@@ -1,16 +1,87 @@
 %!TEX root = ../phd.tex
-
 \chapter{Introduction}
+
+% How worlds infrastructure depends on high-productivity (elaborate what is high-productivity) and high-performance computation.
+
+% Heterogeneous hardware story.
+
+% DSLs restrict the domain and allow compilers.
+
+% Introduce the DSL users.
+
+% Introduce how it is important that DSLs are user-friendly for the DSL user. And easy
+% to develop for the DSL author.
+
+% External DSLs wonderful.
+
+% External DSLs rarely pay-off, hard, only SQL and matlab.
+
+% Further, they quickly grow in a big language. Cite Erik Meier.
+
+% Embedded DSLs come to the rescue.
+
+% Shallow embedded DSLs. cite the {perl} I reviewed.
+
+% Direct embedded DSLs.
+
+% Deep embedded DSLs.
+
+% Sometimes Directly embedded DSLs are fit for the task.
+
+% Advantages, disadvantages, etc.
+
+% Summarize in a table (DSL author, DSL user) x (performance, user-friendines, etc.)
+
+% In thesis we tackle the problem. is thesis we tackle the problems with deeply embedded DSLs.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Part 1
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+%% Concealing the deep embedding.
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Part 2
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+%% Generating the deep embedding.
+%%
+
+%%
+%% Dynamic Compilation of DSLs
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Part 3
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+%% Evaluation of different approaches to partial evaluation.
+%%
+
+%%
+%% Staging for performance of shallow DSLs
+%%
+
+
 
 \section{Background}
 \label{sec:background}
-\todo{remove tool}
+% TODO
+% Distinguish method and functions
+% Universal method
+% Pattern matching
+% Prefixes
+% Extension methods
 In this section we provide background information necessary for understanding \yy's
 implementation in Scala. We briefly explain the core concepts of Lightweight Modular Staging
 \cite{rompf_lightweight_2012,rompf_optimizing_2013} and Scala Macros
 \cite{burmako_scala_2013}. Throughout the paper we assume familiarity with
 the basics of the Scala Programming Language~\cite{odersky_scala_2004}.
-
+\subsection{Scala}
 \subsection{Deep Embedding of DSLs with LMS}
 \label{subsec:deep-embedding}
 
@@ -116,10 +187,5 @@ DSL snippet, \yy produces the \code{VectorDSL} program in
     Vector.fill(1,3) + Vector.fill(2,3)
   }
 \end{listingtiny}
-
-% TODO
-% Distinguish method and functions
-% Universal method
-% Pattern matching
-% Prefixes
-% Extension methods
+\subsection{Partial Evaluation}
+\label{sec:partial-evaluation}
