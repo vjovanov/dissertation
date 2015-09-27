@@ -489,7 +489,7 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
 
     \infyy{}
           {\tctx{\Gamma}{\mathbf{try}\;t_1\;\mathbf{catch}\;t_2\;\mathbf{finally}\;t_3:\;T }}
-          {\mathbf{try}\;t_1\;\mathbf{catch}\;t_2\;\mathbf{finally}\;t_3\; }{\mathtt{tryCatch}[T](\ttrone{t_1},\;\ttrone{t_2},\;\ttrone{t_3})}
+          {\mathbf{try}\;t_1\;\mathbf{catch}\;t_2\;\mathbf{finally}\;t_3\; }{\mathtt{try}[T](\ttrone{t_1},\;\ttrone{t_2},\;\ttrone{t_3})}
     \vspace{0.05em}
 
 \begin{multicols}{2}
@@ -1050,8 +1050,13 @@ This approach requires less code than than ``naked'' AST manipulation\todo{cite}
 VectorFill(Const(1), Const(42))
 \end{lstparagraph}
 
+\todo{calling the methods}
 
-\todo{rework this paragraph and also in other places}
+\subsection{Translation Example}
+\label{sct:translation-example}
+
+To illustrate the core translation, we use an example program for calculating $\sum_{i=0}^n i^{exp}$ using the vector \edsl defined in \figref{lst:vector}. \figref{fig:translation-example} contains three versions of the program: Figure \ref{lst:direct-embedding} depicts the direct embedding version, Figure \ref{lst:desugaring} represents the program after type checking (as the translation sees it), and Figure \ref{lst:transformed_program} shows the result of the translation.
+
  In~\figref{fig:translation-example}, calls to \code{range} on the object
  \code{vector.Vector} and \code{pow} on the package object \code{math.`package`}
  are respectively translated to calls \code{range} and \code{pow} on
@@ -1059,12 +1064,6 @@ VectorFill(Const(1), Const(42))
  information (\code{SourceContext}) and type information \code{TypeTag} is
  handled implicitly by the Scala compiler. In absence of implicit parameters
  they should be handled by the translation.
-
-\subsection{Translation Example}
-\label{sct:translation-example}
-
-To illustrate the core translation, we use an example program for calculating $\sum_{i=0}^n i^{exp}$ using the vector \edsl defined in \figref{lst:vector}. \figref{fig:translation-example} contains three versions of the program: Figure \ref{lst:direct-embedding} depicts the direct embedding version, Figure \ref{lst:desugaring} represents the program after type checking (as the translation sees it), and Figure \ref{lst:transformed_program} shows the result of the translation.
-
 
 \begin{figure*}[!ht]
 \begin{multicols}{2}
@@ -1114,7 +1113,7 @@ new VectorDSL with IfOps
   ifThenElse[Int](
     hole[Int](typeTag[Int], 0) > lift[Int](0),{
     val v: Rep[Vector[Int]] =
-      valDef[Vector[Int]](
+      this.valDef[Vector[Int]](
         this.Vector.range(
           lift[Int](0),
           hole[Int](typeTag[Int], 0)))
@@ -1208,10 +1207,9 @@ with virtualized host language intrinsics.
 not explicitly rejected by the translation. We discuss correctness of eager inlining
 in \cite{techrep} on a Hindley-Milner based calculus similar to the one of Carette et al.~\cite{carette_finally_2009}.
 
-For the intuition why type arguments can not contain function types consider passing an increment function to the generic identity function:
-\begin{listingtiny}
+For the intuition why type arguments can not contain function types consider passing an increment function to the generic identity function:\begin{lstparagraph}
   id[T => T](lam[T, T](x => x + 1))
-\end{listingtiny}
+\end{lstparagraph}
 Here, the \code{id} function expects \code{Rep[_]} type but the argument is \code{Rep[T] => Rep[T]}.
 
 \item The \emph{Dynamic} type supports all operations and, thus, static type errors will not occur. Here, the DSL author is responsible for providing a back-end where dynamic type errors will not occur.
@@ -1223,29 +1221,125 @@ arbitrarily redefine types (e.g., \code{type Int = String}. \yy provides
 \end{itemize}
 
 
-\section{Deep Embedding Implementations}
+\section{Deep Embedding with \yy}
 \label{sec:deep-embedding-implementations}
 
-% Different types of deep embeddings that can be used.
-% Identity
-% Re
+The translation of the direct embedding assumes existence of a deep embedding. This deep embedding
+should have methods that correspond to methods emitted by phases: \emph{i)} language virtualization,
+\emph{ii)} constants and free variables, \emph{iii)} methods defined by the direct embedding, \emph{iv)} the
+method that performs DSL compilation. Further, for each type translation the signature
+of these method is different. In this section we discuss the interface for relevant
+type translations: \emph{i)} identity translation (\sct{sct:shallow-embedding}), \emph{ii)}, \emph{iii)}, and \emph{iv)}. Finally,
+we discuss how the deep embedding is compiled in \sct{sct:compilation-interface}
+
+
+% In the following sections we show this interface for each type translation:
+% For brevity we use the type R[_] instead of Rep[T] to represent the deep embedding.
+\subsection{Defining the a DSL}
+\label{sct:connecting}
+\subsection{DSL Compilation Interface}
+\label{sct:compilation-interface}
+
+% Identity.
+\todo{better name}
+\subsection{Shallow Embedding}
+\label{sct:shallow-embedding}
+
+\begin{figure}
+\begin{listingtiny}
+trait LiftingBase {
+  def lift
+  def hole
+}
+
+trait IdentityBase {
+  def $\$$ifThenElse[T](cond: Boolean, thenBr: => T, elseBr: => T): T
+  def $\$$return(expr: Any): Nothing
+  def $\$$whileDo(cond: Boolean, body: => Unit): Unit
+  def $\$$doWhile(body: => Unit, cond: Boolean): Unit
+  def $\$$try[T](body: => T, catches: Throwable => T, finalizer: => T): T
+  def $\$$throw(t: Throwable): Nothing
+
+  def $\$$valDef[T](init: T): T
+  def $\$$lazyValDef[T](init: T): T
+  def $\$$varDef[T](init: T): T
+  def $\$$read[T](init: T): T
+  def $\$$assign[T](lhs: T, rhs: T): Unit
+}
+
+trait IdentityFunctionsBase {
+  def $\$$app[U](f: () => U): () => U
+  def $\$$app[T_1, U](f: T_1 => U): T_1 => U
+
+  def $\$$lam[U](f: () => U): () => U
+  def $\$$lam[T_1, U](f: T_1 => U): T_1 => U
+}
+\end{listingtiny}
+\end{figure}
+
+\subsection{Polymorphic Embedding}
+\label{sct:polymorphic-embedding}
+
+\begin{figure}
+\begin{listingtiny}
+trait PolymorphicBase {
+  type R[+T]
+}
+
+trait PolymorphicControlScala extends PolymorphicBase {
+  def $\$$ifThenElse[T](cond: R[Boolean], thenBr: => R[T], elseBr: => R[T]): T
+  def $\$$return(expr: R[Any]): Nothing
+  def $\$$whileDo(cond: R[Boolean], body: => R[Unit]): Unit
+  def $\$$doWhile(body: => R[Unit], cond: R[Boolean]): Unit
+  def $\$$try[T](body: => T, catches: Throwable => T, finalizer: => T): T
+  def $\$$throw(t: Throwable): Nothing
+}
+
+trait PolymorphicVariables extends PolymorphicBase {
+  def $\$$valDef[T](init: T): T
+  def $\$$lazyValDef[T](init: T): T
+  def $\$$varDef[T](init: T): T
+  def $\$$read[T](init: T): T
+  def $\$$assign[T](lhs: T, rhs: T): Unit
+}
+
+trait GenericFunctionsBase extends PolymorphicBase {
+  def $\$$app[U](f: R[() => U]): () => R[U]
+  def $\$$app[T_1, U](f: R[T_1 => U]): R[T_1] => R[U]
+
+  def $\$$lam[U](f: () => R[U]): R[() => U]
+  def $\$$lam[T_1, U](f: R[T_1] => R[U]): R[T_1 => U]
+}
+\end{listingtiny}
+\end{figure}
+
+\subsection{Polymorphic Embedding With Eager Inlining}
+\label{sct:polymorphic-embedding-with-eager-inlining}
+\begin{figure}
+\begin{listingtiny}
+trait InliningFunctionsBase extends PolymorhpicBase {
+  def $\$$app[U](f: R[() => U]): () => R[U]
+  def $\$$app[T_1, U](f: R[T_1] => R[U]): R[T_1] => R[U]
+
+  def $\$$lam[U](f: () => R[U]): () => R[U]
+  def $\$$lam[T_1, U](f: R[T_1] => R[U]): R[T_1] => R[U]
+}
+\end{listingtiny}
+\end{figure}
+
+\subsection{Embedding With Custom Types}
+\label{sct:embedding-with-custom-types}
+
 
 \section{Automatic Generation of the Deep Embedding}
 \label{sec:deep-gen}
 
-\todo{add the Amir's system}
+% \todo{add the Amir's system}
 So far, we have seen how \yy translates programs written in the
-direct embedding to the deep embedding.
-%This makes the development task of an
-This arguably simplifies life for \edsl users by allowing them to work
-with the interface
-% easier, as he can still use the interface
-of the direct embedding.  However, the EDSL author still needs to
-maintain synchronized implementations of the two embeddings, which can
-be a tedious and error prone task.
-% that greatly increases the development effort.
-%For example, a change in the direct embedding must be always applied
-%to the deep EDSL as well.
+direct embedding to the deep embedding. This arguably simplifies life
+for \edsl users by allowing them to work with the interface of the
+direct embedding.  However, the EDSL author still needs to maintain synchronized
+ implementations of the two embeddings, which can be a tedious and error prone task.
 
 % Two steps
 To alleviate this issue, \yy automatically generates the deep embedding from
@@ -1258,9 +1352,11 @@ Second, we exploit the fact that method implementations in the direct
 embedding are also direct DSL programs.  Reusing our core translation
 from~\sct{sec:translation}, we translate them to their deep
 counterparts~(\sct{sec:yy-impl-lower}).
+
 %% sstucki: what exactly does this mean?
-In the translated method bodies, in addition to the translated DSL itself, we also allow
-usage of the Scala library constructs that supported by the target back-end (cf.~\cite{techrep}).
+\todo{Explain that there is a core language.}
+% In the translated method bodies, in addition to the translated DSL itself, we also allow
+% usage of the Scala library constructs that supported by the target back-end (cf.~\cite{techrep}).
 
 The automatic generation of deep embeddings reduces the amount of
 boilerplate code that has to be written and maintained by \edsl
@@ -1282,9 +1378,8 @@ optimizations when changing the direct embedding of the \edsl.
 % does not provide any guarantees.
 % Devil is in the details
 
-For further information on how to use \yy's code generation together
-with the core translation, and how to specify rewrite rules,
-cf.~\cite{techrep}.\todo{fix this, this is the tech rep}
+
+\todo{Give an example here.}
 
 \subsection{Constructing High-Level IR Nodes}
 \label{sec:yy-impl-def}
@@ -1559,8 +1654,8 @@ This study was performed by only two users and, thus, is not statistically
 significant. Still, we find the difference in required effort large enough to indicate that \yy
 simplifies front-end development of \edsls.
 
-\subsection{Compilation Times}
-\label{sec:compilation-times}
+% TODO \subsection{Compilation Times}
+% \label{sec:compilation-times}
 
 \section{Discussion}
 \label{sec:other-languages}
