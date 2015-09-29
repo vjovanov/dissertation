@@ -424,12 +424,12 @@ in \sct{sct:translation-example}. Finally we argue for correctness of the transl
 in \sct{sct:correctness}.
 \todo{Does restricting language features fit here.}
 
-\begin{figure*}[ht]
+\begin{figure}
 \centering
 \includegraphics{diagrams/pipeline.eps}
 \caption{Translation from the direct to the deep embedding.}
 \label{fig:pipeline}
-\end{figure*}
+\end{figure}
 
 \subsection{Language Virtualization}
 \label{sct:langauge-virtualization}
@@ -1139,7 +1139,7 @@ new VectorDSL with IfOps
 \subsection{Restricting Host Language Constructs}
 \label{sec:restricting}
 % TODO restricting constants
-% Rule out unsupported expressions.
+% TODO Rule out unsupported expressions.
 
 The direct DSL programs can contain well-typed expressions that are not
 supported by the deep embedding. Often, these expressions lead to unexpected program
@@ -1247,12 +1247,9 @@ we discuss how the deep embedding is compiled in \sct{sct:compilation-interface}
 
 \begin{figure}
 \begin{listingtiny}
-trait LiftingBase {
-  def lift
-  def hole
-}
-
-trait IdentityBase {
+trait IdentityDSL {
+  // TODO lift and hole
+  // controls
   def $\$$ifThenElse[T](cond: Boolean, thenBr: => T, elseBr: => T): T
   def $\$$return(expr: Any): Nothing
   def $\$$whileDo(cond: Boolean, body: => Unit): Unit
@@ -1260,18 +1257,18 @@ trait IdentityBase {
   def $\$$try[T](body: => T, catches: Throwable => T, finalizer: => T): T
   def $\$$throw(t: Throwable): Nothing
 
+  // variables
   def $\$$valDef[T](init: T): T
-  def $\$$lazyValDef[T](init: T): T
+  def $\$$lazyValDef[T](init: => T): T
   def $\$$varDef[T](init: T): T
   def $\$$read[T](init: T): T
   def $\$$assign[T](lhs: T, rhs: T): Unit
-}
 
-trait IdentityFunctionsBase {
+  // subset of function arities
   def $\$$app[U](f: () => U): () => U
-  def $\$$app[T_1, U](f: T_1 => U): T_1 => U
-
   def $\$$lam[U](f: () => U): () => U
+
+  def $\$$app[T_1, U](f: T_1 => U): T_1 => U
   def $\$$lam[T_1, U](f: T_1 => U): T_1 => U
 }
 \end{listingtiny}
@@ -1287,11 +1284,11 @@ trait PolymorphicBase {
 }
 
 trait PolymorphicControlScala extends PolymorphicBase {
-  def $\$$ifThenElse[T](cond: R[Boolean], thenBr: => R[T], elseBr: => R[T]): T
-  def $\$$return(expr: R[Any]): Nothing
-  def $\$$whileDo(cond: R[Boolean], body: => R[Unit]): Unit
-  def $\$$doWhile(body: => R[Unit], cond: R[Boolean]): Unit
-  def $\$$try[T](body: => T, catches: Throwable => T, finalizer: => T): T
+  def $\$$ifThenElse[T](cond: R[Boolean], thenBr: => R[T], elseBr: => R[T]): R[T]
+  def $\$$return(expr: R[Any]): R[Nothing]
+  def $\$$whileDo(cond: R[Boolean], body: => R[Unit]): R[Unit]
+  def $\$$doWhile(body: => R[Unit], cond: R[Boolean]): R[Unit]
+  def $\$$try[T](body: => R[T], catches: Throwable => T, finalizer: => T): T
   def $\$$throw(t: Throwable): Nothing
 }
 

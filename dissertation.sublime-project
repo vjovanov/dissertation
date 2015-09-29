@@ -22,8 +22,10 @@
 				"fonts",
 				"images"
 			],
-			"follow_symlinks": true,
 			"path": "."
+		},
+		{
+			"path": "/Users/vjovanov/code/scala-yinyang"
 		}
 	]
 }
