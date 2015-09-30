@@ -1224,37 +1224,119 @@ arbitrarily redefine types (e.g., \code{type Int = String}. \yy provides
 \section{Deep Embedding with \yy}
 \label{sec:deep-embedding-implementations}
 
-The translation of the direct embedding assumes existence of a deep embedding. This deep embedding
-should have methods that correspond to methods emitted by phases: \emph{i)} language virtualization,
-\emph{ii)} constants and free variables, \emph{iii)} methods defined by the direct embedding, \emph{iv)} the
-method that performs DSL compilation. Further, for each type translation the signature
-of these method is different. In this section we discuss the interface for relevant
-type translations: \emph{i)} identity translation (\sct{sct:shallow-embedding}), \emph{ii)}, \emph{iii)}, and \emph{iv)}. Finally,
-we discuss how the deep embedding is compiled in \sct{sct:compilation-interface}
+The translation to the deep embedding assumes existence of an adequate deep embedding. This deep embedding
+should have an interface that corresponds to methods emitted by phases: \emph{i)} language virtualization,
+\emph{ii)} constants and free variables, \emph{iii)} methods defined by the direct embedding. Further, for
+ each type translation, signature of these method is different. In this section we describe
+ how to define the deep embedding interface~(\sct{sct:relaxed-interface}) for relevant type translations:
+   \emph{i)} the identity translation~(\sct{sct:identity-embedding}),
+   \emph{ii)} the polymorphic embedding~(\sct{sct:polymorphic-embedding}),
+   \emph{iii)} the polymorphic embedding with eager inlining~(\sct{sct:polymorphic-embedding-with-eager-inlining}), and
+   \emph{iv)} the embedding with custom types~(\sct{sct:embedding-with-custom-types}). For conciseness,
+   in all embeddings we omit the interface of pattern matching and virtualized universal methods.\todo{code-pointer}
 
+\subsection{Relaxed Interface of the Deep Embedding}
+\label{sct:relaxed-interface}
 
-% In the following sections we show this interface for each type translation:
-% For brevity we use the type R[_] instead of Rep[T] to represent the deep embedding.
-\subsection{Defining the a DSL}
-\label{sct:connecting}
-\subsection{DSL Compilation Interface}
-\label{sct:compilation-interface}
+The \yy translation requires a certain interface from the deep embedding. This interface, however,
+does not conform to the typical definition of an interface. In most of the translation rules
+the method name, number of type arguments, and number of explicit type arguments are defined.
 
-% Identity.
-\todo{better name}
-\subsection{Shallow Embedding}
-\label{sct:shallow-embedding}
+The number of implicit arguments and the return type, however, are left open to
+ the DSL author. These arguments are added by the type-checker after scope injection. For example, if we define the
+\code{$\$$ifThenElse} function as:\begin{lstparagraph}
+def ifThenElse[T](cond: Boolean, thn: => T, els: => T)(
+  implicit tpe: TypeTag[T]): T = \\...
+\end{lstparagraph}
+the Scala type-checker will invisibly provide run-time type information
+to the method.
+
+This feature can be used in the deep embeddings for various purposes. The ones that
+were used in practice are: \emph{i)} tracking type information, \emph{ii)} tracking
+positions in the direct embedding source code, \emph{iii)} changing the method return type
+based on the argument types, and \emph{iv)} allowing multiple methods with the
+same erased signature\footnote{On the JVM, due to type erasure, methods with different
+ types are sometimes erased to the same signature. This can be avoided by augmenting
+ methods with an additional implicit parameters that modifies the method signature.}.
+
+% TODO Expansion point: maybe expand and explain all of these methods in the appendix.
+
+\subsection{Embedding for the Identity Translation}
+\label{sct:identity-embedding}
+
+The DSL embedding for the identity translation is not truly a deep embedding. The
+types are unmodified and, thus, can not abstract over the DSL intermediate representation.
+This translations is still interesting as it can be used for instrumenting language
+constructs of Scala, and for restricting certain language features in the direct embedding. The
+basic interface that contains all the language features, without additional implicit parameters,
+is defined in~\figref{fig:interface-identity-dsl}.
+
+% Hole and lift interface.
+In this interface method \code{hole} has a slightly different representation than what is presented
+in \sct{sct:translation}. Method has an additional parameter for the run-time type
+information~(\code{tpe: TypeTag[T]}). This parameter is used for explicitly passing
+the type information to the method by \yy. This allows the DSL author to have a signature
+of \code{hole} with multiple type parameters. This is necessary in for the \todo{embedding with custom types}
+as we will see in \sct{sct:embedding-with-custom-types}.
+
+% Control flow is preserved with the Scala by-name parameters.
+With this embedding the order of execution in all control flow constructs of Scala is preserved with
+ by-name parameters. For example, in \code{$\$$ifThenElse} both the \code{thn} and the \code{els} branch
+are by-name and their execution order is defined by the implementation of the method. Similarly,
+\code{$\$$whileDo}, \code{$\$$doWhile}, \code{$\$$try}, and \code{$\$$lazyValDef} have their
+ parameters delayed.
+
+With this type of the embedding the DSL author can instrument Scala language features
+ at will. For example, collecting profiles of \code{if} conditions can be simply added by overriding the
+\code{$\$$ifThenElse} method:\begin{lstparagraph}
+def ifThenElse[T](cond: Boolean, thn: => T, els: => T)(implicit sc: SourceContext): T = {
+  val (thnCnt: Long, elsCnt: Long) =
+    globalProfiles.getOrElse(sc, (0, 0))
+
+  globalProfiles.update(sc,
+    if (cond) (thnCnt + 1, elsCnt)
+    else (thnCnt, elsCnt + 1))
+  if (cond) thn else els
+}
+\end{lstparagraph}
+Achieving this with a facility like macros would require the DSL author to know the
+reflection API and to write a transformers.
+
+With this type of embedding the supported features that are not of interest in the deep embedding
+ can be removed with an interesting trick. If we implement each method in the embedding as a macro
+ that inlines the method to its original language construct all abstraction overhead
+ disappears. For example, \code{$\$$ifThenElse} can be returned to a regular if with\begin{lstparagraph}
+def $\$$ifThenElse[T](cond: Boolean, thn: => T, els: => T): T =
+  macro ifThenElseImpl[T]
+
+def ifThenElseImpl[T](c: Context)(cond: c.Tree,
+  thn: c.Tree, els: c.Tree): c.Tree = { import c.universe._
+  q"if ($\$$cond) $\$$thn else $\$$els"
+}
+\end{lstparagraph}
 
 \begin{figure}
 \begin{listingtiny}
-trait IdentityDSL {
-  // TODO lift and hole
-  // controls
-  def $\$$ifThenElse[T](cond: Boolean, thenBr: => T, elseBr: => T): T
+trait FunctionsInterface {
+  // only a subset of function arities is displayed
+  def $\$$app[U](f: () => U): () => U
+  def $\$$lam[U](f: () => U): () => U
+
+  def $\$$app[T_1, U](f: T_1 => U): T_1 => U
+  def $\$$lam[T_1, U](f: T_1 => U): T_1 => U
+}
+
+trait IdentityInterface with FunctionsInterface {
+  // constants and captured variables
+  def lift[T](v: T): T
+  def hole[T](id: Long, tpe: TypeTag[T]): T
+
+  // control structures
+  def $\$$ifThenElse[T](cond: Boolean, thn: => T, els: => T): T
   def $\$$return(expr: Any): Nothing
   def $\$$whileDo(cond: Boolean, body: => Unit): Unit
   def $\$$doWhile(body: => Unit, cond: Boolean): Unit
-  def $\$$try[T](body: => T, catches: Throwable => T, finalizer: => T): T
+  def $\$$try[T](body: => T, catches: Throwable => T, fin: => T): T
   def $\$$throw(t: Throwable): Nothing
 
   // variables
@@ -1263,51 +1345,52 @@ trait IdentityDSL {
   def $\$$varDef[T](init: T): T
   def $\$$read[T](init: T): T
   def $\$$assign[T](lhs: T, rhs: T): Unit
-
-  // subset of function arities
-  def $\$$app[U](f: () => U): () => U
-  def $\$$lam[U](f: () => U): () => U
-
-  def $\$$app[T_1, U](f: T_1 => U): T_1 => U
-  def $\$$lam[T_1, U](f: T_1 => U): T_1 => U
 }
 \end{listingtiny}
+\caption{Interface of the identity DSL.}
+\label{fig:interface-identity-dsl}
 \end{figure}
 
 \subsection{Polymorphic Embedding}
 \label{sct:polymorphic-embedding}
 
+
 \begin{figure}
 \begin{listingtiny}
-trait PolymorphicBase {
-  type R[+T]
-}
-
-trait PolymorphicControlScala extends PolymorphicBase {
-  def $\$$ifThenElse[T](cond: R[Boolean], thenBr: => R[T], elseBr: => R[T]): R[T]
-  def $\$$return(expr: R[Any]): R[Nothing]
-  def $\$$whileDo(cond: R[Boolean], body: => R[Unit]): R[Unit]
-  def $\$$doWhile(body: => R[Unit], cond: R[Boolean]): R[Unit]
-  def $\$$try[T](body: => R[T], catches: Throwable => T, finalizer: => T): T
-  def $\$$throw(t: Throwable): Nothing
-}
-
-trait PolymorphicVariables extends PolymorphicBase {
-  def $\$$valDef[T](init: T): T
-  def $\$$lazyValDef[T](init: T): T
-  def $\$$varDef[T](init: T): T
-  def $\$$read[T](init: T): T
-  def $\$$assign[T](lhs: T, rhs: T): Unit
-}
+trait PolymorphicBase { type R[+T] }
 
 trait GenericFunctionsBase extends PolymorphicBase {
+  // only a subset of function arities is displayed
   def $\$$app[U](f: R[() => U]): () => R[U]
   def $\$$app[T_1, U](f: R[T_1 => U]): R[T_1] => R[U]
 
   def $\$$lam[U](f: () => R[U]): R[() => U]
   def $\$$lam[T_1, U](f: R[T_1] => R[U]): R[T_1 => U]
 }
+
+trait PolymorphicInterface extends GenericFunctionsBase {
+  // constants and captured variables
+  def lift[T](v: T): R[T]
+  def hole[T](id: Long, tpe: TypeTag[T]): R[T]
+
+  // control structures
+  def $\$$ifThenElse[T](cnd: R[Boolean], thn: => R[T], els: => R[T]): R[T]
+  def $\$$return(expr: R[Any]): R[Nothing]
+  def $\$$whileDo(cnd: R[Boolean], body: => R[Unit]): R[Unit]
+  def $\$$doWhile(body: => R[Unit], cond: R[Boolean]): R[Unit]
+  def $\$$try[T](body: => R[T], catches: R[Throwable => T], fin: => R[T]): R[T]
+  def $\$$throw(e: R[Throwable]): R[Nothing]
+
+  // variables
+  def $\$$valDef[T](init: R[T]): R[T]
+  def $\$$lazyValDef[T](init: => R[T]): R[T]
+  def $\$$varDef[T](init: R[T]): R[T]
+  def $\$$read[T](init: R[T]): R[T]
+  def $\$$assign[T](lhs: R[T], rhs: R[T]): R[Unit]
+}
 \end{listingtiny}
+\caption{Interface of the generic polymorphic embedding.}
+\label{fig:polymorphic-embedding}
 \end{figure}
 
 \subsection{Polymorphic Embedding With Eager Inlining}
@@ -1322,11 +1405,34 @@ trait InliningFunctionsBase extends PolymorhpicBase {
   def $\$$lam[T_1, U](f: R[T_1] => R[U]): R[T_1] => R[U]
 }
 \end{listingtiny}
+\caption{Interface of the polymorphic embedding with eager inlining.}
+\label{fig:polymorphic-embedding-weat-eager-inlining}
 \end{figure}
 
 \subsection{Embedding With Custom Types}
 \label{sct:embedding-with-custom-types}
 
+
+\section{Using \yy}
+\label{sct:using-yy}
+
+In this section we show how to define a DSL with \yy, given that we have both the direct and deep embeddings.
+First we describe the basic interface of \yy. Then how to apply the
+translation~(\sct{sct:compilation-interface}). Finally, we show how the DSL user
+uses \yy based DSLs.
+
+\subsection{\yy Interface}
+\label{sct:yy-interface}
+
+\subsection{Defining a Translation for a DSL}
+\label{sct:defining-a-translation}
+
+\subsection{Using a \yy DSL}
+\label{sct:using-a-dsl}
+
+
+% Identity.
+\todo{better name}
 
 \section{Automatic Generation of the Deep Embedding}
 \label{sec:deep-gen}
