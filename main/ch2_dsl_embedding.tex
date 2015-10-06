@@ -1,6 +1,7 @@
 %!TEX root = ../phd.tex
+\part{Concealing the Deep Embedding of Domain-Specific Languages}
 
-\chapter{Concealing the Deep Embedding of Domain-Specific Languages}
+\chapter{Introduction}
 
 % High-level of abstraction, good user interface, great performance, portable code.
 Domain-specific languages (DSLs) provide a restricted,
@@ -1692,6 +1693,9 @@ system resources are easily exhausted.
  problem has been studied before in context of JIT compilation \todo{cite jit compilation} and
  it falls out of the scope of this work.
 
+\section{Compile-Time Error Reporting}
+\label{sec:compile-time-error-reporting}
+
 \section{Using \yy}
 \label{sec:using-yy}
 
@@ -1746,12 +1750,19 @@ functions should not be virtualized.
 \subsection{Using a \yy DSL}
 \label{sec:using-a-dsl}
 
-% The existence of the direct embedding.
-% Test and production.
+% The user of a YY DSL is only faced with the direct embedding where she can
+% work in a host language.
 
-\section{Automatic Generation of the Deep Embedding}
+% If the user puts the direct embedding code within the DSL block gets language restriction but sill no performance benefits. Static analysis.
+
+% Test and production are executed inside by setting a simple compilation flag.
+
+\part{Deep Embedding Development with a Breeze}
+
+\chapter{Generation of the Deep Embedding}
 \label{sec:deep-gen}
 
+\section{Motivation}
 So far, we have seen how \yy translates programs written in the
 direct embedding to the deep embedding. This arguably simplifies life
 for \edsl users by allowing them to work with the interface of the
@@ -1934,7 +1945,7 @@ correct and human readable code out of Scala ASTs. The generated source code
 is used to represent the lowering specification of every IR node.
 
 
-\section{Putting it Together}
+\chapter{Putting it all Together}
 \label{sec:putting-it-together}
 
 % Section will follow the development cycle, DSL author, DSL user
