@@ -1678,19 +1678,19 @@ this method would be invoked instead.
 
 % The can be many types of DSLs but they are all subsumed by a function interface.
 The deeply embedded DSLs can generate and compile code in the host language, other languages, or be interpreted. We have
-abstracted over these types of DSLs with a simple interface for execution. With this approach
+abstracted over these types of DSLs with a simple interface. With this approach
 all compilation decisions are left to the DSL author. This simplifies the framework, however, it
 complicates management of DSL compilation in presence of multiple DSLs.
 
 In the case where multiple DSL frameworks simultaneously invoke compilation
-of a program it is possible to exhaust memory resources of the host language. For example, each
+of a program it is possible to exhaust memory resources of the running process. For example, each
 compilation in Scala requires loading the whole compiler and requires significant
 amounts of memory. When multiple frameworks use compilation without coordination the
 system resources are easily exhausted.
 
 \yy currently does not provide a way to coordinate compilation of different DSLs. Resolving this
  problem has been studied before in context of JIT compilation \todo{cite jit compilation} and
- it is out of the scope of this work.
+ it falls out of the scope of this work.
 
 \section{Using \yy}
 \label{sec:using-yy}
@@ -1703,8 +1703,51 @@ In this section we show how to define a DSL with \yy, given that we have
 \subsection{Defining a Translation for a DSL}
 \label{sec:defining-a-translation}
 
+The direct-to-deep embedding translation is defined as a macro that accepts a single by-name parameter that represents
+a body of a DSL program. For example, the \code{vectorDSL} from \figref{fig:translation-example} is defined as\begin{lstparagraph}
+def vectorDSL[T](body: => T): T = macro vectorDSLImpl[T]
+\end{lstparagraph}
+
+where \code{vectorDSLImpl} represents the macro implantation.
+
+% Macro implementations invokes a simple tree transformer \code{YYTransfomer}.
+The macro implementation calls into a single transformer (\code{YYTransformer}) that
+implements the whole translation. The \code{YYTransformer} is configured with: \emph{i)} the type of
+a DSL component that implements the deep embedding (e.g., \code{la.VectorDSL})
+, \emph{ii)} the type transformer (e.g., generic polymorphic transformer), and
+\emph{iii)} the configuration object (i.e., whether to virtualize functions, methods, lift Scala objects, etc.).
+Interface of the object that creates a \code{YYTransformer} is shown in \figref{fig:YYTransformer}.
+\begin{figure}
+\begin{lstparagraph}
+object YYTransformer {
+  def apply[C <: Context, T](c: C)(
+    dslType: c.Type,
+    tpeTransformer: TypeTransformer[c.type],
+    config: YYConfig): YYTransformer[c.type, T]
+}
+\end{lstparagraph}
+\caption{Interface to the \yy translation.}
+\label{fig:YYTransformer}
+\end{figure}
+
+With the \code{YYTransformer} object the method \code{vectorDSLImpl} is implemented as:\begin{lstparagraph}
+  def vectorDSLImpl[T](c: Context)(body: c.Expr[T]): c.Expr[T] =
+    YYTransformer[c.type, T](c)(
+      typeOf[la.VectorDSL],
+      new EagerInliningTypeTransformer[c.type](c),
+      YYConfig(virtualizeFunctions = false)(
+      body)
+\end{lstparagraph}
+
+here the type of the \code{VectorDSL} is provided in with \code{typeOf}, \code{EagerInliningTypeTransformer} represents the
+translation for polymorphic embedding with eager inlining, and \code{YYConfig} defines that
+functions should not be virtualized.
+
 \subsection{Using a \yy DSL}
 \label{sec:using-a-dsl}
+
+% The existence of the direct embedding.
+% Test and production.
 
 \section{Automatic Generation of the Deep Embedding}
 \label{sec:deep-gen}
@@ -1729,6 +1772,7 @@ counterparts~(\sct{sec:yy-impl-lower}).
 
 %% sstucki: what exactly does this mean?
 \todo{Explain that there is a core language.}
+
 % In the translated method bodies, in addition to the translated DSL itself, we also allow
 % usage of the Scala library constructs that supported by the target back-end (cf.~\cite{techrep}).
 
@@ -1750,7 +1794,6 @@ optimizations when changing the direct embedding of the \edsl.
  in the direct embedding interface should affect only optimizations
  related to that change. However, this is back-end dependent so \yy
  does not provide any guarantees.
-
 
 \todo{Give an example here.}
 
