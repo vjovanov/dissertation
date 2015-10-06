@@ -178,7 +178,6 @@ embeddings is assured.
   translation to generate the deep \edsl definition out of the direct \edsl
   definition~(\sct{sec:deep-gen}).
 
-
 \end{itemize}
 
 %
@@ -1253,7 +1252,8 @@ should have an interface that corresponds to: \emph{i)} methods emitted by langu
    \emph{i)} the identity translation~(\sct{sec:identity-embedding}),
    \emph{ii)} the polymorphic embedding~(\sct{sec:polymorphic-embedding}),
    \emph{iii)} the polymorphic embedding with eager inlining~(\sct{sec:polymorphic-embedding-with-eager-inlining}), and
-   \emph{iv)} the embedding with custom types~(\sct{sec:embedding-with-custom-types}). For conciseness,
+   \emph{iv)} the embedding with custom types~(\sct{sec:embedding-with-custom-types}).
+  Finally, we discuss how is the deep embedding compiled and executed~(\sct{sec:yy-interface}). For conciseness,
    in all embeddings we omit the interface of pattern matching and virtualized universal methods.
 
 \subsection{Relaxed Interface of the Deep Embedding}
@@ -1273,7 +1273,7 @@ def $\$$ifThenElse[T](cond: Boolean, thn: => T, els: => T)(
 \end{lstparagraph}
 after the translation the Scala type-checker will provide the arguments that carry run-time type information.
 
-% TODO Expansion point we can talk about changing the return type.
+% EXP Expansion point: we can talk about changing the return type.
 
 This feature can be used in the deep embeddings for various purposes. The ones that
 were used in practice are: \emph{i)} tracking type information, \emph{ii)} tracking
@@ -1283,7 +1283,7 @@ same erased signature\footnote{On the JVM, due to type erasure, methods with dif
  argument types are sometimes erased to the same signature. This can be avoided by augmenting
  methods with an additional implicit parameter that modifies the overall method signature.}.
 
-% TODO Expansion point: maybe expand and explain all of these methods in the appendix.
+% EXP Expansion point: maybe expand and explain all of these methods in the appendix.
 
 \subsection{Embedding for the Identity Translation}
 \label{sec:identity-embedding}
@@ -1614,18 +1614,91 @@ With this type of embedding the DSL author is free to redefine types arbitrarily
  for another DSL. For further information on such embeddings see \cite{hofer_polymorphic_2008}
  and \sct{subsec:slick}.
 
+\subsection{\yy Interface}
+\label{sec:yy-interface}
+
+% The interface is liberal.
+\yy does not require an exact interface for the translation to the deep embedding and therefore there are no \code{traits} that
+a DSL author must extend in order to use the translation. The interface is defined by method names
+defined in the translation and by the types dictated by the type translation.
+
+% However the program still needs to be executed.
+After the translation a program in the deep embedding should be executed and should produce
+the same result\footnote{The result can be different in case of floating-point operations executed on
+different back-end platforms, however this difference should not change decisions that are made based on the result.}
+as the direct embedding. Execution of a program should happen transparently to the DSL, i.e., it should completely
+resemble the execution in the direct embedding.
+
+% The execution requires inputs captured by the direct embedding.
+Execution of the deep program depends on all the variables that were captured by the
+direct embedding. \yy, after the core translation, must assure that the deep embedding
+gets all the values that were replaced by holes and that the DSL compiler or interpreter
+can distinguish to which hole does a value belong.
+
+% Interface with execute and the
+To achieve this \yy requires that the deep embedding implements the
+ \code{Executable} interface~(\figref{fig:executable}). This interface
+ contains a single method \code{execute} that is used for execution of
+ the DSL at host language run-time. \yy simply calls the method \code{execute}
+on the translated DSL with the arguments that were converted to holes.
+
+\begin{figure}
+\begin{listingtiny}
+trait Executable { =>
+  def execute[T](args: Seq[Any]): T
+}
+\end{listingtiny}
+\caption{The trait for that \yy uses to execute the deep embedding.}
+\label{fig:executable}
+\end{figure}
+
+
+% Sorting captured variables.
+\yy invokes \code{execute} with all captured variables sorted in the ascending order by the identifier
+that is passed to the corresponding \code{hole} methods. Since the identifiers passed to
+\code{hole} are strictly increasing, the DSL can uniquely map arguments to the holes they belong to. For example, the DSL program in the example translation~(\figref{lst:transformed_program}) has two captured variables (\code{n} and \code{exp}) with identifiers \code{0} and \code{1} respectively.
+\yy will, after translation, invoke this DSL with\begin{lstparagraph}
+dsl.execute[Int](Seq(n, exp))
+\end{lstparagraph}
+
+% Optimization
+This way of invoking a DSL is convenient for the DSL author as one needs to implement
+a single method, however, it is not optimal. Putting arguments in a \code{Seq} introduces an
+additional level of indirection and imposes boxing of all the arguments. In short
+running DSL programs that are executed in tight loops the overhead of boxing can become
+significant.
+
+To avoid this overhead, before translating to the generic \code{execute} method, \yy looks for
+more specific methods that would correspond to the holes that are passed. If this method is found
+\yy will execute that method although it is not in the interface. For example, if a DSL from the example
+translation~((\figref{lst:transformed_program})) would implement a method with a signature\begin{lstparagraph}
+def execute(v0:Int, v1:Int): Int
+\end{lstparagraph}
+this method would be invoked instead.
+
+% The can be many types of DSLs but they are all subsumed by a function interface.
+The deeply embedded DSLs can generate and compile code in the host language, other languages, or be interpreted. We have
+abstracted over these types of DSLs with a simple interface for execution. With this approach
+all compilation decisions are left to the DSL author. This simplifies the framework, however, it
+complicates management of DSL compilation in presence of multiple DSLs.
+
+In the case where multiple DSL frameworks simultaneously invoke compilation
+of a program it is possible to exhaust memory resources of the host language. For example, each
+compilation in Scala requires loading the whole compiler and requires significant
+amounts of memory. When multiple frameworks use compilation without coordination the
+system resources are easily exhausted.
+
+\yy currently does not provide a way to coordinate compilation of different DSLs. Resolving this
+ problem has been studied before in context of JIT compilation \todo{cite jit compilation} and
+ it is out of the scope of this work.
+
 \section{Using \yy}
 \label{sec:using-yy}
 
 In this section we show how to define a DSL with \yy, given that we have
- both the direct and deep embeddings. First we describe the basic interface
- of \yy. Then how to apply the translation~(\sct{sec:defining-a-translation}).
- Finally, we show how the DSL user uses \yy based DSLs.
-
-\subsection{\yy Interface}
-\label{sec:yy-interface}
-
-% Interface is minimal.
+ both the direct and deep embedding that conforms to the required interface.
+ First we describe how to apply the translation~(\sct{sec:defining-a-translation}) and
+ then how the DSL user uses \yy based DSLs.
 
 \subsection{Defining a Translation for a DSL}
 \label{sec:defining-a-translation}
@@ -1636,7 +1709,6 @@ In this section we show how to define a DSL with \yy, given that we have
 \section{Automatic Generation of the Deep Embedding}
 \label{sec:deep-gen}
 
-% \todo{add the Amir's system}
 So far, we have seen how \yy translates programs written in the
 direct embedding to the deep embedding. This arguably simplifies life
 for \edsl users by allowing them to work with the interface of the
