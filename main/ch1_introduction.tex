@@ -1,20 +1,24 @@
 %!TEX root = ../phd.tex
 \chapter{Introduction}
 
-% How worlds infrastructure depends on high-productivity (elaborate what is high-productivity) and high-performance computation.
+% How worlds infrastructure depends on high-productivity (elaborate what is high-productivity)
+% and high-performance computation.
 
-% Heterogeneous hardware story.
+% General purpose programming languages won't cut it.
+%  - compiler general purpose
+%  - language too broad for both high-performance
 
-% DSLs restrict the domain and allow compilers.
+% DSLs restrict the domain, and use the knowledge about the domain to produce better code.
 
 % Introduce the DSL users.
 
-% Introduce how it is important that DSLs are user-friendly for the DSL user. And easy
-% to develop for the DSL author.
+% Introduce how it is important that DSLs are user-friendly for the DSL user.
+% And easy to develop for the DSL author.
 
 % External DSLs wonderful.
 
 % External DSLs rarely pay-off, hard, only SQL and matlab.
+% Make this as a paragraph.
 
 % Further, they quickly grow in a big language. Cite Erik Meier.
 
@@ -32,7 +36,7 @@
 
 % Summarize in a table (DSL author, DSL user) x (performance, user-friendines, etc.)
 
-% In thesis we tackle the problem. is thesis we tackle the problems with deeply embedded DSLs.
+% This thesis we tackle the problem. is thesis we tackle the problems with deeply embedded DSLs.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Part 1
@@ -42,17 +46,33 @@
 %% Concealing the deep embedding.
 %%
 
+%
+% Simple translation resolves all the problems with deep embedding of DSLs.
+%
+
+%
+% Explain each chapter.
+%
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Part 2
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%
-%% Generating the deep embedding.
-%%
+%
+% Generating the deep embedding.
+%
 
-%%
-%% Dynamic Compilation of DSLs
-%%
+% The translation has a problem, required dual embeddings.
+% We reuse the translation to generate DLSs.
+
+
+%
+% Dynamic Compilation of DSLs
+%
+
+% Finally, we identify that dynamic compilation is hard to track in the deep embeddings.
+% we propose a solution for simplifying dynamic compilation in domain-specific languages.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Part 3
@@ -63,13 +83,17 @@
 %%
 
 %%
-%% Staging for performance of shallow DSLs
+%% Polyvariant Staging for Performance of Shallow DSLs
 %%
+\section{Related Work}
 
 
+\chapter{Background}
+\label{ch:background}
 
-\section{Background}
-\label{sec:background}
+\section{The Scala Programming Language}
+\section{Embedded Domain-Specific Languages}
+\section{Partial Evaluation and Multi-Stage Programming}
 % TODO
 % Distinguish method and functions
 % Universal method
@@ -176,7 +200,6 @@ represented to the user as regular methods while macro definitions
 operate on Scala ASTs.  The arguments of macro method definitions are
 the type-checked ASTs of the macro arguments.
 
-\todo{remove tool}
 %Users / Usage
 For DSLs based on \yy we use a macro that accepts a single block of
 code as its input. At compile time, this block is first type checked
@@ -190,5 +213,6 @@ DSL snippet, \yy produces the \code{VectorDSL} program in
     Vector.fill(1,3) + Vector.fill(2,3)
   }
 \end{listingtiny}
+
 \subsection{Partial Evaluation}
 \label{sec:partial-evaluation}
