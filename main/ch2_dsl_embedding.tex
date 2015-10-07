@@ -1,58 +1,12 @@
 %!TEX root = ../phd.tex
 \part{Concealing the Deep Embedding of Domain-Specific Languages}
 
-\chapter{Introduction}
+\chapter{Introduction: Combining Direct and Deep Embeddings of Domain-Specific Languages}
 
-% High-level of abstraction, good user interface, great performance, portable code.
-Domain-specific languages (DSLs) provide a restricted,
-high-level, and user-friendly interface crafted for a specific domain.
-Restricting the language to a particular domain allows programming at
-a high level of abstraction while retaining good run-time performance
-by leveraging domain knowledge for optimized code generation or
-interpretation.  In certain cases, code can even be targeted at
-heterogeneous computing environments~\cite{rompf_optimizing_2013}.
-
-The implementation of a usable \emph{external} (or \emph{stand-alone})
-DSL requires building a parser, type-checker, and possibly a complete
-tool chain consisting of IDE integration, debugging, and documentation
-tools. This is a great undertaking that is often not justified by the
-benefits of having an external DSL.  A promising alternative to
-external DSLs are \emph{embedded DSLs} (\edsls)~\cite{Hudak96csur}
-which are hosted in a general-purpose language and reuse its
-facilities. For the purpose of the following discussion, we
-distinguish between two main types of embeddings: \emph{shallow} and
-\emph{deep} embeddings.
-
-  \begin{itemize}
-  \item In a shallowly embedded DSL, values of the embedded language
-    are \emph{directly} represented by values in the host language.
-    Consequently, terms in the host language that represent terms in
-    the embedded language are evaluated directly into host-language
-    values that represent DSL values. In other words, evaluation in
-    the embedded language corresponds directly to evaluation in the
-    host language.
-  \item In a deeply embedded DSL, values of the embedded language are
-    represented \emph{symbolically}, that is, by host-language data
-    structures, which we refer to as the \emph{intermediate
-      representation (IR)}. Terms in the host language that represent
-    terms in the embedded language are evaluated into this intermediate
-    representation. An additional evaluation step is necessary to
-    reduce the intermediate representation to a direct representation.
-    This additional evaluation is typically achieved through
-    \emph{interpretation} of the IR in the host language, or through
-    \emph{code generation} and subsequent \emph{execution}.
-  \end{itemize}
-
-  An important advantage of deep embeddings over shallow ones is that DSL
-  terms can be easily manipulated by the host language. This enables domain-specific
-  optimizations~\cite{rompf_lightweight_2012,rompf_optimizing_2013}
-  that lead to orders-of-magnitude improvements in program performance, and
-  multi-target code generation~\cite{brown_heterogeneous_2011}.
-%
-
+\todo{Introduced the deep embedding and shallow embedding.}
 % Direct embedding
 
-On the other hand, shallow embeddings typically suffer less from
+Shallow embeddings typically suffer less from
 \emph{linguistic mismatch}: this is particularly obvious for a class of shallow embeddings that we refer to as \emph{direct} embeddings. Direct embeddings preserve the intrinsic constructs of the host language ``on the nose''. That is, DSL
 constructs such as \code{if} statements, loops, or function literals, as well
 as primitive data types such as integers, floating-point numbers, or strings
@@ -75,38 +29,36 @@ relate their programs to the code that is finally executed. Finally, the host
 language often provides more constructs than the embedded language and the usage
 of these constructs can be undesired in the DSL. If these constructs are generic in type
 (e.g., list comprehensions or \code{try\\catch}) they can not be restricted in the embedded
-language by using complex types (\sct{sec:abstraction-leaks}).
+language by using complex types~(\sct{sec:abstraction-leaks}).
 
 Ideally, we would like to complement the high performance of deeply
 embedded DSLs, along with their capabilities for multi-target code
 generation, with the usability of their directly embedded counterparts.
-Reaching this goal turns out to
-be more challenging than one might expect: let us compare the
-interfaces of a direct embedding and a deep embedding of a simple
+Reaching this goal turns out to be more challenging than one might expect:
+let us compare the interfaces of a direct embedding and a deep embedding of a simple
 EDSL for manipulating vectors\footnote{
-  All code examples are written in \emph{Scala}.  Similar techniques can
+  All code examples are written in \emph{Scala}. Similar techniques can
   be applied in other statically typed languages.  Cf.~\cite{carette_finally_2009,awesome,svenningsson_combining_2012}.}.
-The direct version of the interface is declared as: \vspace{3pt}
-\begin{listingtiny}
+The direct version of the interface is declared as:\begin{lstparagraph}
 trait Vector[T] {
   def map[U](fn: T => U): Vector[U]
 }
-\end{listingtiny}
-\vspace{3pt} The interface of the deep embedding, however,
+\end{lstparagraph}
+
+The interface of the deep embedding, however,
 fundamentally differs in the types: while the (polymorphic) \code{map}
 operation in the direct embedding operates directly on values of some
 generic type \code{T}, the deep embedding must operate on whatever
 intermediate representations we chose for \code{T}. For our example,
 we chose the abstract, higher-kinded type \code{Rep[T]} to represent
-values of type \code{T} in the deep embedding: \vspace{3pt}
-\begin{listingtiny}
+values of type \code{T} in the deep embedding:\begin{lstparagraph}
 trait Vector[T] {
   def map[U](fn: Rep[T => U]): Rep[Vector[U]]
 }
-\end{listingtiny}
+\end{lstparagraph}
 
-\vspace{3pt} The difference in types is necessarily visible in the
-signature and thus inevitably leaks into user programs.  This might seem like
+The difference in types is necessarily visible in the
+signature and thus inevitably leaks into user programs. This might seem like
 a low price to pay for all the advantages offered by a deep embedding.
 However, as we will see in \sct{sec:abstraction-leaks}, this
 difference in types is at the heart of many of the inconveniences
@@ -127,7 +79,7 @@ typed'' interface. We would like to preserve the idiomatic interface
 of the host language and completely conceal the deep embedding.
 
 % Direct interface with meta-programming.
-The central idea of this paper is the use of \emph{reflection} to convert
+The central idea of this \work is the use of \emph{reflection} to convert
 programs written in an unmodified direct embedding into their deeply
 embedded counterparts.  Since the fundamental difference between the
 interfaces of the two embeddings resides in their types, we employ a
@@ -194,18 +146,18 @@ direct implementation obviates 101 type annotations related to the
 deep embedding. The complete evaluation is presented in
 \sct{sec:ch2-evaluation}.
 
-Throughout the paper, we target the LMS~\cite{rompf_lightweight_2012}
-framework as a deep embedding back-end due to the plethora of existing
+Throughout the paper, we target the LMS
+framework~\cite{rompf_lightweight_2012} as a deep embedding back-end due to the plethora of existing
 LMS \edsls.  Consequently, we will assume that deep embeddings use
 LMS' extensible IR.  However, \yy is applicable to other types of IR
 (e.g., polymorphic embeddings~\cite{hofer_polymorphic_2008}) and
-possibly other statically typed languages (\sct{sec:other-languages}).
+possibly other statically typed languages~(\sct{sec:other-languages}).
 
-\section{Motivation}
+\chapter{Motivation: Abstraction Leaks in the Deep Embedding}
 \label{sec:motivation}
 
 % What do we describe in this Section
-The main idea of this paper is that \edsl{} users should program in a
+The main idea of this \work is that \edsl{} users should program in a
 direct embedding, while the corresponding deep embedding should be used only in production.
 To motivate this idea we consider the direct embedding and the deep embedding of a simple \edsl for manipulating vectors. Here, we use Scala to show the problems with the deep embedding that apply to other statically typed programming languages (e.g., Haskell and OCaml). These languages achieve the embedding in different ways~\cite{svenningsson_combining_2012,awesome,carette_finally_2009,guerrero_implementing_2004}, but this is always reflected in the type signatures. In the context of Scala, there are additional problems with type inference and implicit conversions, however, we omit those from the discussion as language specific.
 
@@ -246,7 +198,7 @@ and inspecting intermediate values with the debugger is straightforward.
 The problem, however, is that the code written in such a direct embedding suffers from major performance issues \cite{rompf_optimizing_2013}. For some intuition, consider the following code for adding 3 vectors: \code{v1 + v2 + v3}. Here, each \code{+} operation creates an intermediate \code{Vector} instance, uses the \code{zip} function, which itself creates an intermediate \code{Seq} instance, and calls a higher-order \code{map} function. The abstractions of the language that allow us to write code with high-level of abstraction have a downfall in terms of performance. Consecutive vector summations would perform much better if they were implemented with a simple while loop.
 
 % Deep Embedding
-\subsection{The Deep Embedding}
+\section{The Deep Embedding}
 For the DSL from \figref{lst:vector}, the overhead could be eliminated with
 optimizations like stream fusion~\cite{coutts_stream_2007} and inlining, but to
 properly exploit domain knowledge, and to potentially target other platforms,
@@ -311,7 +263,7 @@ trait VectorDSL extends Base {
 \caption{\label{lst:vector_deep} A LMS based deep \edsl{} for manipulating numerical vectors.}
 \end{figure}
 
-\subsection{Abstraction Leaks in the Deep Embedding}
+\section{Abstraction Leaks in the Deep Embedding}
 \label{sec:abstraction-leaks}
 
 The programs in the deep embedding construct the IR instead of the values in the embedded language. This inevitably leaks to the users in the following ways:
@@ -350,8 +302,11 @@ In the deep embedding the corresponding type error contains \code{Rep} types and
        x + 1
            ^
 \end{lstparagraph}
-This example represents one of the  most common type errors. For more complicated type errors
-\todo{cf.}~\cite{techrep}. \paragraph{Unrestricted host language constructs.} In the deep embedding all
+This example represents one of the  most common type errors.
+
+\todo{another more involved type error.}
+
+\paragraph{Unrestricted host language constructs.} In the deep embedding all
 generic constructs of a host language can be used arbitrarily. For example,
 \code{scala.List.fill[T](count: Int, el: T)} can, for the argument \code{el}, accept
 both direct and deep terms. This is often undesirable as it can lead
@@ -388,7 +343,7 @@ instead during DSL program execution:\vspace{3pt}
 Here, the resulting program always throws a \code{DivisionByZero}
 exception.
 
-\section{Translation of the Direct Embedding}
+\chapter{Translation of the Direct Embedding}
 \label{sec:translation}
 
 % Set up the problem.
@@ -422,7 +377,6 @@ in \sct{sec:langauge-virtualization} and DSL intrinsification
 in \sct{sec:dsl-intrinsification}. The whole translation is explained on a concrete example
 in \sct{sec:translation-example}. Finally we argue for correctness of the translation
 in \sct{sec:correctness}.
-\todo{Does restricting language features fit here.}
 
 \begin{figure}
 \centering
@@ -1127,22 +1081,17 @@ vectorDSL {
 val n = 100; val exp = 6;
 new VectorDSL with IfOps
   with MathOps { def main() = {
-  ifThenElse[Int](
-    hole[Int](typeTag[Int], 0) > lift[Int](0),{
-    val v: Rep[Vector[Int]] =
-      this.valDef[Vector[Int]](
-        this.Vector.range(
-          lift[Int](0),
-          hole[Int](typeTag[Int], 0)))
+  ifThenElse[Int](hole[Int](0, typeTag[Int]) > lift[Int](0),{
+    val v: Rep[Vector[Int]] = this.valDef[Vector[Int]](
+      lift(vector.Vector).range(lift[Int](0),hole[Int](
+        typeTag[Int], 0)))
     v.map[Int](lam[Int, Int](x: Rep[Int] =>
-      this.`package`.pow(
-        x,
-        hole[Int](typeTag[Int], 1))
-    ).sum[Int](this.Numeric.IntIsIntegral)
+      lift(math.`package`).pow(x, hole[Int](typeTag[Int], 1))
+    ).sum[Int](lift(math.Numeric).IntIsIntegral)
   },{
     lift[Int](0)
-  }
-)}
+  })
+}
 \end{listingtiny}
 \caption{The \yy translation of the program from \figref{lst:desugaring}.}
 \label{lst:transformed_program}
@@ -1150,62 +1099,6 @@ new VectorDSL with IfOps
 \end{subfigure}
 \caption{\label{fig:translation-example} Transformation of an EDSL program for calculating $\sum_{i=0}^n i^{exp}$.}
 \end{figure*}
-
-
-
-\subsection{Restricting Host Language Constructs}
-\label{sec:restricting}
-% TODO restricting constants
-% TODO Rule out unsupported expressions.
-
-The direct DSL programs can contain well-typed expressions that are not
-supported by the deep embedding. Often, these expressions lead to unexpected program
-behavior (\sct{sec:motivation}) and we must rule them out by reporting meaningful and
-precise error messages to the user.
-
-% Consequence of the translation => Ill typed
-We could rule out unsupported programs by relying on properties of the
-core translation. If a direct program contains unsupported expressions, after
-translation it will become ill-typed in the deep embedding. We could reject
-unsupported programs by simply reporting type checking errors. Since, the
-direct program is well-typed and the translation preserves well-typedness all
-type errors must be due to unsupported expressions.
-
-% Leaks error messages
-Unfortunately, naively restricting the language by detecting type-checking
-failures is leaking information about the deep embedding. The reported error
-messages will contain virtualized language constructs and types. This is not desirable
-as users should not be exposed to the internals of the deep embedding.
-
-% Custom type checking!
-\yy avoids leakage of the deep embedding internals in error messages by performing an
-additional verification step that, in a fine grained way, checks if a method
-from the direct program exists in the deep embedding. This step traverses the
-tree generated by the core translation and verifies for each method call if it
-correctly type-checks in the deep embedding. If the type checking fails \yy
-reports two kinds of error messages:
-
-\begin{itemize}
-\item Generic messages for unsupported methods:\begin{lstparagraph}
-List.fill(1000, Vector.fill(1000,1)).reduce(_+_)
-^
-Method List.fill[T] is unsupported in VectorDSL.
-\end{lstparagraph}
-%\vfill %% sstucki: hack!
-
-\item Custom messages for unsupported host language constructs:\begin{lstparagraph}
-try Vector.fill(1000, 1) / 0
-^
-Construct try/catch is unsupported in VectorDSL.
-\end{lstparagraph}
-\end{itemize}
-%
-% Restricting the language is a piece of cake.
-With \yy the DSL author can arbitrarily restrict virtualized constructs in an
-embedded language by simply omitting corresponding method definitions from the
-deep embedding. Due to the additional verification step all error messages are
-clearly shown to the user. This allows easy construction of embedded DSLs that
-support only a subset of the host language.
 
 \subsection{Correctness}
 \label{sec:correctness}
@@ -1338,6 +1231,8 @@ def ifThenElseImpl[T](c: Context)(cond: c.Tree,
 \yy provides a component that has all language features overridden with macros that rewrite
 to the original language construct. By using this component the DSL author can override functionality
 of individual language constructs without a need to redefine all other language features.
+
+\todo{hole -> $\$hole$}
 
 % Hole and lift interface.
 In \figref{fig:interface-identity-dsl} method \code{hole} has a slightly different  representation than what is presented in \sct{sec:translation}. Method \code{hole}
@@ -1691,7 +1586,7 @@ system resources are easily exhausted.
 
 \yy currently does not provide a way to coordinate compilation of different DSLs. Resolving this
  problem has been studied before in context of JIT compilation \todo{cite jit compilation} and
- it falls out of the scope of this work.
+ it falls out of the scope of this \work.
 
 \section{Compile-Time Error Reporting}
 \label{sec:compile-time-error-reporting}
@@ -1757,12 +1652,303 @@ functions should not be virtualized.
 
 % Test and production are executed inside by setting a simple compilation flag.
 
+\chapter{Evaluation}
+\label{sec:ch2-evaluation}
+
+We compared the deep embedding generation of \yy with Forge on three Delite-based
+ deep \edsls: OptiML, OptiQL, and Vector~(\sct{subsec:eval-deepgen}).
+Then, we measured the effect of concealing the deep embedding by counting the
+number of obviated annotations related to deep embedding in the test suites of OptiML
+and OptiGraph EDSLs~(\sct{subsec:correctness}). Finally, we evaluated the ease
+of adopting \yy for the existing deep \edsl Slick~\cite{slick}
+~(\sct{subsec:slick}) and compare the effort of designing the interface with
+the current version of the interface. We do not report on execution speed since performance
+benefits of the deep embedding have been studied previously~\cite{rompf_optimizing_2013,forge}.
+
+\subsection{Automatic Deep EDSL Generation}
+\label{subsec:eval-deepgen}
+
+To evaluate the automatic deep EDSL generation for OptiML, OptiQL, and Vector,
+we used Forge~\cite{forge}, a Scala based meta-EDSL for generating both direct
+and deep EDSLs from a single specification. Forge already contained
+specifications for OptiML and OptiQL.
+
+To avoid re-typing OptiML and OptiQL we modified Forge to generate the direct
+embedding from its specification and generated the direct embeddings
+from the existing Forge based \edsl specifications. Then, we used our automatic deep
+generation tool to convert these direct embeddings into their deep
+counterparts. Since, deep \edsls mostly consist of boilerplate the generated
+embeddings have a similar number of LOC as the handwritten counterparts. For all
+three \edsls, we verified that tests running in the direct embeddings behave the
+same as the tests for the deep embeddings.
+
+In Table \ref{tbl:deepgen}, we give a line count comparison for the code in
+the direct embedding, Forge specification, and deep embedding for three \edsls:
+\emph{i) OptiML} is a Delite-based \edsl for machine learning,
+\emph{ii) OptiQL} is a Delite-based \edsl for running in-memory queries, and
+\emph{iii) Vector} is the EDSL shown as an example throughout this paper.
+We are careful with measuring lines-of-code (LOC) with Forge and the deep EDSLs: we only
+count the parts which are generated out of the given direct EDSL.
+
+Overall, \yy requires roughly the same number of LOC as Forge to specify the DSL.
+This can be viewed as positive result since Forge relies on a specific meta-language
+ for defining the two embeddings. \yy, however, uses Scala itself
+for this purpose and is thus much easier to use. In case of OptiML, Forge
+slightly outperforms \yy. This is because Forge supports meta-programming at
+the level of classes while Scala does not.
+
+\begin{table}[ht]
+\caption{LOC for direct EDSL, Forge specification, and deep EDSL.}
+\label{tbl:deepgen}
+\centering
+\begin{tabularx}{\linewidth}{ X X X X }
+\toprule
+ EDSL       &   Direct      &     Forge     &   Deep      \\ \midrule
+OptiML      &   1128        &     1090    &   5876      \\
+OptiQL      &   73          &     74      &   526       \\
+Vector      &   70          &     71      &   369       \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+We did not compare the efforts required to specify the DSL with \yy and Forge. The
+reason is twofold:
+\begin{itemize}
+
+\item It is hard to estimate the effort required to design a DSL. If the same
+person designs a single DSL twice, the second implementation will always be
+easier and take less time. On the other hand, when multiple people implement a DSL their skill levels
+can greatly differ. Finally, DSL design is technically demanding and it is hard to find
+a large enough group to conduct a statistically significant user
+study.
+
+\item Writing the direct embedding in Scala is arguably simpler than writing a
+Forge specification. Forge is Delite-specific language and uses a custom
+preprocessor to define method bodies in Scala. Thus, learning a new language and
+combining it with Scala snippets must be harder than just writing idiomatic
+Scala.
+\end{itemize}
+
+\subsection{No Annotations in the Direct Embedding}
+\label{subsec:correctness}
+
+% What have we done.
+To evaluate the number of obviated annotations related to the deep embedding we
+implemented a direct embedding for the OptiGraph \edsl (an \edsl for graph
+processing), and used the generated direct \edsl for OptiML. We implemented
+the whole application suites of these \edsls with the direct embedding. All 21
+applications combined have 1284 lines of code.
+
+To see the effects of the direct embedding as the front-end we counted the
+number of deep embedding related annotations that were used in the application
+suite. The counted annotations are \code{Rep[T]} for types and \code{lift(t)}
+for lifting literals when implicit conversions fail. In 21 applications
+the direct embedding obviated 96 \code{Rep[T]} annotations and 5
+\code{lift(t)} annotations.
+
+\subsection{Case Study: \yy for Slick}
+\label{subsec:slick}
+Slick is a deeply embedded Scala \edsl for database querying and access. Slick
+is not based on LMS, but still uses \code{Rep} types to achieve reification.
+To improve the complicated interface of Slick we used \yy.
+However, since the deep embedding of Slick already exists, we first designed the new
+interface (direct embedding). The new interface has dummy method
+implementations since semantics of different database back-ends can not be
+mapped to Scala. Thus, this interface is used only for user friendly error reporting and
+documentation. The interface is completely new, covers all the functionality of Slick,
+ and consists of only 70 lines of code (cf. \cite{techrep}).
+
+Slick has complicated method signatures that do not correspond to the simple new
+interface. In order to preserve backward compatibility, the redesign of Slick to
+fit \yy's core translation was not possible. We addressed this by adding a
+wrapper for the deep embedding of Slick that fits the required signature.
+The wrapper contains only 240 lines of straightforward code.
+
+We compare the effort required for the interface design with \yy and with
+traditional type system based approaches. The development of the previous Slick
+interface required more than a year of development while the \yy version was
+developed in less than one month. The new front-end passes all 54 tests that cover the
+most important functionalities of Slick. When using Slick all error messages are
+idiomatic to Scala and resemble typical error messages from the standard
+library.
+
+This study was performed by only two users and, thus, is not statistically
+significant. Still, we find the difference in required effort large enough to indicate that \yy
+simplifies front-end development of \edsls.
+
+\chapter{Putting it all Together}
+\label{sec:putting-it-together}
+
+% Section will follow the development cycle, DSL author, DSL user
+
+% We will define a DSL and the dependencies.
+
+% We will use the DSL
+
+% We will generate
+\section{Compilation Times}
+\label{sec:compilation-times}
+
+\section{Discussion}
+\label{sec:other-languages}
+
+% Staging and partial evaluation
+
+\yy consistently translates terms to the embedded domain and, thus, postpones
+DSL compilation to run-time. Although, compilation happens in a different
+compilation stage, \yy does not allow staging~\cite{taha_multi-stage_1997}.
+\edsls can, however, achieve partial evaluation~\cite{jones1993partial} if their
+implementation supports it.
+
+% Yin-Yang requires a few things.
+We implemented \yy in Scala, however the underlying principles are applicable
+in the wider context. \yy operates in the domain of statically typed languages
+based on the Hindley-Milner calculus with a type system that is advanced enough
+to support deep EDSL embedding. The type inference mechanism, purity, laziness,
+and sub-typing, do not affect the operation of \yy. Different aspects of \yy
+require different language features, which we discuss separately below.
+
+% For the translation (nice interface) type introspection. For the library macros.
+\paragraph{The core translation and language restriction} are based on term and
+type transformations. Thus, the host language must support reflection,
+introspection and transformation on types and terms. This can be achieved both
+at run-time and compile-time.
+
+% Semantic Equivalence
+\paragraph{Semantic equivalence} between the direct embedding and deep embedding
+is required for debugging and prototyping. If there is a \emph{semantic mismatch}~\cite{czarnecki_dsl_2004}
+ between the two embeddings, e.g., the host language is lazy and the embedded
+ language is strict, \yy can not be used for debugging. In this scenario the
+ direct embedding can be implemented as stub which is used only for its user
+ friendly interface and error reporting.
+
+
+\section{Related Work}
+\label{sec:related-work}
+
+% Context: Hudak, finally tagless, polymorphic embedding LMS
+\yy is a framework for developing embedded DSLs in the spirit of
+Hudak~\cite{Hudak96csur,Hudak98sr}: embedded DSLs are \emph{Scala
+  libraries} and DSL programs are just \emph{Scala programs} that do
+not, in general, require pre- or post-processing using external tools.
+\yy translates directly embedded DSL programs into
+finally-tagless~\cite{carette_finally_2009} deep embeddings.  Our
+approach supports (but is not limited to)
+polymorphic~\cite{hofer_polymorphic_2008} deep embeddings, and -- as
+should be apparent from the examples used in this paper -- is
+particularly well-adapted for deep EDSLs using an LMS-type
+IR~\cite{rompf_scala-virtualized:_2009,rompf_optimizing_2013}.
+
+% Forge
+Sujeeth et al. propose Forge~\cite{forge}, a Scala based meta-EDSL for generating equivalent
+shallow and deep embeddings from a single specification.  DSLs
+generated by Forge provide a common abstract interface for both
+shallow and deep embeddings through the use of abstract \code{Rep}
+types.  A shallow embedding is obtained by defining \code{Rep} as the
+identity function on types, i.e.\ \code{Rep[T] = T}.
+
+Forge provides some additional features compared to \yy as the Forge language allows meta-programming
+ constructs on the definition level which is not possible in Scala. This makes Forge programs, more
+ concise in certain scenarios. Further, in the deep embedding
+ Forge sometimes generates code which is tightly coupled with the Delite framework.
+
+A DSL user can switch between the shallow and deep embeddings by
+changing a single flag in the project build. Unfortunately, the interface of the shallow
+embedding generated by Forge remains cluttered with \code{Rep} type
+annotations. Additionally, some plain types that are admissible in a
+directly embedded program may lack counterparts among the IR types of
+the deep embedding.  This means that some seemingly well-typed DSL
+programs become ill-typed once the transition from the shallow to the
+deep embedding is made, forcing users to manually fix type errors in
+the deeply embedded program. Finally, DSL authors must learn a new
+language for EDSL design whereas with \yy this language is Scala
+itself.
+
+% Lancet
+Project Lancet~\cite{lancet} by Rompf et al. and work of Scherr and
+Chiba~\cite{scherr_ecoop_2014} interpret Java bytecode to extract
+domain-specific knowledge from directly embedded
+DSL programs compiled to bytecode. These solutions are similar to \yy
+in that the direct embedding is translated to the deep
+embedding, however, they do not provide functionality to
+generate a deep embedding out of a direct one.
+
+% For space reasons:
+Awesome Prelude~\cite{awesome} proposes replacing all primitive types
+in Haskell with type classes that can then be implemented to either
+construct IR or execute programs directly. This allows to easily
+switch between dual embeddings while the type classes ensure
+equivalent type checking.  Unfortunately, this approach does not
+extend easily to native language constructs, and requires changing the
+type signatures of common functions.
+
+\chapter{Improving Error Reporting of DSLs}
+\label{sec:error-reporting}
+
+\section{Restricting Host Language Constructs}
+\label{sec:restricting}
+% TODO restricting constants
+% TODO Rule out unsupported expressions.
+
+The direct DSL programs can contain well-typed expressions that are not
+supported by the deep embedding. Often, these expressions lead to unexpected program
+behavior (\sct{sec:motivation}) and we must rule them out by reporting meaningful and
+precise error messages to the user.
+
+% Consequence of the translation => Ill typed
+We could rule out unsupported programs by relying on properties of the
+core translation. If a direct program contains unsupported expressions, after
+translation it will become ill-typed in the deep embedding. We could reject
+unsupported programs by simply reporting type checking errors. Since, the
+direct program is well-typed and the translation preserves well-typedness all
+type errors must be due to unsupported expressions.
+
+% Leaks error messages
+Unfortunately, naively restricting the language by detecting type-checking
+failures is leaking information about the deep embedding. The reported error
+messages will contain virtualized language constructs and types. This is not desirable
+as users should not be exposed to the internals of the deep embedding.
+
+% Custom type checking!
+\yy avoids leakage of the deep embedding internals in error messages by performing an
+additional verification step that, in a fine grained way, checks if a method
+from the direct program exists in the deep embedding. This step traverses the
+tree generated by the core translation and verifies for each method call if it
+correctly type-checks in the deep embedding. If the type checking fails \yy
+reports two kinds of error messages:
+
+\begin{itemize}
+\item Generic messages for unsupported methods:\begin{lstparagraph}
+List.fill(1000, Vector.fill(1000,1)).reduce(_+_)
+^
+Method List.fill[T] is unsupported in VectorDSL.
+\end{lstparagraph}
+%\vfill %% sstucki: hack!
+
+\item Custom messages for unsupported host language constructs:\begin{lstparagraph}
+try Vector.fill(1000, 1) / 0
+^
+Construct try/catch is unsupported in VectorDSL.
+\end{lstparagraph}
+\end{itemize}
+%
+% Restricting the language is a piece of cake.
+With \yy the DSL author can arbitrarily restrict virtualized constructs in an
+embedded language by simply omitting corresponding method definitions from the
+deep embedding. Due to the additional verification step all error messages are
+clearly shown to the user. This allows easy construction of embedded DSLs that
+support only a subset of the host language.
+
+\section{Domain-Specific Error Reporting at Compile Time}
+\label{sec:domain-specific-error-reporting}
+
+
 \part{Deep Embedding Development with a Breeze}
+\label{part:deep-embedding-development-with-a-breeze}
 
 \chapter{Generation of the Deep Embedding}
 \label{sec:deep-gen}
 
-\section{Motivation}
 So far, we have seen how \yy translates programs written in the
 direct embedding to the deep embedding. This arguably simplifies life
 for \edsl users by allowing them to work with the interface of the
@@ -1944,237 +2130,5 @@ trait. To this effect, we implemented Sprinter~\cite{sprinter}, a library that g
 correct and human readable code out of Scala ASTs. The generated source code
 is used to represent the lowering specification of every IR node.
 
-
-\chapter{Putting it all Together}
-\label{sec:putting-it-together}
-
-% Section will follow the development cycle, DSL author, DSL user
-
-% We will define a DSL and the dependencies.
-
-% We will use the DSL
-
-% We will generate
-
-\section{Evaluation}
-\label{sec:ch2-evaluation}
-
-We compared the deep embedding generation of \yy with Forge on three Delite-based
- deep \edsls: OptiML, OptiQL, and Vector~(\sct{subsec:eval-deepgen}).
-Then, we measured the effect of concealing the deep embedding by counting the
-number of obviated annotations related to deep embedding in the test suites of OptiML
-and OptiGraph EDSLs~(\sct{subsec:correctness}). Finally, we evaluated the ease
-of adopting \yy for the existing deep \edsl Slick~\cite{slick}
-~(\sct{subsec:slick}) and compare the effort of designing the interface with
-the current version of the interface. We do not report on execution speed since performance
-benefits of the deep embedding have been studied previously~\cite{rompf_optimizing_2013,forge}.
-
-\subsection{Automatic Deep EDSL Generation}
-\label{subsec:eval-deepgen}
-
-To evaluate the automatic deep EDSL generation for OptiML, OptiQL, and Vector,
-we used Forge~\cite{forge}, a Scala based meta-EDSL for generating both direct
-and deep EDSLs from a single specification. Forge already contained
-specifications for OptiML and OptiQL.
-
-To avoid re-typing OptiML and OptiQL we modified Forge to generate the direct
-embedding from its specification and generated the direct embeddings
-from the existing Forge based \edsl specifications. Then, we used our automatic deep
-generation tool to convert these direct embeddings into their deep
-counterparts. Since, deep \edsls mostly consist of boilerplate the generated
-embeddings have a similar number of LOC as the handwritten counterparts. For all
-three \edsls, we verified that tests running in the direct embeddings behave the
-same as the tests for the deep embeddings.
-
-In Table \ref{tbl:deepgen}, we give a line count comparison for the code in
-the direct embedding, Forge specification, and deep embedding for three \edsls:
-\emph{i) OptiML} is a Delite-based \edsl for machine learning,
-\emph{ii) OptiQL} is a Delite-based \edsl for running in-memory queries, and
-\emph{iii) Vector} is the EDSL shown as an example throughout this paper.
-We are careful with measuring lines-of-code (LOC) with Forge and the deep EDSLs: we only
-count the parts which are generated out of the given direct EDSL.
-
-Overall, \yy requires roughly the same number of LOC as Forge to specify the DSL.
-This can be viewed as positive result since Forge relies on a specific meta-language
- for defining the two embeddings. \yy, however, uses Scala itself
-for this purpose and is thus much easier to use. In case of OptiML, Forge
-slightly outperforms \yy. This is because Forge supports meta-programming at
-the level of classes while Scala does not.
-
-\begin{table}[ht]
-\caption{LOC for direct EDSL, Forge specification, and deep EDSL.}
-\label{tbl:deepgen}
-\centering
-\begin{tabularx}{\linewidth}{ X X X X }
-\toprule
- EDSL       &   Direct      &     Forge     &   Deep      \\ \midrule
-OptiML      &   1128        &     1090    &   5876      \\
-OptiQL      &   73          &     74      &   526       \\
-Vector      &   70          &     71      &   369       \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-We did not compare the efforts required to specify the DSL with \yy and Forge. The
-reason is twofold:
-\begin{itemize}
-
-\item It is hard to estimate the effort required to design a DSL. If the same
-person designs a single DSL twice, the second implementation will always be
-easier and take less time. On the other hand, when multiple people implement a DSL their skill levels
-can greatly differ. Finally, DSL design is technically demanding and it is hard to find
-a large enough group to conduct a statistically significant user
-study.
-
-\item Writing the direct embedding in Scala is arguably simpler than writing a
-Forge specification. Forge is Delite-specific language and uses a custom
-preprocessor to define method bodies in Scala. Thus, learning a new language and
-combining it with Scala snippets must be harder than just writing idiomatic
-Scala.
-\end{itemize}
-
-\subsection{No Annotations in the Direct Embedding}
-\label{subsec:correctness}
-
-% What have we done.
-To evaluate the number of obviated annotations related to the deep embedding we
-implemented a direct embedding for the OptiGraph \edsl (an \edsl for graph
-processing), and used the generated direct \edsl for OptiML. We implemented
-the whole application suites of these \edsls with the direct embedding. All 21
-applications combined have 1284 lines of code.
-
-To see the effects of the direct embedding as the front-end we counted the
-number of deep embedding related annotations that were used in the application
-suite. The counted annotations are \code{Rep[T]} for types and \code{lift(t)}
-for lifting literals when implicit conversions fail. In 21 applications
-the direct embedding obviated 96 \code{Rep[T]} annotations and 5
-\code{lift(t)} annotations.
-
-\subsection{Case Study: \yy for Slick}
-\label{subsec:slick}
-Slick is a deeply embedded Scala \edsl for database querying and access. Slick
-is not based on LMS, but still uses \code{Rep} types to achieve reification.
-To improve the complicated interface of Slick we used \yy.
-However, since the deep embedding of Slick already exists, we first designed the new
-interface (direct embedding). The new interface has dummy method
-implementations since semantics of different database back-ends can not be
-mapped to Scala. Thus, this interface is used only for user friendly error reporting and
-documentation. The interface is completely new, covers all the functionality of Slick,
- and consists of only 70 lines of code (cf. \cite{techrep}).
-
-Slick has complicated method signatures that do not correspond to the simple new
-interface. In order to preserve backward compatibility, the redesign of Slick to
-fit \yy's core translation was not possible. We addressed this by adding a
-wrapper for the deep embedding of Slick that fits the required signature.
-The wrapper contains only 240 lines of straightforward code.
-
-We compare the effort required for the interface design with \yy and with
-traditional type system based approaches. The development of the previous Slick
-interface required more than a year of development while the \yy version was
-developed in less than one month. The new front-end passes all 54 tests that cover the
-most important functionalities of Slick. When using Slick all error messages are
-idiomatic to Scala and resemble typical error messages from the standard
-library.
-
-This study was performed by only two users and, thus, is not statistically
-significant. Still, we find the difference in required effort large enough to indicate that \yy
-simplifies front-end development of \edsls.
-
-\subsection{Compilation Times}
-\label{sec:compilation-times}
-
-\todo{talk about the work that reduces compilation times}
-
-\section{Discussion}
-\label{sec:other-languages}
-
-% Staging and partial evaluation
-
-\yy consistently translates terms to the embedded domain and, thus, postpones
-DSL compilation to run-time. Although, compilation happens in a different
-compilation stage, \yy does not allow staging~\cite{taha_multi-stage_1997}.
-\edsls can, however, achieve partial evaluation~\cite{jones1993partial} if their
-implementation supports it.
-
-% Yin-Yang requires a few things.
-We implemented \yy in Scala, however the underlying principles are applicable
-in the wider context. \yy operates in the domain of statically typed languages
-based on the Hindley-Milner calculus with a type system that is advanced enough
-to support deep EDSL embedding. The type inference mechanism, purity, laziness,
-and sub-typing, do not affect the operation of \yy. Different aspects of \yy
-require different language features, which we discuss separately below.
-
-% For the translation (nice interface) type introspection. For the library macros.
-\paragraph{The core translation and language restriction} are based on term and
-type transformations. Thus, the host language must support reflection,
-introspection and transformation on types and terms. This can be achieved both
-at run-time and compile-time.
-
-% Semantic Equivalence
-\paragraph{Semantic equivalence} between the direct embedding and deep embedding
-is required for debugging and prototyping. If there is a \emph{semantic mismatch}~\cite{czarnecki_dsl_2004}
- between the two embeddings, e.g., the host language is lazy and the embedded
- language is strict, \yy can not be used for debugging. In this scenario the
- direct embedding can be implemented as stub which is used only for its user
- friendly interface and error reporting.
-
-
-\section{Related Work}
-\label{sec:related-work}
-
-% Context: Hudak, finally tagless, polymorphic embedding LMS
-\yy is a framework for developing embedded DSLs in the spirit of
-Hudak~\cite{Hudak96csur,Hudak98sr}: embedded DSLs are \emph{Scala
-  libraries} and DSL programs are just \emph{Scala programs} that do
-not, in general, require pre- or post-processing using external tools.
-\yy translates directly embedded DSL programs into
-finally-tagless~\cite{carette_finally_2009} deep embeddings.  Our
-approach supports (but is not limited to)
-polymorphic~\cite{hofer_polymorphic_2008} deep embeddings, and -- as
-should be apparent from the examples used in this paper -- is
-particularly well-adapted for deep EDSLs using an LMS-type
-IR~\cite{rompf_scala-virtualized:_2009,rompf_optimizing_2013}.
-
-% Forge
-Sujeeth et al. propose Forge~\cite{forge}, a Scala based meta-EDSL for generating equivalent
-shallow and deep embeddings from a single specification.  DSLs
-generated by Forge provide a common abstract interface for both
-shallow and deep embeddings through the use of abstract \code{Rep}
-types.  A shallow embedding is obtained by defining \code{Rep} as the
-identity function on types, i.e.\ \code{Rep[T] = T}.
-
-Forge provides some additional features compared to \yy as the Forge language allows meta-programming
- constructs on the definition level which is not possible in Scala. This makes Forge programs, more
- concise in certain scenarios. Further, in the deep embedding
- Forge sometimes generates code which is tightly coupled with the Delite framework.
-
-A DSL user can switch between the shallow and deep embeddings by
-changing a single flag in the project build. Unfortunately, the interface of the shallow
-embedding generated by Forge remains cluttered with \code{Rep} type
-annotations. Additionally, some plain types that are admissible in a
-directly embedded program may lack counterparts among the IR types of
-the deep embedding.  This means that some seemingly well-typed DSL
-programs become ill-typed once the transition from the shallow to the
-deep embedding is made, forcing users to manually fix type errors in
-the deeply embedded program. Finally, DSL authors must learn a new
-language for EDSL design whereas with \yy this language is Scala
-itself.
-
-% Lancet
-Project Lancet~\cite{lancet} by Rompf et al. and work of Scherr and
-Chiba~\cite{scherr_ecoop_2014} interpret Java bytecode to extract
-domain-specific knowledge from directly embedded
-DSL programs compiled to bytecode. These solutions are similar to \yy
-in that the direct embedding is translated to the deep
-embedding, however, they do not provide functionality to
-generate a deep embedding out of a direct one.
-
-% For space reasons:
-Awesome Prelude~\cite{awesome} proposes replacing all primitive types
-in Haskell with type classes that can then be implemented to either
-construct IR or execute programs directly. This allows to easily
-switch between dual embeddings while the type classes ensure
-equivalent type checking.  Unfortunately, this approach does not
-extend easily to native language constructs, and requires changing the
-type signatures of common functions.
-
+\chapter{Dynamic Compilation of Domain-Specific Languages}
+\label{sec:dynamic-compilation}

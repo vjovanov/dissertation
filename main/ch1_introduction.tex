@@ -9,8 +9,54 @@
 %  - language too broad for both high-performance
 
 % DSLs restrict the domain, and use the knowledge about the domain to produce better code.
+Domain-specific languages (DSLs) provide a restricted,
+high-level, and user-friendly interface crafted for a specific domain.
+Restricting the language to a particular domain allows programming at
+a high level of abstraction while retaining good run-time performance
+by leveraging domain knowledge for optimized code generation or
+interpretation.  In certain cases, code can even be targeted at
+heterogeneous computing environments~\cite{rompf_optimizing_2013}.
 
-% Introduce the DSL users.
+The implementation of a usable \emph{external} (or \emph{stand-alone})
+DSL requires building a parser, type-checker, and possibly a complete
+tool chain consisting of IDE integration, debugging, and documentation
+tools. This is a great undertaking that is often not justified by the
+benefits of having an external DSL.  A promising alternative to
+external DSLs are \emph{embedded DSLs} (\edsls)~\cite{Hudak96csur}
+which are hosted in a general-purpose language and reuse its
+facilities. For the purpose of the following discussion, we
+distinguish between two main types of embeddings: \emph{shallow} and
+\emph{deep} embeddings.
+
+  \begin{itemize}
+  \item In a shallowly embedded DSL, values of the embedded language
+    are \emph{directly} represented by values in the host language.
+    Consequently, terms in the host language that represent terms in
+    the embedded language are evaluated directly into host-language
+    values that represent DSL values. In other words, evaluation in
+    the embedded language corresponds directly to evaluation in the
+    host language.
+  \item In a deeply embedded DSL, values of the embedded language are
+    represented \emph{symbolically}, that is, by host-language data
+    structures, which we refer to as the \emph{intermediate
+      representation (IR)}. Terms in the host language that represent
+    terms in the embedded language are evaluated into this intermediate
+    representation. An additional evaluation step is necessary to
+    reduce the intermediate representation to a direct representation.
+    This additional evaluation is typically achieved through
+    \emph{interpretation} of the IR in the host language, or through
+    \emph{code generation} and subsequent \emph{execution}.
+  \end{itemize}
+
+% High-level of abstraction, good user interface, great performance, portable code.
+An important advantage of deep embeddings over shallow ones is that DSL
+  terms can be easily manipulated by the host language. This enables domain-specific
+  optimizations~\cite{rompf_lightweight_2012,rompf_optimizing_2013}
+  that lead to orders-of-magnitude improvements in program performance, and
+  multi-target code generation~\cite{brown_heterogeneous_2011}.
+
+
+% Introduce the DSL authors and DSL users.
 
 % Introduce how it is important that DSLs are user-friendly for the DSL user.
 % And easy to develop for the DSL author.
