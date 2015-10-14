@@ -11,8 +11,8 @@ Infrastructure of our society depends on billions of lines of code executed in d
 
 % High-level of abstraction.
 Modern programming languages allow programmers to concisely with a high-level of
- abstraction model their problems. This allows writing their programs in minimal
- number of lines of code (LoC) and understanding
+ abstraction model their problems. This allows writing programs in minimal
+ number of lines of code (LoC) and quickly understanding programs written by others.
 
 % The performance is important for our environment.
 The amount of energy used for computation is becoming significant portion of overall energy consumption. It is estimated
@@ -37,10 +37,12 @@ For compilers of high-level general purpose programming languages it is hard to 
  \item General purpose compilers reason only about general computations and can not reason
    about \emph{specific domains} such as linear algebra and relational algebra.
  \item During compilation the compilers are faced with a overwhelming number of choices
-   for optimization. Finding a specific solution that is optimal for a given platform in
-   this wast space is in most cases impossible.
+   during optimization. Each choice exponentially increases the \emph{search space}
+   that the compiler needs to explore. Finding a specific solution that is optimal
+   for a given platform in this wast space is in most cases impossible.
  \end{itemize}
 
+% Domain-Specific Languages
 
 \subsection{Domain-Specific Languages}
 \label{sec:domain-specific-languages}
