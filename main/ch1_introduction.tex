@@ -1,12 +1,49 @@
 %!TEX root = ../phd.tex
 \chapter{Introduction}
 \label{sct:introduction}
-% How worlds infrastructure depends on high-productivity (elaborate what is high-productivity)
-% and high-performance computation.
 
-% General purpose programming languages won't cut it.
+% How worlds infrastructure depends on high-productivity (elaborate what is high-productivity).
+Infrastructure of our society depends on billions of lines of code executed in data-centers,
+ mobile devices, in routers, on personal computers, and in controllers of various devices. There are
+ several million programmers worldwide writing code mostly in \emph{general purpose programming languages}
+ like JavaScript, Java, Python, C\#. Advancements in our society's IT infrastructure depend on
+ productivity of programmers that program it.
+
+% High-level of abstraction.
+Modern programming languages allow programmers to concisely with a high-level of
+ abstraction model their problems. This allows writing their programs in minimal
+ number of lines of code (LoC) and understanding
+
+% The performance is important for our environment.
+The amount of energy used for computation is becoming significant portion of overall energy consumption. It is estimated
+ that 5\% \todo{cite} of electricity in the United States is used for data-center computations\todo{cite} and since
+ the year 2005 this percentage is in constant growth\todo{cite}. If we would write more efficient
+ programs the IT infrastructure would consume proportionally less energy.
+
+% Low-level specialized code and heterogeneous platforms
+Writing efficient programs for the programmers usually leads to low productivity. To make programs
+ efficient programmers must write them with low-level of abstraction\todo{cite} and hand-craft their
+ programs for the particular platform where the program is executed\todo{cite}. The problem
+ becomes even worse on \emph{heterogeneous platforms} where programmers are faced
+ with multiple computing targets such as parallel CPUs, GPUs, and FPGAs. With heterogeneous
+ platforms programmers need to specialize their programs for each target separately.
+
+% General purpose programming languages won't cut it for achieving both high-productivity and specialized code.
 %  - compiler general purpose
 %  - language too broad for both high-performance
+For compilers of high-level general purpose programming languages it is hard to remove
+ the abstraction overheads and at the same time target heterogeneous platforms. The two main
+ reasons general purpose compilers can not optimize programs are:\begin{itemize}
+ \item General purpose compilers reason only about general computations and can not reason
+   about \emph{specific domains} such as linear algebra and relational algebra.
+ \item During compilation the compilers are faced with a overwhelming number of choices
+   for optimization. Finding a specific solution that is optimal for a given platform in
+   this wast space is in most cases impossible.
+ \end{itemize}
+
+
+\subsection{Domain-Specific Languages}
+\label{sec:domain-specific-languages}
 
 % DSLs restrict the domain, and use the knowledge about the domain to produce better code.
 Domain-specific languages (DSLs) provide a restricted,
@@ -16,6 +53,8 @@ a high level of abstraction while retaining good run-time performance
 by leveraging domain knowledge for optimized code generation or
 interpretation.  In certain cases, code can even be targeted at
 heterogeneous computing environments~\cite{rompf_optimizing_2013}.
+
+% Examples of super successful DSLs
 
 The implementation of a usable \emph{external} (or \emph{stand-alone})
 DSL requires building a parser, type-checker, and possibly a complete
@@ -58,7 +97,10 @@ An important advantage of deep embeddings over shallow ones is that DSL
 
 % Introduce the DSL authors and DSL users.
 
+% It is important that domain-speicfic languages. are
+
 % Introduce how it is important that DSLs are user-friendly for the DSL user.
+
 % And easy to develop for the DSL author.
 
 % External DSLs wonderful.
@@ -83,6 +125,7 @@ An important advantage of deep embeddings over shallow ones is that DSL
 % Summarize in a table (DSL author, DSL user) x (performance, user-friendines, etc.)
 
 % This thesis we tackle the problem. is thesis we tackle the problems with deeply embedded DSLs.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Part 1
@@ -266,13 +309,3 @@ DSL snippet, \yy produces the \code{VectorDSL} program in
 
 \subsection{Partial Evaluation}
 \label{sec:partial-evaluation}
-a
-\newpage
-a
-\newpage
-a
-\newpage
-a
-\newpage
-a
-\newpage

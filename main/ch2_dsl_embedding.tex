@@ -969,21 +969,16 @@ by-name body of the case when the \code{cond} statement is satisfied.
 \label{sec:dsl-intrinsification}
 
 DSL intrinsification maps directly embedded versions
- of the DSL intrinsics to their deep counterparts.  The constructs that
- need to be converted are: \emph{i)} DSL types, \emph{ii)} constant literals,
- \emph{iii)} captured variables, and \emph{iv)} DSL operations in the direct program.
-
- \todo{section pointers}
-
- \todo{pointer to the figure and add lines to the figure, also adapt the figure for the new translation}
+ of the DSL intrinsics to their deep counterparts. The constructs that
+ we translate~(\figref{fig:pipeline}) are: \emph{i)} constants and
+ free variables~(\S \ref{sec:constants-and-free-variables}), \emph{ii)} DSL types~(\S \ref{sec:type-translation}), and \emph{iii)} DSL operations in the direct program~(\S \ref{sec:operation-translation}).
 
 \subsection{Constants and Free Variables}
 \label{sec:constants-and-free-variables}
 
  \paragraph{Constants.} Constant values can be intrinsified in the deep embedding in multiple ways.
- They can be converted to a method call for each constant (e.g., $\trone{\mathtt{1}} = \mathtt{\_\_1}$),
-  type (e.g., $\trone{\mathtt{1}} = \,$\code{liftInt(1)}), or with a unified polymorphic function (e.g., $\trone{\mathtt{1}} = \,$\code{lift[Int](1)}) that
-  uses type classes to define behavior and the return type of \code{lift}.
+ They can be converted to a method call for each constant (e.g., $\trone{\mathtt{1}} = \mathtt{\_1}$),
+  type (e.g., $\trone{\mathtt{1}} = \,$\code{liftInt(1)}), or with a unified polymorphic function (e.g., $\trone{\mathtt{1}} = \,$\code{lift[Int](1)}) that uses type classes to define behavior and the return type of \code{lift}.
 
   % Why do we use type classes.
   In \yy we use the polymorphic function approach for to translate constants
@@ -1316,18 +1311,20 @@ with virtualized host language intrinsics.
 
 \item \emph{Eager inlining} preserves well-typedness for programs that are
 not explicitly rejected by the translation. We discuss correctness of eager inlining
-in \cite{techrep} on a Hindley-Milner based calculus similar to the one of Carette et al.~\cite{carette_finally_2009}.
+in the appendix on a Hindley-Milner based calculus similar to the one of Carette et al.~\cite{carette_finally_2009}.
 
 For the intuition why type arguments can not contain function types consider passing an increment function to the generic identity function:\begin{lstparagraph}
   id[T => T](lam[T, T](x => x + 1))
 \end{lstparagraph}
-Here, the \code{id} function expects \code{Rep[_]} type but the argument is \code{Rep[T] => Rep[T]}.
+Here, the \code{id} function expects a \code{Rep[_]} type but the argument is \code{Rep[T] => Rep[T]}.
 
 \item The \emph{Dynamic} type supports all operations and, thus, static type errors will not occur. Here, the DSL author is responsible for providing a back-end where dynamic type errors will not occur.
 
 \item \emph{Custom types} can cause custom type errors since \edsl authors can
 arbitrarily redefine types (e.g., \code{type Int = String}. \yy provides
 \emph{no guarantees} for this type of the translation.
+
+%\toimplement Generics
 
 \end{itemize}
 
@@ -1343,15 +1340,15 @@ compilation stage, \yy does not allow staging~\cite{taha_multi-stage_1997}.
 implementation supports it.
 
 % Yin-Yang requires a few things.
-We implemented \yy in Scala, however the underlying principles are applicable
+We implemented \yy in Scala, however, the underlying principles are applicable
 in the wider context. \yy operates in the domain of statically typed languages
 based on the Hindley-Milner calculus with a type system that is advanced enough
-to support deep EDSL embedding. The type inference mechanism, purity, laziness,
+to support deep DSL embedding. The type inference mechanism, purity, laziness,
 and sub-typing, do not affect the operation of \yy. Different aspects of \yy
 require different language features, which we discuss separately below.
 
 % For the translation (nice interface) type introspection. For the library macros.
-\paragraph{The core translation} are based on term and
+\paragraph{The core translation} is based on term and
 type transformations. Thus, the host language must support reflection,
 introspection and transformation on types and terms. This can be achieved both
 at run-time and compile-time.
@@ -1364,7 +1361,9 @@ is required for debugging and prototyping. If there is a \emph{semantic mismatch
  direct embedding can be implemented as stub which is used only for its user
  friendly interface and error reporting.
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                           Deep Embedding with Yin-Yang
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Deep Embedding with \yy}
 \label{sec:deep-embedding-implementations}
 
@@ -1381,7 +1380,7 @@ should have an interface that corresponds to: \emph{i)} methods emitted by langu
    \emph{ii)} the polymorphic embedding~(\S \ref{sec:polymorphic-embedding}),
    \emph{iii)} the polymorphic embedding with eager inlining~(\S \ref{sec:polymorphic-embedding-with-eager-inlining}), and
    \emph{iv)} the embedding with custom types~(\S \ref{sec:embedding-with-custom-types}).
-  Finally, we discuss how is the deep embedding compiled and executed~(\S \ref{sec:yy-interface}). For conciseness,
+  Finally, we discuss how the deep embedding is compiled and executed~(\S \ref{sec:yy-interface}). For conciseness,
    in all embeddings we omit the interface of pattern matching and virtualized universal methods.
 
 \section{Relaxed Interface of the Deep Embedding}
@@ -1392,26 +1391,22 @@ The \yy translation requires a certain interface from the deep embedding. This i
  In most translation rules only the method name, number of type arguments, and number
  of explicit arguments is defined.
 
-The number of implicit arguments and the return type, however, are left open to
- the DSL author. The implicit parameters are added by the type-checker after the operation translation
- phase if they are present in the deep embedding.
+The number of implicit arguments and the return type are left open for
+ the DSL author to define. The implicit parameters are added by the type-checker
+ after the operation translation phase if they are present in the deep embedding.
  For example, if we define the \code{$\$$ifThenElse} function as\begin{lstparagraph}
 def $\$$ifThenElse[T](cond: Boolean, thn: => T, els: => T)(
   implicit tpe: TypeTag[T]): T = \\...
 \end{lstparagraph}
-after the translation the Scala type-checker will provide the arguments that carry run-time type information.
-
-% EXP Expansion point: we can talk about changing the return type.
+after the translation the Scala type-checker will provide the arguments that
+carry run-time type information.
 
 This feature can be used in the deep embeddings for various purposes. The ones that
-were used in practice are: \emph{i)} tracking type information, \emph{ii)} tracking
+were used in DSLs based on \yy and LMS are: \emph{i)} tracking type information, \emph{ii)} tracking
 positions in the source code of the direct embedding, \emph{iii)} changing the method return type
 based on its argument types, and \emph{iv)} allowing multiple methods with the
-same erased signature\footnote{On the JVM, due to type erasure, methods with different
- argument types are sometimes erased to the same signature. This can be avoided by augmenting
- methods with an additional implicit parameter that modifies the overall method signature.}.
+same erased signature (\S \ref{sec:scala-specific-problems}).
 
-% EXP Expansion point: maybe expand and explain all of these methods in the appendix.
 
 \section{Embedding for the Identity Translation}
 \label{sec:identity-embedding}
@@ -1419,9 +1414,8 @@ same erased signature\footnote{On the JVM, due to type erasure, methods with dif
 The DSL embedding for the identity translation is not truly a deep embedding. The
 types are unmodified and, thus, can not represent the DSL intermediate representation.
 This translations is still interesting as a mechanism for instrumenting language
-constructs of Scala, as well as for restricting certain language features in the direct embedding. The
-basic interface that contains all the language features, without any additional implicit parameters,
-is defined in~\figref{fig:interface-identity-dsl}.
+constructs of Scala. The basic interface that contains all the language features,
+ without any additional implicit parameters, is defined in~\figref{fig:interface-identity-dsl}.
 
 % Control flow is preserved with the Scala by-name parameters.
 With this embedding the order of execution in all control flow constructs of Scala is preserved with
@@ -1462,8 +1456,8 @@ def ifThenElseImpl[T](c: Context)(cond: c.Tree,
 }
 \end{lstparagraph}
 
-\yy provides a component that has all language features overridden with macros that rewrite
-to the original language construct. By using this component the DSL author can override functionality
+\yy provides a Scala component that has methods of all language features overridden with macros that rewrite
+ them to the original language construct. By using this component the DSL author can override functionality
 of individual language constructs without a need to redefine all other language features.
 
 % Hole and lift interface.
@@ -1509,6 +1503,8 @@ trait IdentityInterface with FunctionsInterface {
 \label{fig:interface-identity-dsl}
 \end{figure}
 
+
+
 \section{Polymorphic Embedding}
 \label{sec:polymorphic-embedding}
 
@@ -1521,15 +1517,16 @@ With the generic polymorphic embedding we uniformly abstract over each type in t
 % More on polymorphic embedding.
 In \figref{fig:polymorphic-embedding} we show the basic interface
  for the generic polymorphic embedding. In trait
- \code{PolymorphicBase} the type \code{R[+T]} is the abstraction over the types in the
- direct embedding. This type is covariant in type \code{T} and therefore the abstract
- types have the same subtyping relation as the types in the direct embedding. Some deep
- embeddings call this type \code{Rep}.
+ \code{PolymorphicBase} the type \code{R[+T]}\footnote{Some deep
+ embeddings call this type \code{Rep}, \code{Repr}. We use the name \code{R} as in
+ languages with local type inference this type is omnipresent in method signatures and makes them longer.} is the abstraction over the types in the direct embedding. This type is covariant in type \code{T}
+ and therefore the abstract types have the same subtyping relation as the types
+ in the direct embedding.
 
 In this embedding both function definition and function application are abstracted over.
-\code{lam} converts functions from the host language into the functions in the embedded language and
-\code{app} returns functions from the embedded language into the host language. This way the DSL author
-has complete control over the function definition/application in the deep embedding.
+ \code{lam} converts functions from the host language into the functions in the embedded language and
+ \code{app} returns functions from the embedded language into the host language. This way the DSL author
+ has complete control over the function definition/application in the deep embedding.
 
 \begin{figure}
 \begin{listingtiny}
@@ -1580,13 +1577,16 @@ DSL operation are added to \code{R[T]} types in the same manner. In addition the
 translated objects in the direct embedding. Since we treat objects as constants
 they are handled by the \code{lift} method.
 
-An object from the direct embedding should be represented with an appropriate lift method and a set
+An object from the direct embedding should be represented with an appropriate \code{lift} method and a set
  of extension methods that represent its operations. For example, to support the \code{println}
- method on the \code{Predef} object the deep embedding introduce an extension method on \code{R[Predef.type]}:\begin{lstparagraph}
+ method on the \code{Predef} object the deep embedding must introduce a lifting construct and
+ an extension method on \code{R[Predef.type]}:\begin{lstparagraph}
+ def lift(c: Predef.type): R[Predef.type] = Const(Predef)
  implicit class PredefOps(predef: R[Predef.type]) {
    def println(p: R[Any]): R[Unit] = \\...
  }
  \end{lstparagraph}
+
 To preserve the original API of the deep embedding one can introduce a shortcut for the
  \code{Predef} object in the DSL component:\begin{lstparagraph}
  val Predef = lift[Predef.type](scala.Predef)
@@ -1596,9 +1596,9 @@ This way the deep embedding can be used in a similar way to the direct embedding
 
 
 \paragraph{Operations in the direct embedding.} Implementation of the deep embedding operations
- depends on which rules of virtualiztion are applied. If we apply
- method virtualization in the DSL programs the bodes of the deep embedding operations
- should be transformed with the same transformation. For example, an identity method
+ depends on which rules of virtualiztion are applied. If we apply method virtualization
+ in the DSL programs the bodes of the deep embedding operations should be transformed
+ with the same transformation. For example, an identity method
  in the deep embedding\begin{lstparagraph}
    def id[T](v: R[T]): R[T] = Identity(v)
  \end{lstparagraph}
@@ -1607,7 +1607,7 @@ This way the deep embedding can be used in a similar way to the direct embedding
  \end{lstparagraph}
 
 In practice, the deep DSL operations only reify the deep program and tracking function application of these
- methods just introduces superfluous IR nodes. Further, this transformation convolutes
+ methods introduces superfluous IR nodes. Further, this transformation convolutes
  the implementation of the deep embedding. For these reasons, in most of the DSLs it is common to disable method
  virtualization. This way the domain-specific operations are always executed in
  the host language.
@@ -1634,10 +1634,11 @@ the way host language functions are translated. With this type of embedding func
 are left unmodified, and thus executed, in the host language and therefore always executed during DSL compilation. Effectively,
 this way of treating functions always inlines all functions in the deep embedding embedding.
 
-With the type translation for eager inlining there two possibilities for the DSL author: \emph{i)} use the full language virtualization but disallow curried functions, and
-\emph{ii)} to completely disable virtualization of functions. In both of these cases the DSL author
-must implement the interface \code{PolymorphicInterface} from \figref{fig:polymorphic-embedding}, however, the interface
-for functions is different.
+With the type translation for eager inlining there two possibilities for the DSL author:
+\emph{i)} use the full language virtualization but disallow curried functions, and
+\emph{ii)} to completely disable virtualization of functions and allow curried functions.
+ In both of these cases the DSL author must implement the interface \code{PolymorphicInterface}
+ from \figref{fig:polymorphic-embedding}, however, the interface for functions is different.
 
 \paragraph{Eager inlining with function virtualization.} If the full virtualization
 is used the deep embedding should provide an interface shown in \figref{fig:polymorphic-embedding-with-eager-inlining}. This way the user can track function applications and definitions in the deep embedding with
@@ -1657,7 +1658,7 @@ with a type \code{scala.Int} (as it is in the C based languages) inside of the D
 type Boolean = scala.Int
 \end{lstparagraph}
 
-The interface of this type of embeddings is equivalent to the interface of the identity embedding~(\figref{fig:interface-identity-dsl}) except that all types need to be abstract. Further, in Scala functions can not be directly
+The interface of this type of embeddings is equivalent to the interface of the identity embedding~(\figref{fig:interface-identity-dsl}) except that all types need to be abstract. Further, Scala functions can not be directly
 converted into abstract types so all functions in the deep embedding must be represented
 with their nominal equivalents (e.g., \code{Int => Int} must be represented as \code{Function1[Int, Int]}).
 An example of the interface for functions is presented in \figref{fig:custom-types}. Here, \code{type Function0[U]} makes
@@ -1683,7 +1684,7 @@ A common pitfall with naming abstract types is using only their type name (e.g.,
  The problem arises when two different types (with different paths) have the same name. In these cases
  the DSL author must use the full type path as the abstract type. \yy can be configured to
  add a prefix to the types with their full path or only to their name. In all examples, for conciseness reasons,
- we use the translation that places the prefix only in front of the type name.\todo{name the option}
+ we use the translation that does not use the full path but only the type name.
 
 % How one adds methods to such embedding
 In the embedding with custom types a common way to reify the DSL IR is to
@@ -1721,7 +1722,6 @@ trait BooleanDSL extends DSLBase {
 \caption{Overriding semantics of \code{Boolean} with the reification semantics for the deep embedding.}
 \label{fig:reification-custom-types}
 \end{figure}
-\todo{Type-check this snippet.}
 
 The types in the deep embedding can not be expressed as a type function and therefore
 defining the interface of \code{hole} and \code{lift} is different than the other embeddings. Here,
