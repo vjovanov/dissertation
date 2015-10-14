@@ -142,7 +142,7 @@ embeddings is assured.
 
   \item It improves error reporting~(\S \ref{sec:error-reporting}) in the direct embedding by:
    \emph{i)} allowing domain-specific error reporting at host language
-   compile-time~(\S \ref{sec:compile-time-error-reporting}) and \emph{ii)}
+   compile-time~(\S \ref{sec:domain-specific-error-reporting}) and \emph{ii)}
    restricting host language features in the direct \edsl{} based on the
    supported features of the deep \edsl{}~(\S \ref{sec:restricting}).
 
@@ -1862,15 +1862,23 @@ here the type of the \code{VectorDSL} is provided in with \code{typeOf} construc
 
 % Test and production are executed inside by setting a simple compilation flag.
 
+\chapter{DSL Reification at the Host-Language Compile Time}
+\label{sec:compile-time-reification}
+
+
 \chapter{Improving Error Reporting of DSLs}
 \label{sec:error-reporting}
 
-While describing all the abstraction leaks in the deep embedding~(\S \ref{sec:motivation})) of the
+The error reporting of the deep embedding does not blend into the host language in two ways:
+ \emph{i)} the DSL is not able to restrict generic language features of the host language and errors can happen at run-time~(\S \ref{sec:unrestricted-language}) and \emph{ii)} domain-specific errors can only be reported at host-language run-time~(\S \ref{sec:domain-specific-error-reporting-runtime}). In this chapter we show how once ``we broke the ice'' with using the host-language reflection improving error reporting becomes a simple addition and how the DSL author can
+ be completely agnostic of the host language reflection API. In \S \ref{sec:restricting} we
+ show how restricting host language constructs is achieved by omitting operations in
+ the deep embedding and in \S \ref{sec:domain-specific-error-reporting} we explain
+ error reporting at host language compile-time.
+
 
 \section{Restricting Host Language Constructs}
 \label{sec:restricting}
-% TODO restricting constants
-% TODO Rule out unsupported expressions.
 
 The direct DSL programs can contain well-typed expressions that are not
 supported by the deep embedding. Often, these expressions lead to unexpected program
@@ -1919,10 +1927,57 @@ With \yy the DSL author can arbitrarily restrict virtualized constructs in an
 embedded language by simply omitting corresponding method definitions from the
 deep embedding. Due to the additional verification step all error messages are
 clearly shown to the user. This allows easy construction of embedded DSLs that
-support only a subset of the host language.
+support only a subset of the host language without the need to know the Scala
+reflection API.
 
 \section{Domain-Specific Error Reporting at Compile Time}
 \label{sec:domain-specific-error-reporting}
+
+The domain-specific error reporting is performed on the reified DSL program and to do it
+at host language compile-time we must first reify the DSL IR. To this end \yy uses
+the techniques described in \S \ref{sec:compile-time-reification} to reify the program.
+
+
+Once the program is reified \yy calls the \code{staticallyCheck} method from~\figref{fig:statically-checked} on the DSL component. This method accepts as an argument the \code{Reporter} interface that the  DSL
+author can use to report messages on the host language console. The DSL author can use
+the \code{Reporter} to report errors (the \code{error} method), warnings (the \code{warning} method),
+and to provide informational messages (the \code{info} method).
+
+
+All methods in the \code{Reporter} interface accept the \code{pos} argument of type \code{Option[Position]}
+ for displaying where the information should be displayed. If the position argument
+ is not passed the error will be displayed without a position, and if it is provided the
+ message will be displayed for the source code at the position in the same manner
+ as the host language would.
+
+\begin{figure}
+\begin{listingtiny}
+trait Position {
+  def source: File
+  def line: Int
+  def column: Int
+}
+
+trait Reporter {
+  def info(pos: Option[Position], msg: String): Unit
+  def warning(pos: Option[Position], msg: String): Unit
+  def error(pos: Option[Position], msg: String): Unit
+}
+
+trait StaticallyChecked {
+  def staticallyCheck(c: Reporter): Unit
+}
+\end{listingtiny}
+\caption{Interface for domain-specific error reporting in the deep embedding.}
+\label{fig:statically-checked}
+\end{figure}
+
+The interface that is provided for error reporting is much simpler than the Scala reflection equivalent. The API
+is simplified for error reporting in domain-specific languages and does not require the
+DSL author to comprehend the Scala internals. For the values of the \code{Position} interface
+the DSL author can choose an adequate implementation (e.g., one presented by Rompf et al. \cite{rompf_scala-virtualized:_2009}).
+
+
 
 
 \chapter{Reducing Runtime Overheads of the Deep Embedding}
