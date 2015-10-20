@@ -16,7 +16,7 @@ Modern general purpose programming languages allow programmers to concisely, wit
  Unfortunately, abstraction comes with a cost: each layer of abstraction must be
  executed and uses more energy for computation.
 
-
+\todo{reshape for speed.}
 % The performance is important for our environment.
 The amount of energy used for computation is becoming a significant portion of the overall energy consumption in the world.
  It is estimated that 2\% \todo{cite} of electricity in the United States is used for data-center computations and since
@@ -46,7 +46,7 @@ Writing efficient programs in general purpose programming languages leads to low
    for optimization. Each choice exponentially increases the \emph{search space}
    that the compiler needs to explore. Finding a specific solution that is optimal
    for a given platform in this wast space is in most cases impossible. The only way
-   to efficiently explore the was search space is to use the domain knowledge to guide
+   to efficiently explore the search space is to use the domain knowledge to guide
    the optimizer towards a close-to-optimal solution.
  \end{itemize}
 
@@ -58,16 +58,14 @@ Writing efficient programs in general purpose programming languages leads to low
 Domain-specific languages (DSLs) provide a restricted,
  high-level, and user-friendly interface crafted for a specific domain.
  Restricting the language to a particular domain allows programming at
- a high level of abstraction while retaining good run-time performance
- by leveraging domain knowledge for optimized code generation or
- interpretation.  In certain cases, code can even be targeted at
- heterogeneous computing environments~\cite{rompf_optimizing_2013}.
+ a high level of abstraction but allows extraction of domain knowledge by
+ treating specially constructs from the restricted language.
 
 % With DSLs can both write at the high-level and generate specialized code.
 DSLs allow users to write programs at the high-level of abstraction and at the
- same time highly optimize them for execution on different target platforms. The restricted interface allows the optimizer to extract the domain knowledge from user programs. This knowledge is then used to define larger space of possible program executions. Then the knowledge about the domain
- can further be used to guide the optimizer in exploring the space of possible program executions
- towards the close-to-optimal solution.
+ same time highly optimize them for execution on different target platforms. The restricted interface allows the optimizer to extract the domain knowledge from user programs. This knowledge is then used to define larger space of possible program executions. Then the knowledge about the domain can further be used to guide the optimizer in exploring the space of possible program executions towards the close-to-optimal solution. In certain cases, code can be targeted at
+ heterogeneous computing environments~\cite{rompf_optimizing_2013}.
+
 
 % Examples of super successful DSLs
 Successful examples of a DSL is the Standard Query Language (SQL) with millions of users world wide.
@@ -78,14 +76,15 @@ Successful examples of a DSL is the Standard Query Language (SQL) with millions 
 \subsection{Kinds of DSLs}
 \label{sec:kinds-of-dsls}
 
-DSLs the restricted interface
+DSLs can be implemented in two major categories: \emph{i)} as external DSLs that
+ have a specialized compiler for the language, \emph{ii)} internal DSLs that are
+ embedded inside a general purpose host language.
 
 \paragraph{External DSLs.} The implementation of a usable \emph{external}
 (or \emph{stand-alone}) DSL requires building a parser, type-checker, and possibly a complete
 tool chain consisting of IDE integration, debugging, and documentation
 tools. This is a great undertaking that is often not justified by the
-benefits of having an external DSL. Except SQL and Matlab external domain specific
-languages have rarely been developed to a mature-enough state for wide adoption.
+benefits of having an external DSL.
 
 Another perspective about external DSLs is that they start as small concise languages but
  end up as a general purpose language\todo{cite}. As DSLs become popular their  language designers
@@ -129,7 +128,7 @@ For the purpose of the following discussion, we distinguish between two main typ
   \end{itemize}
 
 
-\section{Comparison of DSL Kinds}
+\subsection{Comparison of DSL Kinds}
 \label{sec:comparison-of-dsl-kinds}
 % What we will compare
 In this section we will show a brief comparison of programmability and performance
@@ -163,7 +162,7 @@ external DSLs as \emph{hard to develop}.\todo{cite}
 
 Finally, external DSLs have \emph{high performance}. The language and the compiler can be
 designed such that they extract all domain-knowledge from user programs. This domain knowledge
-can then be used to optimize programs. Good example of high-performance DSLs is Spiral~\todo{cite}
+can then be used to optimize programs. Good example of high-performance DSLs is Spiral~\cite{puschel2005spiral}
 as in parts of their work they thoroughly examine the domain and explore the entire
 search space in order to find optimal programs.
 
@@ -253,49 +252,128 @@ Shallow embeddings, on the other hand, are a good fit for languages where exploi
  and XML, testing frameworks, and Actors~\cite{haller2009scala}.
 
 
-\section{Importance of Language Support for Embedded DSL}
+\section{Importance of Support for DSL}
 \label{sec:importance-of-language-support}
 
 % No approach to DSLs is good in all aspects.
+To allow both high-level of abstraction and high performance of programs it is necessary
+ enable wide adoption of domain specific languages. However, from \tabref{tbl:comparison} we
+ see that support for domain specific languages is not ideal. External DSLs require
+ tremendous amounts of work to be implemented, deep embeddings are not ideal in terms
+ of DSL user experience and DSL author productivity, and shallow embeddings lack in
+ ways to remove the abstraction overheads.
 
-% For embedded domain-specific. The deep
-% It is important that domain-speicfic languages. are
+ For wide adoption of domain specific languages it is imperative to improve support
+ for DSLs. It is necessary to: \emph{i)} have good experience for the DSL users in all kinds of DSLs,
+  \emph{ii)} have good infrastructure for building external and deeply embedded domain specific languages, and \emph{iii)} a
+ way to remove the abstraction penalty of shallowly embedded DSLs.
 
-However, embedded domain specific languages are recommended in many cases and there
-the situation is far from ideal. Explain what is missing and how shallow DSLs are complementary
-to deep ones.
+% For improving external domain specific languages language workbenches.
+In the recent years \emph{language workbenches}~\cite{fowler2005language} such as
+ Spoofax~\cite{kats2010spoofax} and Rascal~\cite{klint2009rascal,van2011rascal} have been designed
+  to generate large parts of the language ecosystem based on the declarative specification.
+  With language workbenches it is possible to generate the parser, type-checker, name binding logic,
+  IDE support, and debuggers (the detailed overview of language workbenches is presented
+  by Erdweg et al.~\cite{erdweg2013state}).
 
-% Introduce how it is important that DSLs are user-friendly for the DSL user.
+% For improving deep embeddings.
+Support for deeply embedded domain specific languages has improved in the interface and
+ease of development in recent years. Frameworks like Forge~\cite{forge}
+, similarly to language workbenches, allow generating the deep embedding from a declarative
+specification. Scala-Virtualized~\cite{rompf_scala-virtualized:_2009} proposes overriding
+ host language constructs to better support deeply embedded DSLs. Svenningsson and Axelsson~\cite{svenningsson_combining_2012}
+ propose combining shallow and deep embeddings for better user experience. For detailed
+ comparison of these approaches see~\S \ref{sec:related-work}.
+
+% For improving abstraction overheads of shallow embeddings \todo{cite}
+Removing abstraction overheads in shallow embeddings can be roughly
+ divided into two categories: \emph{i)} automatic schemes where compiler tries
+ to optimize the code without user or author guidance, and \emph{ii)} DSL author
+ guided schemes for optimization where the DSL author declares how to remove
+ abstraction overheads.
+
+% Automatic schemes do not work.
+The automatic schemes for optimization can not match the performance of hand optimized
+ code~\cite{rompf_optimizing_2013}. Automatic optimizations must rely on heuristics that
+ are designed to perform the best on all programs. In many cases what is best for the
+ average case is not the best solution for the give domain-specific language.
+
+% Guided schemes are mostly staging, partial evaluation, idris partial evaluation. Detailed
+%  explanation in ...
+Guided schemes for removing abstraction overheads allow the DSL author and the user
+to precisely control which abstractions are optimized. From this category, we emphasize
+multi-stage programming~\cite{taha_multi-stage_1997,taha2004gentle}, and schemes
+based on partial evaluation~\cite{jones1993partial,brady2010scrapping}. For the detailed
+overview see of approaches and their comparison see \S \ref{sec:related-work-staging}.
 
 \section{Improving Language Support for Embedded Domain-Specific Languages}
 \label{sec:improving-language-support}
 
-In this thesis we improve the language support for domain specific languages. The
-thesis is divided in 3 parts. first, second and third.
+In this dissertation we improve the language support for embedded domain specific languages. The
+ thesis is divided in three parts: \emph{i)} describes a technique we use to improve
+ user experience in deeply embedded DSLs, \emph{ii)} describes automation of the
+ deep embedding design in order to minimize the effort required by the DSL author, \emph{iii)}
+ we propose a method for improving performance of shallow DSLs by removing abstraction overheads
+ in a user-controlled and predictable way.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Part 1
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Improving User Experience in the Deep Embedding}
 
 %%
 %% Concealing the deep embedding.
 %%
 
-%
-% Simple translation resolves all the problems with deep embedding of DSLs.
-%
+In the first part of the thesis we improve user experience of the deep embedding by
+ using an equivalent shallow embedding for program development. Then, when performance is
+ important, we translate the shallow program into the corresponding deep program
+ by a compile-time type-driven translation.
 
-%
-% Explain each chapter.
-%
+Using the shallow embedding for development provides users with idiomatic interfaces,
+ allows easy debugging, and gives comprehensible type errors. The translation allows to improve other aspects of
+ the deep embedding such as error reporting, run-time overheads, and compilation times.
+
+
+%%
+%% Simple translation resolves all the problems with deep embedding of DSLs.
+%%
+
+%%
+%% Explain each chapter.
+%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Part 2
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Automating Development of the Deep Embedding}
 
-%
-% Generating the deep embedding.
-%
+ In the first part of the thesis we required that the deep embedding interface
+ and implementation corresponds to the shallow embedding. In practice,
+ this is error prone and requires great effort on the part of DSL author. Further,
+ handling of internal DSL transformations was performed by AST manipulation or
+ re-use of the deep embedding. Finally, the DSL authors had to take care of dynamic
+ compilation of the deep embedding.
+
+ In the second part of the thesis we ease the development of the deep embedding: \begin{itemize}
+
+   \item Re-using the shallow-to-deep translation to generate the deep embedding based on the
+    shallow embedding~(\todo{section}).
+
+   \item Re-using the shallow-to-deep translation to allow user friendly
+    transformations in the deep embedding~(\S \ref{sec:deep-gen}).
+
+    \item Provide an abstraction in the deep embedding for managing decisions about
+     dynamic compilation of deeply embedded DSLs~(\S \ref{sec:dynamic-compilation}).
+
+ \end{itemize}
+%%
+%% Reusing the translation for deep embedding translations.
+%%
+
+%%
+%% Generating the deep embedding.
+%%
 
 % The translation has a problem, required dual embeddings.
 % We reuse the translation to generate DLSs.
@@ -312,38 +390,99 @@ thesis is divided in 3 parts. first, second and third.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Part 3
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Removing Abstraction Overheads in Shallow Domain-Specific Languages}
 
 %%
 %% Evaluation of different approaches to partial evaluation.
 %%
 
+ In the introductory part~(\S \ref{sec:introdution-partial-evaluation}) we evaluate existing approaches
+  to predictably remove abstraction overheads in libraries. Then we show that none of
+  the approaches is ideal. Approaches like partial evaluation are not predictable and type-safe,
+  approaches like \code{static} terms in D are not powerful enough. Approaches like staging (both quotation and type based)
+  require code duplication on the part of the DSL author which hampers development of shallow DSLs.
+
 %%
 %% Polyvariant Staging for Performance of Shallow DSLs
 %%
-\section{Terminology}
-\label{sec:terminology}
-% in production
+We propose polyvariant staging~(\S \ref{sec:polyvariant-staging}) for removing abstraction
+ overheads in a predictable, type-safe, and concise way. We enhance the programs with
+ information about polyvariant binding-time analysis~\cite{rytz1992polyvariant}. Then we provide
+  a small set of annotations on program types to achieve type-safe partial evaluation.
+  Since we only use types to propagate information user programs do not need special annotations
+  and polyvariant binding-time analysis obviates the need to duplicate DSL code.
 
-% EDSL DSL used interchangeably
+% TODO once we are done.
+%\section{Terminology}
+%\label{sec:terminology}
 
+% Define: in production
+% Introduce the term direct embedding.
+% EDSL ~> DSL in the context where talk about deep embeddings.
+% deep embedding ~> deeply embedded DSL
+% shallow embedding ~> shallowly embedded DSL
+% direct embedding ~> directly embedded DSL
+% host language ~> meta languages
+% embedded language ~> object language
+% DSL user ~> user
+% DSL author ~> author
 
 \chapter{Background}
 \label{ch:background}
 
 \section{The Scala Programming Language}
-\section{Embedded Domain-Specific Languages}
-\section{Partial Evaluation and Multi-Stage Programming}
-% TODO
+\label{sec:scala}
 % Distinguish method and functions
-% Universal method
-% Pattern matching
+% Pattern matching ~> unapply pattern
 % Prefixes
 % Extension methods
 % Type hierarchy
+% Universal method
 % Implicit arguments
 
-In this section we provide background information necessary for understanding \yy's
-implementation in Scala. We briefly explain the core concepts of Lightweight Modular Staging
+
+\subsection{Scala Macros}
+\label{sec:scala-macros}
+
+% What are scala macros and how are they defined.
+Scala Macros~\cite{burmako_scala_2013} are a compile-time meta-programming
+ feature of Scala. Macros operate on Scala abstract syntax trees (ASTs): they
+ can construct new ASTs, or transform and analyze the existing Scala ASTs.
+ Macro programs can use common functionality of the Scala compiler like
+ error-reporting, type checking, transformations, traversals, and implicit
+ search.
+
+In this work we use a particular flavor of Scala macros called \emph{black-box def
+ macros}, though we will often drop the prefix ``def'' for the
+ sake of brevity.  From a programmer's point of view, def macros
+ are invoked just like regular Scala methods.  However, macro
+ invocations are \emph{expanded} during compile time to produce new
+ ASTs.  Macro invocations are type checked both before and after
+ expansion to ensure that expansion preserves well-typedness.  Macros
+ have separated declarations and definitions: declarations are
+ represented to the user as regular methods while macro definitions
+ operate on Scala ASTs.  The arguments of macro method definitions are
+ the type-checked ASTs of the macro arguments.
+
+%Users / Usage
+% TODO explain the defintion of this macro.
+For DSLs in this thesis we use a macro that accepts a single block of
+ code as its input. At compile time, this block is first type checked
+ against the interface of the shallow embedding.  We will use this type of macros
+ for defining DSL boundaries, e.g., the following snippet is how we will define DSL
+ programs:
+\figref{lst:lms}:\begin{lstparagraph}
+vectorDSL {
+  Vector.fill(1,3) + Vector.fill(2,3)
+}
+\end{lstparagraph}
+
+
+\section{Embedded Domain-Specific Languages}
+\label{sec:embedded-domain-specific-languages}
+
+In this section we provide background information necessary for understanding this
+thesis. We briefly explain the core concepts of Lightweight Modular Staging
 \cite{rompf_lightweight_2012,rompf_optimizing_2013} and Scala Macros
 \cite{burmako_scala_2013}. Throughout the paper we assume familiarity with
 the basics of the Scala Programming Language~\cite{odersky_scala_2004}.
@@ -410,47 +549,10 @@ of type \code{T} during \edsl execution.
 % operations
 Operations on \code{Rep[T]} terms are added by implicit conversions that are introduced in the \edsl scope. For example, the implicit class \code{VectorOps} introduces the \code{+} operation on every term of type \code{Rep[Vector[T]]}. In the example, the type class \code{Numeric} ensures that vectors contain only numerical values.
 
-\todo{remove tool}
 % Statement about successful use
-LMS has been successfully used by in project Delite~\cite{brown_heterogeneous_2011,composition-ecoop2013} for building DSLs that support heterogeneous parallel computing. \edsls developed with Delite cover domains
-such as machine learning, graph processing, data mining, etc. Due to its wide use and high performance we choose Delite as a back-end for \yy.
+LMS has been successfully used by project Delite~\cite{brown_heterogeneous_2011,composition-ecoop2013} for building DSLs that support heterogeneous parallel computing. \edsls developed with Delite cover domains
+such as machine learning, graph processing, data mining, etc.
 
 
-\subsection{Scala Macros}
-\label{sec:scala-macros}
-
-% What are scala macros and how are they defined.
-Scala Macros~\cite{burmako_scala_2013} are a compile-time meta-programming
-feature of Scala. Macros operate on Scala abstract syntax trees (ASTs): they
-can construct new ASTs, or transform and analyze the existing Scala ASTs.
-Macro programs can use common functionality of the Scala compiler like
-error-reporting, type checking, transformations, traversals, and implicit
-search.
-
-\yy uses a particular flavor of Scala macros called \emph{def
-  macros}, though we will often drop the prefix ``def'' for the
-sake of brevity.  From a programmer's point of view, def macros
-are invoked just like regular Scala methods.  However, macro
-invocations are \emph{expanded} during compile time to produce new
-ASTs.  Macro invocations are type checked both before and after
-expansion to ensure that expansion preserves well-typedness.  Macros
-have separated declarations and definitions: declarations are
-represented to the user as regular methods while macro definitions
-operate on Scala ASTs.  The arguments of macro method definitions are
-the type-checked ASTs of the macro arguments.
-
-%Users / Usage
-For DSLs based on \yy we use a macro that accepts a single block of
-code as its input. At compile time, this block is first type checked
-against the interface of the direct embedding. Then, \yy applies the
-generic transformation to translate the directly embedded AST to the
-corresponding deeply embedded AST.  For example, given the following
-DSL snippet, \yy produces the \code{VectorDSL} program in
-\figref{lst:lms}:\begin{lstparagraph}
-vectorDSL {
-  Vector.fill(1,3) + Vector.fill(2,3)
-}
-\end{lstparagraph}
-
-\subsection{Partial Evaluation}
+\section{Partial Evaluation and Multi-Stage Programming}
 \label{sec:partial-evaluation}

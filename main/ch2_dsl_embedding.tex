@@ -1881,8 +1881,85 @@ here the type of the \code{VectorDSL} is provided in with \code{typeOf} construc
 
 % Test and production are executed inside by setting a simple compilation flag.
 
-\chapter{DSL Reification at the Host-Language Compile Time}
+\chapter{DSL Reification at Host-Language Compile Time}
 \label{sec:compile-time-reification}
+
+To integrate the deep embedding tightly with the host-language it is necessary to
+ have the DSL IR reified at host language compilation-time. With the reified IR
+ domain-specific analysis and error reporting can be integrated with the host language~(\S \ref{sec:domain-specific-error-reporting}).
+ Also, DSLs that do not depend on run-time values for optimizations can be completely compiled
+ at host-language compile time and their generated code integrated with the IR of the host language~(\S \ref{sec:reducing-runtime-overheads}.
+
+ % Only have the trees so we have two possibilities: i) interpretation ii) code generation.
+Reifying the DSL IR after the translation requires executing the code that is generated
+ after the direct-to-deep translation. Since the translation happens during program type-checking
+ the executable version of the translated DSL does not exist. To execute this code there
+ are two possibilities:\begin{itemize}
+ \item {\bf Use compilation.} Since all the captured variables are replaced by holes~(\todo{ref}) the
+  deep embedding can be compiled down to executable code separately from the rest of the host language program.
+  Then the deep embedding binary can be executed to obtain the domain-specific IR.
+
+ \item {\bf Use interpretation.} Use the interpreter of the host language trees to obtain the
+  domain-specific IR. Since the deep DSL has no captured variables it is possible to
+  perform interpretation.
+ \end{itemize}
+
+Compilation has an upfront cost of compiling the code but the execution is optimal while
+ interpretation does not have an up-front cost but the execution is slower. For Scala
+ and different sizes of DSL programs we evaluate both approaches in \S \ref{sec:performance-of-host-langauge-compile-time-reification}.
+
+\section{Reification by Compilation}
+\label{sec:reification-by-compilation}
+
+% The DSL program does not contain captured terms.
+The DSL program that is being compiled to the executable during host language type-checking
+ does not have terms that can not be compiled:\begin{itemize}
+  \item All captured variables have been converted into calls to \code{hole} by the translation.
+  \item Class and object definitions in the DSL are forbidden by the virtualization phase. \todo{check}
+  \item Usage of definitions (i.e., classes, traits, objects, and methods) that are compiled in the same compilation
+   unit is impossible. The direct embedding does not contain equivalents for these objects and they can
+   not be accepted by operation translation.
+\end{itemize}
+
+% It is possible to compile it independently of the rest of the compilation unit.
+Given that the translated DSL body is independent of the current compilation unit it is possible to
+ compile it separately and produce the executable file. For the DSL body the compilation
+ pipeline is executed to the last phase starting from type-checking. Then the DSL body
+ can be executed and we acquire an instance of the DSL with its trees reified.
+
+% For the tree of that program we execute the evaluate function.
+In \yy for the purpose of compile-time reification we use the \code{eval} construct in Scala. The \code{eval} function
+ accepts the Scala trees and compiles them to bytecode, loads the class that contains the compiled trees and
+executes it.
+
+In case of the JVM the reification by compilation has a relatively large overhead. Compiling, loading the bytecode, and executing that code in the JVM interpreter has a relatively large initial overhead. Then the bytecode that is loaded must be executed in the JVM interpreter as it is executed for the first time. Finally, the code is executed only once in order to reify the DSL program and discarded afterwards.
+
+\section{Reification by Interpretation}
+\label{sec:reification-by-interpretation}
+
+% We build a specialized interpreter.
+An alternative to compilation is interpretation of the DSL trees. With interpretation
+ an \emph{interpreter} interprets the trees emitted by the direct-to-deep translation to obtain
+ an instance to a reified DSL at host-language compile time. Since the DSL trees do not depend
+ on the definitions in the current compilation unit it is possible to interpret them.
+
+Since the \yy translation greatly simplifies the executed trees we use a specialized interpreter.
+ In this interpreter we treat only a subset of Scala that is emitted by the DSL translation.
+ Further, the interpreter invokes all functions in the program with reflection. This way the
+ execution of the DSL operations is achieved by executing pre-compiled code and the interpreter
+ executes the DSL programs.
+
+% Callbacks into the higher order functions.
+With the specialized interpreter special care must be taken with higher-order functions. The DSL operations
+ that accept functions as arguments must accept function instances while the
+ function bodies must be executed in the interpreter. To this end, to pre-compiled
+ operations we pass function instances that call back into the interpreter code.
+
+\section{Performance of Compile-Time Reification}
+\label{sec:performance-of-host-langauge-compile-time-reification}
+ % We evaluate both approaches in section ...
+%
+
 
 
 \chapter{Improving Error Reporting of DSLs}
@@ -2388,3 +2465,4 @@ is used to represent the lowering specification of every IR node.
 
 \chapter{Dynamic Compilation of Domain-Specific Languages}
 \label{sec:dynamic-compilation}
+
