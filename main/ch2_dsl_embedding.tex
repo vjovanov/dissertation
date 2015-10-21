@@ -152,11 +152,12 @@ embeddings is assured.
    which are fundamentally not staged \yy uses \emph{reflective instantiation} to compile DSLs at host language compile time. For staged DSLs (compiled at host language run-time) \yy avoids re-reification of
    programs by storing them into a cache.
 
+\compilation{
   \item It reduces large compilation times introduced by the deep embedding. The translation
    is changed such that it directly calls the reification methods without having to use
    the complicated type system constructs. Reducing compilation times is presented
    in~\S \ref{sec:minimizing-compile-times}.
-
+}
   \item It simplifies deep \edsl development and guarantees semantic equivalence
    between the direct embedding and the deep embedding by reusing the core
    translation to generate the deep \edsl definition out of the direct \edsl
@@ -458,6 +459,7 @@ The deeply embedded DSLs are compiled at run time when the code is executed. Thi
 
 \todo{cite amirs thesis}
 
+\compilation{
 \subsection{Long Compilation Times}
 \label{sec:long-compilation-times}
 
@@ -472,6 +474,7 @@ In Scala the compilation overheads for the deep embedding are significant and af
  search starts dominating compilation and introducing delays noticeable by the user. We
  provide detailed analysis of compilation times in the polymorphic embeddings in Scala
  in~\S \ref{sec:minimizing-compile-times}.
+}
 
 \subsection{Abstraction Leaks in the Deep Embedding Specific to Scala}
 \label{sec:scala-specific-problems}
@@ -2079,16 +2082,11 @@ the DSL author can choose an adequate implementation (e.g., one presented by Rom
 \chapter{Reducing Runtime Overheads of the Deep Embedding}
 \label{sec:reducing-runtime-overheads}
 
-% Section will follow the development cycle, DSL author, DSL user
 
-% We will define a DSL and the dependencies.
-
-% We will use the DSL
-
-% We will generate
-\chapter{Minimizing Compilation Time of the Deep Embedding}
-\label{sec:minimizing-compile-times}
-
+\compilation{
+  \chapter{Minimizing Compilation Time of the Deep Embedding}
+  \label{sec:minimizing-compile-times}
+}
 
 
 
