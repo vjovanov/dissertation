@@ -66,7 +66,6 @@ DSLs allow users to write programs at the high-level of abstraction and at the
  same time highly optimize them for execution on different target platforms. The restricted interface allows the optimizer to extract the domain knowledge from user programs. This knowledge is then used to define larger space of possible program executions. Then the knowledge about the domain can further be used to guide the optimizer in exploring the space of possible program executions towards the close-to-optimal solution. In certain cases, code can be targeted at
  heterogeneous computing environments~\cite{rompf_optimizing_2013}.
 
-
 % Examples of super successful DSLs
 Successful examples of a DSL is the Standard Query Language (SQL) with millions of users world wide.
  SQL concisely expresses the domain of data querying and uses the knowledge about linear algebra
@@ -306,7 +305,7 @@ multi-stage programming~\cite{taha_multi-stage_1997,taha2004gentle}, and schemes
 based on partial evaluation~\cite{jones1993partial,brady2010scrapping}. For the detailed
 overview see of approaches and their comparison see \S \ref{sec:related-work-staging}.
 
-\section{Improving Language Support for Embedded Domain-Specific Languages}
+\section{Language Support for Embedded Domain-Specific Languages}
 \label{sec:improving-language-support}
 
 In this dissertation we improve the language support for embedded domain specific languages. The
@@ -320,7 +319,7 @@ In this dissertation we improve the language support for embedded domain specifi
 %% Part 1
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Improving User Experience in the Deep Embedding}
-
+\label{sec:user-experience}
 %%
 %% Concealing the deep embedding.
 %%
@@ -347,6 +346,7 @@ Using the shallow embedding for development provides users with idiomatic interf
 %% Part 2
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Automating Development of the Deep Embedding}
+\label{sec:automating-developemnt}
 
  In the first part of the thesis we required that the deep embedding interface
  and implementation corresponds to the shallow embedding. In practice,
@@ -391,7 +391,7 @@ Using the shallow embedding for development provides users with idiomatic interf
 %% Part 3
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Removing Abstraction Overheads in Shallow Domain-Specific Languages}
-
+\label{sec:removing-abstraction-overheads}
 %%
 %% Evaluation of different approaches to partial evaluation.
 %%
@@ -426,6 +426,7 @@ We propose polyvariant staging~(\S \ref{sec:polyvariant-staging}) for removing a
 % embedded language ~> object language
 % DSL user ~> user
 % DSL author ~> author
+
 
 \chapter{Background}
 \label{ch:background}
