@@ -1,9 +1,9 @@
 %!TEX root = ../phd.tex
-\part{Improving the Programmer Experience with Deeply Embedded Domain-Specific Languages}
+\part{Improving Programmer Experience with the Deeply Embedded Domain-Specific Languages}
 
 \chapter{Introduction: Concealing the Deep Embedding of DSLs}
 \label{sec:introduction-yy}
-In \sct{sct:introduction} we introduced domain-specific languages and how they can
+In \S \ref{sct:introduction} we introduced domain-specific languages and how they can
  be embedded into a host language. Then we discussed strengths and weaknesses of deep and shallow embeddings.
  In this section we compare deep and shallow embeddings and then show how they can
  be combined in order to keep all the strengths and cancel out the weaknesses with
@@ -16,7 +16,7 @@ In \sct{sct:introduction} we introduced domain-specific languages and how they c
  % - debugging
 
 Deep \edsls{} intrinsically \emph{compromise programmer experience} by leaking their
-implementation details (\sct{sec:abstraction-leaks}). Often, IR construction
+implementation details (\S \ref{sec:abstraction-leaks}). Often, IR construction
 is achieved through complex type system constructs that are, inevitably,
 visible in the \edsl interface. This can lead to cryptic type errors
 that are often incomprehensible to DSL users.
@@ -25,7 +25,7 @@ relate their programs to the code that is finally executed. Finally, the host
 language often provides more constructs than the embedded language and the usage
 of these constructs can be undesired in the DSL. If these constructs are generic in type
 (e.g., list comprehensions or \code{try\\catch}) they can not be restricted in the embedded
-language by using complex types~(\sct{sec:abstraction-leaks}).
+language by using complex types~(\S \ref{sec:abstraction-leaks}).
 
 
 % Direct embedding
@@ -66,7 +66,7 @@ trait Vector[T] {
 The difference in types is necessarily visible in the
 signature and thus inevitably leaks into user programs. This might seem like
 a low price to pay for all the advantages offered by a deep embedding.
-However, as we will see in \sct{sec:abstraction-leaks}, this
+However, as we will see in \S \ref{sec:abstraction-leaks}, this
 difference in types is at the heart of many of the inconveniences
 associated with deep embeddings such as long compilation times, execution overheads,
 and inability to restrict the host language constructs. How then, can we conceal
@@ -99,7 +99,7 @@ motivating example the type translation is simply:
   \ttrone{T} &=& \text{\code{Rep[}}T\text{\code{]}}& \text{otherwise}.
 \end{array}
 \]
-In \sct{sec:translation} we describe this translation among several
+In \S \ref{sec:translation} we describe this translation among several
 others and discuss their trade-offs.
 
 % What does Yin-Yang do?
@@ -117,8 +117,9 @@ Once we ``broke the ice'' by using reflection it becomes simpler to further
  improve the deep embeddings. \yy enables \emph{domain-specific error reporting} at host language compile time
  by compiling a DSL program during host language compilation. It \emph{restricts} the embedded language by
  providing an additional verification step for producing comprehensible error messages,
- reduces long compilation times of the deep embedding by directly calling reification logic,
- and reduces run-time overheads by compiling the deep programs at host language compile-time.
+ reduces long compilation times of the deep embedding by avoiding extension methods and
+ directly calling reification operations, and reduces run-time overheads by compiling the
+ deep programs at host language compile-time.
 
 Finally, to avoid error prone maintenance of synchronized direct and deep embeddings \yy reuses the core
 translation to generate the deep embeddings based on the definition of
@@ -131,35 +132,36 @@ embeddings is assured.
 \begin{itemize}
 
   \item It completely conceals leaky abstractions of deep EDSLs from the users.
-  The virtues of the direct embedding are used for prototyping, while the deep
-  embedding enables high-performance in production. The reliable translation
-  ensures that programs written in the direct embedding will always be correct
-  in the deep embedding. The core translation is described in \sct{sec:translation}.
+   The virtues of the direct embedding are used for prototyping, while the deep
+   embedding enables high-performance in production. The reliable translation
+   ensures that programs written in the direct embedding will always be correct
+   in the deep embedding. The core translation is described in \S \ref{sec:translation}.
 
   \item It allows changing different deep embedding back-ends with simple configuration
    changes. We discuss different deep embeddings supported by \yy
-   in~\sct{sec:deep-embedding-implementations}.
+   in~\S \ref{sec:deep-embedding-implementations}.
 
-  \item It improves error reporting~(\sct{sec:error-reporting}) in the direct embedding by:
+  \item It improves error reporting~(\S \ref{sec:error-reporting}) in the direct embedding by:
    \emph{i)} allowing domain-specific error reporting at host language
-   compile-time~(\sct{sec:compile-time-error-reporting}) and \emph{ii)}
+   compile-time~(\S \ref{sec:domain-specific-error-reporting}) and \emph{ii)}
    restricting host language features in the direct \edsl{} based on the
-   supported features of the deep \edsl{}~(\sct{sec:restricting}).
+   supported features of the deep \edsl{}~(\S \ref{sec:restricting}).
 
-  \item It reduces the run-time overheads of the deep embedding~(\sct{sec:reducing-runtime-overheads}). The deep embeddings
+  \item It reduces the run-time overheads of the deep embedding~(\S \ref{sec:reducing-runtime-overheads}). The deep embeddings
    always reify their IR before execution at runtime and thus impose execution overheads. For DSLs
    which are fundamentally not staged \yy uses \emph{reflective instantiation} to compile DSLs at host language compile time. For staged DSLs (compiled at host language run-time) \yy avoids re-reification of
    programs by storing them into a cache.
 
+\compilation{
   \item It reduces large compilation times introduced by the deep embedding. The translation
    is changed such that it directly calls the reification methods without having to use
    the complicated type system constructs. Reducing compilation times is presented
-   in~\sct{sec:minimizing-compile-times}.
-
+   in~\S \ref{sec:minimizing-compile-times}.
+}
   \item It simplifies deep \edsl development and guarantees semantic equivalence
    between the direct embedding and the deep embedding by reusing the core
    translation to generate the deep \edsl definition out of the direct \edsl
-   definition~(\sct{sec:deep-gen}).
+   definition~(\S \ref{sec:deep-gen}).
 
 \end{itemize}
 
@@ -175,29 +177,23 @@ OptiML~\cite{sujeeth_optiml:_2011}. In all programs combined the
 direct implementation obviates 101 type annotations related to the
 deep embedding.
 
-We evaluate \yy as a tool for generating a user-friendly frontend for the Slick DSL~\cite{slick}. The evaluation shows
+We use \yy as a tool for generating a user-friendly frontend for the Slick DSL~\cite{slick}. This case study shows
 that developing a frontend for existing DSLs requires little effort and that
-developing an API with \yy takes far less time than the deep embedding. The complete evaluation is presented in \sct{sec:ch2-evaluation}.
+developing an API with \yy takes far less time than the deep embedding. The complete evaluation is presented in \S \ref{sec:ch2-evaluation}.
 
 
 
 
-%
-% Motivation
-%
-
-
-
-
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                Motivation                                   %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Motivation: Abstraction Leaks in the Deep Embedding}
 \label{sec:motivation}
 
 % What do we describe in this Section
 The main idea of this \work is that \edsl{} users should program in a
 direct embedding, while the corresponding deep embedding should be used only in production.
-To motivate this idea we consider the direct embedding and the deep embedding of a simple \edsl for manipulating vectors. Here, we use Scala to show the problems with the deep embedding that apply to other statically typed programming languages (e.g., Haskell and OCaml). These languages achieve the embedding in different ways~\cite{svenningsson_combining_2012,awesome,carette_finally_2009,guerrero_implementing_2004}, but this is always reflected in the type signatures. In the context of Scala, there are additional problems with type inference and implicit conversions that we discuss in \sct{sec:scala-specific-problems}.
+To motivate this idea we consider the direct embedding and the deep embedding of a simple \edsl for manipulating vectors. Here, we use Scala to show the problems with the deep embedding that apply to other statically typed programming languages (e.g., Haskell and OCaml). These languages achieve the embedding in different ways~\cite{svenningsson_combining_2012,awesome,carette_finally_2009,guerrero_implementing_2004}, but this is always reflected in the type signatures. In the context of Scala, there are additional problems with type inference and implicit conversions that we discuss in \S \ref{sec:scala-specific-problems}.
 
 % Shallow Embedding in Scala
 \figref{lst:vector} shows a simple direct \edsl{} for manipulating numerical vectors.
@@ -228,15 +224,18 @@ class Vector[T: Numeric](val data: Seq[T]) {
 
 For a programmer, this is an easy to use library. Not only can we write
 expressions such as \code{v1 + v2} for summing vectors (resembling mathematical
-notation), but we can also get meaningful type error messages. The \edsl is an
-idiomatic Scala and displayed type errors are comprehensible. Finally, in the
+notation), but we can also get meaningful type error messages. This \edsl is an
+idiomatic library in Scala and displayed type errors are comprehensible. Finally, in the
 direct embedding, all terms directly represent values from the embedded language
 and inspecting intermediate values with the debugger is straightforward.
 
 The problem, however, is that the code written in such a direct embedding suffers from major performance issues \cite{rompf_optimizing_2013}. For some intuition, consider the following code for adding 3 vectors: \code{v1 + v2 + v3}. Here, each \code{+} operation creates an intermediate \code{Vector} instance, uses the \code{zip} function, which itself creates an intermediate \code{Seq} instance, and calls a higher-order \code{map} function. The abstractions of the language that allow us to write code with high-level of abstraction have a downfall in terms of performance. Consecutive vector summations would perform much better if they were implemented with a simple while loop.
 
-% Deep Embedding
+
+
 \section{The Deep Embedding}
+\label{sec:the-deep-embedding}
+
 For the DSL from \figref{lst:vector}, the overhead could be eliminated with
 optimizations like stream fusion~\cite{coutts_stream_2007} and inlining, but to
 properly exploit domain knowledge, and to potentially target other platforms,
@@ -249,8 +248,7 @@ framework and present the deep version of the \edsl{} for manipulating numerical
 
 In the \code{VectorDSL} interface every method has an additional implicit
 parameter of type \code{SourceContext} and every generic type requires an
-additional \code{TypeTag} type class. The \code{SourceContext} contains information
-about the current file name, line number, and character offset.
+additional \code{TypeTag} type class\footnote{\code{SourceContext} and \code{TypeTag} are only an example of source information and run-time type information. A particular DSL can use other types but they would still be used in the similar way.}. The \code{SourceContext} contains information about the current file name, line number, and character offset.
 \code{SourceContext}s are used for mapping generated code to the original
 program source. \code{TypeTag}s carry all information about the type of terms.
 They are used to propagate run-time type information through the \edsl{}
@@ -261,6 +259,8 @@ definitions that are provided in the DSL.
 
 \begin{figure}
 \begin{listingtiny}
+
+
 trait VectorDSL extends Base {
   object Vector {
     def fromSeq[T:Numeric:TypeTag](seq: Rep[Seq[T]])
@@ -286,12 +286,18 @@ trait VectorDSL extends Base {
       vector_map(v, f)
   }
 
-  // IR constructors for `map` and `plus` are elided
-  case class VectorFill[T:TypeTag](v: Rep[T], s: Rep[Int])
-    (implicit sc: SourceContext)
+  // Elided IR constructors of `map`, `data`, `fromSeq`, and `range`
+  case class VectorFill[T:TypeTag](v: Rep[T], s: Rep[Int],
+    sc: SourceContext)
   def vector_fill[T:Numeric:TypeTag](v: Rep[T], size: Rep[Int])
     (implicit sc: SourceContext): Rep[Vector[T]] =
-    VectorFill(v, size) // IR node construction
+    VectorFill(v, size, sc) // IR node construction
+
+  case class VectorPlus[T:TypeTag](lhs: Rep[T], rhs: Rep[T],
+    sc: SourceContext)
+  def vector_plus[T:TypeTag](l: Rep[Vector[T]], r: Rep[Vector[T]])
+    (implicit sc: SourceContext): Rep[Vector[T]] =
+    VectorPlus(l, r, sc) // IR node construction
 }
 \end{listingtiny}
 \caption{\label{lst:vector_deep} A deep \edsl{} for manipulating numerical vectors based on LMS.}
@@ -300,13 +306,13 @@ trait VectorDSL extends Base {
 \section{Abstraction Leaks in the Deep Embedding}
 \label{sec:abstraction-leaks}
 
-The programs in the deep embedding construct the IR instead of the values in the embedded language and this inevitably leaks to the users. In this section we discuss how DSL interfaces are convoluted in the deep embedding~(\sct{sec:convoluted-interfaces}), how debugging is made difficult~(\sct{sec:difficult-debugging}), how type errors can
-become incomprehensible~(\sct{sec:incomprehensible-type-errors}), how it is not possible
-to restrict certain host language constructs~(\sct{sec:unrestricted-language}), how
-domain-specific error reporting can only be achieved at run time~(\sct{sec:domain-specific-error-reporting-runtime}),
-how run-time compilation at host-language runtime creates execution overheads~(\sct{sec:runtime-overheads}), how
-deep embedding of DSLs can impose long compilation times~(\sct{sec:long-compilation-times}), and how deep embedding
-becomes more complicated in the deep embedding~(\sct{sec:scala-specific-problems}).
+The the deep embedding programs construct an IR instead of the values in the embedded language and this inevitably leaks to the users. In this section we discuss how DSL interfaces are convoluted in the deep embedding~(\S \ref{sec:convoluted-interfaces}), how debugging is made difficult~(\S \ref{sec:difficult-debugging}), how type errors can
+become incomprehensible~(\S \ref{sec:incomprehensible-type-errors}), how it is not possible
+to restrict certain host language constructs~(\S \ref{sec:unrestricted-language}), how
+domain-specific error reporting can only be achieved at run time~(\S \ref{sec:domain-specific-error-reporting-runtime}),
+how run-time compilation at host-language runtime creates execution overheads~(\S \ref{sec:runtime-overheads}), \compilation{how
+deep embedding of DSLs can impose long compilation times~(\S \ref{sec:long-compilation-times})}, and
+how what are the problems specific to Scala in deep embeddings~(\S \ref{sec:scala-specific-problems}).
 
 
 \subsection{Convoluted Interfaces}
@@ -324,7 +330,13 @@ In DSLs that use code generation, method signatures must be
  leaks in the DSL interface. In Scala \code{TypeTag}s and \code{SourceContext}s are
  passed with implicit parameters. This makes the interface harder to understand as the user of
  the \edsl{}, who might not be an expert programmer, needs to understand concepts
- like \code{TypeTag} and \code{SourceContext}. A method \code{map} from the introductory example~(\sct{sec:introduction-yy}) with source and type information has two additional implicit parameters:\begin{lstparagraph}
+ like \code{TypeTag} and \code{SourceContext}. A method \code{map} from the introductory example~(\S \ref{sec:introduction-yy}) with source and type information has two additional implicit parameters.
+
+ The convoluted interfaces are well presented in \figref{lst:vector_deep}. Here we see
+  how all methods have additional implicit arguments \code{SourceContext}, how the method
+  definition is placed in an \code{implicit class} instead on the type it self, and how
+  it is necessary to have additional methods for defining the
+  organization of methods is \begin{lstparagraph}
   def map[U](fn: Rep[T => U])
     (implicit sc: SourceContext, tpe: TypeTag[U]): Rep[Vector[U]]
  \end{lstparagraph}
@@ -420,31 +432,34 @@ exception.
 
 Domain-specific languages often provide additional program analysis and verification
  beyond the type system. DSLs perform verification if data-sources are present~\cite{mcclure2005sql,zaharia2012resilient}, operations are supported on a given platform~\cite{slick}, whether multi-dimensional array shapes are correct~\cite{ureche_stagedsac:_2012}, etc.
- Ideally, error reporting with the domain-specific analysis should be performed at
- compile-time in order to avoid run-time errors in production and to provide faster reaction
- time.
+ Ideally, error reporting with the domain-specific analysis should be performed at host language
+ compile-time in order to avoid run-time errors in production and to reduce the time between
+ the error is introduced and detected.
 
 % Deep embedding can not achieve this as it is excecuted at host language runtime. Thus making DSLs unsafe.
 Deep EDSLs do not support compile-time error reporting due to their execution at host language run time.
- This requires users to execute the DSL body in order to perform domain-specific error reporting. This
+ As a consequence, users must execute the DSL body in order to perform domain-specific error detection. This
  can lead to accidental errors in production code, requires more time find the errors as the error reporting
- requires running tests, and errors are can not be nicely integrated into the host language error
+ requires running tests, and errors are not integrated into the host language error
  reporting environment.
 
 
 \subsection{Runtime Overheads of DSL Compilation}
 \label{sec:runtime-overheads}
+
 % Cost of reification.
 The deeply embedded DSLs are compiled at run time when the code is executed. This compilation
  introduces overheads on the first execution of the program as well as subsequent executions. The first execution
  has a larger overhead as the DSL needs to be fully compiled, and the overhead of subsequent
- executions depend on the implementation of the deep embedding. Some deep embeddings
+ executions depends on the implementation of the deep embedding. Some deep embeddings
  recompile their programs every time~\cite{rompf2012lightweight,slick} which can lead to significant
- execution overheads~\cite{taha_multi-stage_1997}. Others support guards for re-compilation which lower
+ execution overheads~\todo{cite amir's thesis}. Others support guards for re-compilation which lower
  the overheads but introduce additional constructs in the user programs further
  leaking deep embedding abstractions.
+
 \todo{cite amirs thesis}
-\todo{expand a bit}
+
+\compilation{
 \subsection{Long Compilation Times}
 \label{sec:long-compilation-times}
 
@@ -458,52 +473,59 @@ In Scala the compilation overheads for the deep embedding are significant and af
  methods for a given type. In presence of many types in the embedded language implicit
  search starts dominating compilation and introducing delays noticeable by the user. We
  provide detailed analysis of compilation times in the polymorphic embeddings in Scala
- in~\sct{sec:minimizing-compile-times}.
+ in~\S \ref{sec:minimizing-compile-times}.
+}
 
 \subsection{Abstraction Leaks in the Deep Embedding Specific to Scala}
 \label{sec:scala-specific-problems}
 
-Scala specific features like \emph{weak least upper bounds}~\cite{odersky_scala_2004} and \emph{type erasure} lead to further abstraction leaks in the deep embedding. In this section we discuss those and show
-how they affect the DSL user.
+Scala specific features like \emph{weak least upper bounds}~\cite{odersky_scala_2004}
+ and \emph{type erasure} lead to further abstraction leaks in the deep embedding.
+ In this section we discuss those and show how they affect the DSL user.
 
 \paragraph{Weak least upper bounds.} The Scala language introduces \emph{weak type conformance} where
- primitive types can conform although they are not in a subtyping relation. According to the
- language specification~\cite{odersky_scala_2004} type $T$ weakly conforms to $U$~($T <:_\omega U$) if $T$ is a subtype of $U$ ($T <: U$) or $T$ precedes $U$ in the following ordering:\begin{lstparagraph}
+  primitive types can conform although they are not in a subtyping relation. According to the
+  language specification~\cite{odersky_scala_2004}, a type $T$ weakly conforms to $U$~($T <:_\omega U$)
+  if $T$ is a subtype of $U$ ($T <: U$) or $T$ precedes $U$ in the following ordering:\begin{lstparagraph}
  Byte $<:_\omega$ Short $<:_\omega$ Int
  Char $<:_\omega$ Int
  Int $<:_\omega$ Long $<:_\omega$ Float $<:_\omega$ Double
  \end{lstparagraph}
 
-The weak least upper bounds are computed with respect to weak conformance in: \emph{i)} inferring the return type of conditional statements (e.g., \code{if} and pattern matching), and \emph{ii)} type inference of type arguments. For example, term \code{if (cond) 1 else 1.0d} has a type \code{Double}. Weak least upper bounds are computed before
-the numeric conversions so the \code{then} branch of the previous term is widened to \code{1.0d}.
+The weak least upper bounds are computed with respect to weak conformance:
+ \emph{i)} when inferring the return type of conditional statements (e.g., \code{if}
+  and pattern matching), and \emph{ii)} in type inference of type arguments. For example,
+  term \code{if (cond) 1 else 1.0d} has a type \code{Double}. Weak least upper bounds
+  are computed before the numeric conversions so the \code{then} branch of the
+  previous term is widened to \code{1.0d}.
 
-In case of the deep embedding there are no weak least upper bounds are applied
- as term types are not primitive. This leads to inconsistent behavior with the host
- language. For example, type checking \begin{lstparagraph}
-val res = if(pos) 1 else -1.0
+In case of the deep embedding there are no weak least upper bounds applied
+ as term types are never primitive types as they represent the IR. This leads to
+ inconsistent behavior with the host language. For example, type checking\begin{lstparagraph}
+val res = if(positive) 1 else -1.0
 res * 42
 \end{lstparagraph}leads to the following type error:\begin{lstparagraph}
 error: value * is not a member of Prog.this.Rep[AnyVal]
 res * 42
     ^
-\end{lstparagraph} This behavior in the deep embedding can not be improved with implicit conversions
- as the programs are type correct and implicit conversions are
- triggered only for incorrect programs.
+\end{lstparagraph} This behavior in the deep embedding can not be improved with
+ implicit conversions as the programs are type correct and implicit conversions
+ are triggered only for incorrect programs.
 
 \paragraph{Type erasure.} Scala introduces \emph{erasure}~\cite{odersky_scala_2004} of abstract types to
  the base reference type (\code{AnyRef}). As a result, overloaded methods with apparently different
- argument types erase to the same signature. Two methods having the same signature is illegal
- and leads to compilation errors.
+ argument types erase to the same signature. Having two methods in the same scope
+  with the same signature is illegal and leads to compilation errors.
 
+In the deep embedding all types are abstract and erase to the type \code{Object}
+ on the JVM. Consequently methods that could be defined in the direct embedding
+ erase to the same signature and become illegal. Defining methods \begin{lstparagraph}
+def from(json: Rep[String]): Rep[Vector[Double]]
+def from(bytes: Rep[Array[Byte]]): Rep[Vector[Double]]
+ \end{lstparagraph} yields an compilation error. This code would otherwise be valid
+in the host language.
 
- In the deep embedding all types are abstract and the methods that could be defined regularly
-  become illegal. Defining methods \begin{lstparagraph}
- def from(json: Rep[String]): Rep[Vector[Double]]
- def from(bytes: Rep[Array[Byte]]): Rep[Vector[Double]]
- \end{lstparagraph} yields the following error
- which would be otherwise legal code in the host language.
-
- The DSL users are left with two options: \emph{i)} to rename one of the methods and diverge from the original design (e.g., rename \code{from} to \code{fromBytes}, or \emph{ii)} to introduce additional implicit parameters which will disambiguate the two methods after erasure \begin{lstparagraph}
+The DSL authors are left with two options: \emph{i)} to rename one of the methods and diverge from the original design (e.g., rename \code{from} to \code{fromBytes}, or \emph{ii)} to introduce additional implicit parameters which will disambiguate the two methods after erasure \begin{lstparagraph}
  def from(json: Rep[String]): Rep[Vector[Double]]
  def from(bytes: Rep[Array[Byte]])
    (implicit p: Overloaded): Rep[Vector[Double]]
@@ -515,15 +537,9 @@ abstraction leaks.
 
 
 
-
-
-
-%
-% Translation of the Direct Embedding
-%
-
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                   Translation of the Direct Embedding                        %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Translation of the Direct Embedding}
 \label{sec:translation}
 
@@ -554,10 +570,10 @@ Since the translation is type-directed it requires reflection that supports
 \end{description}
 
 \figref{fig:pipeline} shows the translation pipeline of \yy. Language virualization is covered
-in \sct{sec:langauge-virtualization} and DSL intrinsification
-in \sct{sec:dsl-intrinsification}. The whole translation is explained on a concrete example
-in \sct{sec:translation-example}. Finally we argue for correctness of the translation
-in \sct{sec:correctness}.
+in \S \ref{sec:langauge-virtualization} and DSL intrinsification
+in \S \ref{sec:dsl-intrinsification}. The whole translation is explained on a concrete example
+in \S \ref{sec:translation-example}. Finally we argue for correctness of the translation
+in \S \ref{sec:correctness}.
 
 \begin{figure*}[!ht]
 \centering
@@ -571,13 +587,11 @@ in \sct{sec:correctness}.
 \label{sec:langauge-virtualization}
 Language virtualization allows to redefine intrinsic constructs of the
 host language, such as \code{if} and \code{while} statements. This can be
-achieved by translating them into suitable method invocations as shown by Rompf
-et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-virtualized:_2009}.
+achieved by translating them into suitable method invocations as shown by of Carette et al.~\cite{carette_finally_2009} and Rompf et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-virtualized:_2009}.
 
- \yy follows the ideas of Carette et al.~\cite{carette_finally_2009}
- and Scala-Virtualized but virtualizes all Scala expressions and uses macros of
-  unmodified Scala to virtualize its intrinsics. Practice has shown that DSL
-  authors are reluctant to use a modified compiler and that for the wide adoption
+ \yy follows the ideas of Scala-Virtualized but virtualizes all Scala language constructs that
+  appear as expressions; uses macros of unmodified Scala to virtualize its intrinsics.
+  Practice has shown that DSL authors are reluctant to use a modified compiler and that for the wide adoption
   of embedded DSLs it is important to provide a solution based on unmodified Scala.
 
  Compared to Scala-Virtualized we translate additional language constructs:
@@ -676,7 +690,7 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
  Defined translation rules convert language constructs into method calls where each language construct has
   a corresponding method. The signature of each method is partially defined by \yy. Method names, the number of
   type parameters and the number of type arguments are predefined while types of arguments and return types
-  are open for the DSL author to define. \todo{link to the signature}
+  are open for the DSL author to define (\S \ref{sec:deep-embedding-implementations}).
 
  Binding of the translated language constructs to the corresponding methods
   in the deep embedding is achieved during DSL intrinsification; language virtualization is
@@ -687,26 +701,24 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
  \paragraph{Functions.} We virtualize function definition and application to support full abstraction over the host
   language expressions. This allows DSL authors to define how functions are treated by
   reifying them and optionally providing analysis and transformations over them. For example, DSL authors
-  can define different inlining strategies, perform call graph analysis, or instrument all function calls. With Scala-Virtualized
-  this is not possible as functions are not translated and thus it is impossible to
+  can define different inlining strategies, perform call graph analysis, or instrument all function calls. With Scala-Virtualized this is not possible as functions are not translated and thus it is impossible to
   abstract over them.
 
 % Discuss method translations.
  \paragraph{Methods.} Method definitions follow a similar philosophy as functions.
   The difference is that in Scala, the \code{def} keyword is used to define universal quantification and possibly recursion.
   This is similar to the \code{let} and \code{letrec} constructs in other functional languages. This translation is optional
-  as in some DSLs it is more concise to reuse method application of the host language.
-  \todo{Name collision.}
+  as in some DSLs it is more concise to reuse method application of the host language. \toimplement
 
 % Discuss control structures.
  \paragraph{Control constructs.} We translate all Scala control constructs (e.g.,\code{if} and \code{try} to method calls.
   Scala's type system supports parametric polymorphism, by-name parameters, and partial functions that can model
-  the semantics of all constructs. How these features are used to model the original constructs is presented~\todo{}.
+  the semantics of all control constructs. How these features are used to model the original constructs is presented in \S \ref{sec:deep-embedding-implementations}).
 
 % Discuss variables.
  \paragraph{Value bindings.} Scala has multiple constructs for value binding: values, variables, and lazy values. \yy translates
-  definition of values into methods as well as all accesses. Abstraction over values accesses is
-  necessary for tracking effects in case of variables, access order in case of lazy values, and instrumentation
+  definition of all values into methods as well as accesses to them. Abstraction over values accesses is
+  necessary for tracking effects in case of variables, access order in case of lazy values, and for instrumentation
   in case of simple values.
 
  \paragraph{Universal methods.} Scala is designed such that the types \code{Any} and
@@ -724,12 +736,26 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
   performed manually by the DSL author.
 
   For DSLs that require extension of these methods we provide an alternative translation
-  of universal methods into the name mangled infix form:
+  of universal methods into the name mangled infix form:\toimplement
 
   \infyyax{}
       {t_1\; == \;t_2}{\trone{t_1}.\;\mathtt{\_\_==}(\;\trone{t_2})}
 
-  \todo{new}
+  \paragraph{The \code{new} construct.} The new construct of Scala can not be
+  virtualized to a single method as signatures of data-type constructors differ in number
+   of type arguments, the number of arguments and in their types. If the method name was the
+   same for all data types the method would have to have a different type signature based on
+   one of its type arguments. In Scala this would be possible with by using a combination of
+   overloading and implicit parameters but this requires usage of complicated constructs in the deep embedding.
+
+
+   % We wirtualize new
+   Instead, we rely on the power of the translation, and we virtualize constructor calls
+     to method calls whose name depends on the type that is being constructed:
+
+  \infyy{}
+      {\tctx{\Gamma} methodName = \mathtt{"new\_"} + \mathtt{path}(type)}
+      {\mathbf{new} \; type[T](arg)}{methodName[T](\trone{arg})}
 
 \begin{figure}[!ht]
 %
@@ -847,9 +873,8 @@ et al. in the modified Scala compiler named Scala-Virtualized~\cite{rompf_scala-
 \label{sec:virtpatmat}
 
 % Define how it works.
-The Scala compiler has a virtual pattern matcher that allows for changing the semantics
- of the construct. The semantics can be changed to reify the pattern match for its use
- in DSLs or to provide alternative \yy reuses the functionality of this pattern matcher
+The Scala compiler has a virtual pattern matcher that allows for overloading the semantics
+ of the pattern matching construct. \yy reuses the functionality of this pattern matcher
  in combination with DSL intrinsification to allow reasoning about it in DSL compilers.
  In this section, for purposes of explaining DSL intrinsification, we explain the functioning
  of the virtualized pattern matcher.
@@ -857,19 +882,18 @@ The Scala compiler has a virtual pattern matcher that allows for changing the se
 % Semantics of Scala pattern matching: alternatives are interpreted with a plus and failures with a zero, and guards as filters. We also need a constructor one. Example of Option.
 Scala's pattern matching can be interpreted with deconstructors and operations on the \code{Option}
  type of Scala. The successful match is represented with the \code{Some} type which is
- a constructed the monadic return of the \code{Option} monad; failures failures with the
- \code{None} type which is a monadic \emph{zero} operation.
- The pattern nesting is represented with the monadic \emph{bind} operation \code{flatMap}; alternation is represented with the
+ the monadic return of the \code{Option} monad and failures with the \code{None} type
+ which is a monadic \emph{zero} operation. The pattern nesting is represented with
+ the monadic \emph{bind} operation \code{flatMap}; alternation is represented with the
  \code{orElse} combinator on the \code{Option} monad which represents monadic addition. The semantics
  of Scala pattern matching can be represented completely with the operations of the zero-plus monad.
-
 
 % Based on the fact that Scala pattern matching can be interpreted as a zero+ monad.
 The virtual pattern matcher converts Scala pattern matching to the operations on a user-defined zero-plus monad.
 A pattern match is virtualized if the object \code{__match} is defined in the scope. For the original
 semantics of Scala pattern matching is defined by the object \code{__match} defined in \figref{fig:match-default}. To
-virtualize pattern matching users can provide their own type signatures and implementations in \code{__match},
-on implementations of the zero-plus monad, and implementations and signatures of the deconstructors.
+virtualize pattern matching users can provide their own definitions of methods in \code{__match},
+implementations of the zero-plus monad, and implementations of the case class deconstructors.
 
 % Basic Scala
 \begin{figure}[ht]
@@ -941,30 +965,23 @@ Pair.unapply(p).flatMap(x2: (Int, Int) => {
 \end{lstparagraph}
 
 Finally the pattern guards are translated into the call to the \code{guard} function that executes the
-by-name body of the case if the \code{cond} statement is satisfied.
+by-name body of the case when the \code{cond} statement is satisfied.
 
-% Explain how we leave it for DSL intrinsification to virtualize.
-\todo{here add a link to later sections}
 
 \section{DSL Intrinsification}
 \label{sec:dsl-intrinsification}
 
 DSL intrinsification maps directly embedded versions
- of the DSL intrinsics to their deep counterparts.  The constructs that
- need to be converted are: \emph{i)} DSL types, \emph{ii)} constant literals,
- \emph{iii)} captured variables, and \emph{iv)} DSL operations in the direct program.
-
- \todo{section pointers}
-
- \todo{pointer to the figure and add lines to the figure, also adapt the figure for the new translation}
+ of the DSL intrinsics to their deep counterparts. The constructs that
+ we translate~(\figref{fig:pipeline}) are: \emph{i)} constants and
+ free variables~(\S \ref{sec:constants-and-free-variables}), \emph{ii)} DSL types~(\S \ref{sec:type-translation}), and \emph{iii)} DSL operations in the direct program~(\S \ref{sec:operation-translation}).
 
 \subsection{Constants and Free Variables}
 \label{sec:constants-and-free-variables}
 
  \paragraph{Constants.} Constant values can be intrinsified in the deep embedding in multiple ways.
- They can be converted to a method call for each constant (e.g., $\trone{\mathtt{1}} = \mathtt{\_\_1}$),
-  type (e.g., $\trone{\mathtt{1}} = \,$\code{liftInt(1)}), or with a unified polymorphic function (e.g., $\trone{\mathtt{1}} = \,$\code{lift[Int](1)}) that
-  uses type classes to define behavior and the return type of \code{lift}.
+ They can be converted to a method call for each constant (e.g., $\trone{\mathtt{1}} = \mathtt{\_1}$),
+  type (e.g., $\trone{\mathtt{1}} = \,$\code{liftInt(1)}), or with a unified polymorphic function (e.g., $\trone{\mathtt{1}} = \,$\code{lift[Int](1)}) that uses type classes to define behavior and the return type of \code{lift}.
 
   % Why do we use type classes.
   In \yy we use the polymorphic function approach for to translate constants
@@ -1121,7 +1138,7 @@ the deep embedding can redefine it:
 Unlike with the previous translations, where the type system of the direct embedding was
 ensuring that the term will type-check in the deep embedding, this translation gives no guarantees. The
 responsibility for the correctness of the translation is on the DSL author. We applied this translation to Slick
-\cite{slick} with great success~(\sct{subsec:slick}).
+\cite{slick} with great success~(\S \ref{subsec:slick}).
 
 \paragraph{Changing the translation.} By simply changing the type translation, the \edsl author can modify behavior of an \edsl.  For example, with the generic polymorphic embedding the \edsl will reify function IR nodes and thus allow for dynamic dispatch. In the same \edsl that uses the eager inlining translation, dynamic dispatch is restricted and all function calls are inlined.
 
@@ -1198,7 +1215,7 @@ In \yy we chose the operation translations that closely match the structure of
  calling operations etc. With such interface the previous example resembles the direct embedding\begin{lstparagraph}
 Vector.fill(1)(42)
 \end{lstparagraph}
-except for the abstraction leaks of the deep embedding (\sct{sec:abstraction-leaks}).
+except for the abstraction leaks of the deep embedding (\S \ref{sec:abstraction-leaks}).
 This approach requires less code than than ``naked'' AST manipulation\todo{cite}, e.g:\begin{lstparagraph}
 VectorFill(Const(1), Const(42))
 \end{lstparagraph}
@@ -1297,18 +1314,20 @@ with virtualized host language intrinsics.
 
 \item \emph{Eager inlining} preserves well-typedness for programs that are
 not explicitly rejected by the translation. We discuss correctness of eager inlining
-in \cite{techrep} on a Hindley-Milner based calculus similar to the one of Carette et al.~\cite{carette_finally_2009}.
+in the appendix on a Hindley-Milner based calculus similar to the one of Carette et al.~\cite{carette_finally_2009}.
 
 For the intuition why type arguments can not contain function types consider passing an increment function to the generic identity function:\begin{lstparagraph}
   id[T => T](lam[T, T](x => x + 1))
 \end{lstparagraph}
-Here, the \code{id} function expects \code{Rep[_]} type but the argument is \code{Rep[T] => Rep[T]}.
+Here, the \code{id} function expects a \code{Rep[_]} type but the argument is \code{Rep[T] => Rep[T]}.
 
 \item The \emph{Dynamic} type supports all operations and, thus, static type errors will not occur. Here, the DSL author is responsible for providing a back-end where dynamic type errors will not occur.
 
 \item \emph{Custom types} can cause custom type errors since \edsl authors can
 arbitrarily redefine types (e.g., \code{type Int = String}. \yy provides
 \emph{no guarantees} for this type of the translation.
+
+%\toimplement Generics
 
 \end{itemize}
 
@@ -1324,15 +1343,15 @@ compilation stage, \yy does not allow staging~\cite{taha_multi-stage_1997}.
 implementation supports it.
 
 % Yin-Yang requires a few things.
-We implemented \yy in Scala, however the underlying principles are applicable
+We implemented \yy in Scala, however, the underlying principles are applicable
 in the wider context. \yy operates in the domain of statically typed languages
 based on the Hindley-Milner calculus with a type system that is advanced enough
-to support deep EDSL embedding. The type inference mechanism, purity, laziness,
+to support deep DSL embedding. The type inference mechanism, purity, laziness,
 and sub-typing, do not affect the operation of \yy. Different aspects of \yy
 require different language features, which we discuss separately below.
 
 % For the translation (nice interface) type introspection. For the library macros.
-\paragraph{The core translation} are based on term and
+\paragraph{The core translation} is based on term and
 type transformations. Thus, the host language must support reflection,
 introspection and transformation on types and terms. This can be achieved both
 at run-time and compile-time.
@@ -1345,7 +1364,9 @@ is required for debugging and prototyping. If there is a \emph{semantic mismatch
  direct embedding can be implemented as stub which is used only for its user
  friendly interface and error reporting.
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                           Deep Embedding with Yin-Yang
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Deep Embedding with \yy}
 \label{sec:deep-embedding-implementations}
 
@@ -1356,13 +1377,13 @@ should have an interface that corresponds to: \emph{i)} methods emitted by langu
 
  For each type translation, interface of the deep embedding and IR reification is
   achieved differently. In this section we describe
-  how to define the deep embedding interface~(\sct{sec:relaxed-interface}) and achieve reification
+  how to define the deep embedding interface~(\S \ref{sec:relaxed-interface}) and achieve reification
   for relevant type translations:
-   \emph{i)} the identity translation~(\sct{sec:identity-embedding}),
-   \emph{ii)} the polymorphic embedding~(\sct{sec:polymorphic-embedding}),
-   \emph{iii)} the polymorphic embedding with eager inlining~(\sct{sec:polymorphic-embedding-with-eager-inlining}), and
-   \emph{iv)} the embedding with custom types~(\sct{sec:embedding-with-custom-types}).
-  Finally, we discuss how is the deep embedding compiled and executed~(\sct{sec:yy-interface}). For conciseness,
+   \emph{i)} the identity translation~(\S \ref{sec:identity-embedding}),
+   \emph{ii)} the polymorphic embedding~(\S \ref{sec:polymorphic-embedding}),
+   \emph{iii)} the polymorphic embedding with eager inlining~(\S \ref{sec:polymorphic-embedding-with-eager-inlining}), and
+   \emph{iv)} the embedding with custom types~(\S \ref{sec:embedding-with-custom-types}).
+  Finally, we discuss how the deep embedding is compiled and executed~(\S \ref{sec:yy-interface}). For conciseness,
    in all embeddings we omit the interface of pattern matching and virtualized universal methods.
 
 \section{Relaxed Interface of the Deep Embedding}
@@ -1373,26 +1394,22 @@ The \yy translation requires a certain interface from the deep embedding. This i
  In most translation rules only the method name, number of type arguments, and number
  of explicit arguments is defined.
 
-The number of implicit arguments and the return type, however, are left open to
- the DSL author. The implicit parameters are added by the type-checker after the operation translation
- phase if they are present in the deep embedding.
+The number of implicit arguments and the return type are left open for
+ the DSL author to define. The implicit parameters are added by the type-checker
+ after the operation translation phase if they are present in the deep embedding.
  For example, if we define the \code{$\$$ifThenElse} function as\begin{lstparagraph}
 def $\$$ifThenElse[T](cond: Boolean, thn: => T, els: => T)(
   implicit tpe: TypeTag[T]): T = \\...
 \end{lstparagraph}
-after the translation the Scala type-checker will provide the arguments that carry run-time type information.
-
-% EXP Expansion point: we can talk about changing the return type.
+after the translation the Scala type-checker will provide the arguments that
+carry run-time type information.
 
 This feature can be used in the deep embeddings for various purposes. The ones that
-were used in practice are: \emph{i)} tracking type information, \emph{ii)} tracking
+were used in DSLs based on \yy and LMS are: \emph{i)} tracking type information, \emph{ii)} tracking
 positions in the source code of the direct embedding, \emph{iii)} changing the method return type
 based on its argument types, and \emph{iv)} allowing multiple methods with the
-same erased signature\footnote{On the JVM, due to type erasure, methods with different
- argument types are sometimes erased to the same signature. This can be avoided by augmenting
- methods with an additional implicit parameter that modifies the overall method signature.}.
+same erased signature (\S \ref{sec:scala-specific-problems}).
 
-% EXP Expansion point: maybe expand and explain all of these methods in the appendix.
 
 \section{Embedding for the Identity Translation}
 \label{sec:identity-embedding}
@@ -1400,9 +1417,8 @@ same erased signature\footnote{On the JVM, due to type erasure, methods with dif
 The DSL embedding for the identity translation is not truly a deep embedding. The
 types are unmodified and, thus, can not represent the DSL intermediate representation.
 This translations is still interesting as a mechanism for instrumenting language
-constructs of Scala, as well as for restricting certain language features in the direct embedding. The
-basic interface that contains all the language features, without any additional implicit parameters,
-is defined in~\figref{fig:interface-identity-dsl}.
+constructs of Scala. The basic interface that contains all the language features,
+ without any additional implicit parameters, is defined in~\figref{fig:interface-identity-dsl}.
 
 % Control flow is preserved with the Scala by-name parameters.
 With this embedding the order of execution in all control flow constructs of Scala is preserved with
@@ -1443,12 +1459,12 @@ def ifThenElseImpl[T](c: Context)(cond: c.Tree,
 }
 \end{lstparagraph}
 
-\yy provides a component that has all language features overridden with macros that rewrite
-to the original language construct. By using this component the DSL author can override functionality
+\yy provides a Scala component that has methods of all language features overridden with macros that rewrite
+ them to the original language construct. By using this component the DSL author can override functionality
 of individual language constructs without a need to redefine all other language features.
 
 % Hole and lift interface.
-In \figref{fig:interface-identity-dsl} method \code{hole} has a slightly different  representation than what is presented in \sct{sec:translation}. Method \code{hole}
+In \figref{fig:interface-identity-dsl} method \code{hole} has a slightly different  representation than what is presented in \S \ref{sec:translation}. Method \code{hole}
  has an additional parameter for the run-time type information~(\code{tpe: TypeTag[T]}).
  This parameter is passed explicitly by \yy to allow the compiler to infer the type arguments
  of the method hole. This allows additional freedom for defining the interface of hole~(see \todo{embedding with custom types}).
@@ -1490,6 +1506,8 @@ trait IdentityInterface with FunctionsInterface {
 \label{fig:interface-identity-dsl}
 \end{figure}
 
+
+
 \section{Polymorphic Embedding}
 \label{sec:polymorphic-embedding}
 
@@ -1502,15 +1520,16 @@ With the generic polymorphic embedding we uniformly abstract over each type in t
 % More on polymorphic embedding.
 In \figref{fig:polymorphic-embedding} we show the basic interface
  for the generic polymorphic embedding. In trait
- \code{PolymorphicBase} the type \code{R[+T]} is the abstraction over the types in the
- direct embedding. This type is covariant in type \code{T} and therefore the abstract
- types have the same subtyping relation as the types in the direct embedding. Some deep
- embeddings call this type \code{Rep}.
+ \code{PolymorphicBase} the type \code{R[+T]}\footnote{Some deep
+ embeddings call this type \code{Rep}, \code{Repr}. We use the name \code{R} as in
+ languages with local type inference this type is omnipresent in method signatures and makes them longer.} is the abstraction over the types in the direct embedding. This type is covariant in type \code{T}
+ and therefore the abstract types have the same subtyping relation as the types
+ in the direct embedding.
 
 In this embedding both function definition and function application are abstracted over.
-\code{lam} converts functions from the host language into the functions in the embedded language and
-\code{app} returns functions from the embedded language into the host language. This way the DSL author
-has complete control over the function definition/application in the deep embedding.
+ \code{lam} converts functions from the host language into the functions in the embedded language and
+ \code{app} returns functions from the embedded language into the host language. This way the DSL author
+ has complete control over the function definition/application in the deep embedding.
 
 \begin{figure}
 \begin{listingtiny}
@@ -1561,13 +1580,16 @@ DSL operation are added to \code{R[T]} types in the same manner. In addition the
 translated objects in the direct embedding. Since we treat objects as constants
 they are handled by the \code{lift} method.
 
-An object from the direct embedding should be represented with an appropriate lift method and a set
+An object from the direct embedding should be represented with an appropriate \code{lift} method and a set
  of extension methods that represent its operations. For example, to support the \code{println}
- method on the \code{Predef} object the deep embedding introduce an extension method on \code{R[Predef.type]}:\begin{lstparagraph}
+ method on the \code{Predef} object the deep embedding must introduce a lifting construct and
+ an extension method on \code{R[Predef.type]}:\begin{lstparagraph}
+ def lift(c: Predef.type): R[Predef.type] = Const(Predef)
  implicit class PredefOps(predef: R[Predef.type]) {
    def println(p: R[Any]): R[Unit] = \\...
  }
  \end{lstparagraph}
+
 To preserve the original API of the deep embedding one can introduce a shortcut for the
  \code{Predef} object in the DSL component:\begin{lstparagraph}
  val Predef = lift[Predef.type](scala.Predef)
@@ -1577,9 +1599,9 @@ This way the deep embedding can be used in a similar way to the direct embedding
 
 
 \paragraph{Operations in the direct embedding.} Implementation of the deep embedding operations
- depends on which rules of virtualiztion are applied. If we apply
- method virtualization in the DSL programs the bodes of the deep embedding operations
- should be transformed with the same transformation. For example, an identity method
+ depends on which rules of virtualiztion are applied. If we apply method virtualization
+ in the DSL programs the bodes of the deep embedding operations should be transformed
+ with the same transformation. For example, an identity method
  in the deep embedding\begin{lstparagraph}
    def id[T](v: R[T]): R[T] = Identity(v)
  \end{lstparagraph}
@@ -1588,7 +1610,7 @@ This way the deep embedding can be used in a similar way to the direct embedding
  \end{lstparagraph}
 
 In practice, the deep DSL operations only reify the deep program and tracking function application of these
- methods just introduces superfluous IR nodes. Further, this transformation convolutes
+ methods introduces superfluous IR nodes. Further, this transformation convolutes
  the implementation of the deep embedding. For these reasons, in most of the DSLs it is common to disable method
  virtualization. This way the domain-specific operations are always executed in
  the host language.
@@ -1615,10 +1637,11 @@ the way host language functions are translated. With this type of embedding func
 are left unmodified, and thus executed, in the host language and therefore always executed during DSL compilation. Effectively,
 this way of treating functions always inlines all functions in the deep embedding embedding.
 
-With the type translation for eager inlining there two possibilities for the DSL author: \emph{i)} use the full language virtualization but disallow curried functions, and
-\emph{ii)} to completely disable virtualization of functions. In both of these cases the DSL author
-must implement the interface \code{PolymorphicInterface} from \figref{fig:polymorphic-embedding}, however, the interface
-for functions is different.
+With the type translation for eager inlining there two possibilities for the DSL author:
+\emph{i)} use the full language virtualization but disallow curried functions, and
+\emph{ii)} to completely disable virtualization of functions and allow curried functions.
+ In both of these cases the DSL author must implement the interface \code{PolymorphicInterface}
+ from \figref{fig:polymorphic-embedding}, however, the interface for functions is different.
 
 \paragraph{Eager inlining with function virtualization.} If the full virtualization
 is used the deep embedding should provide an interface shown in \figref{fig:polymorphic-embedding-with-eager-inlining}. This way the user can track function applications and definitions in the deep embedding with
@@ -1638,7 +1661,7 @@ with a type \code{scala.Int} (as it is in the C based languages) inside of the D
 type Boolean = scala.Int
 \end{lstparagraph}
 
-The interface of this type of embeddings is equivalent to the interface of the identity embedding~(\figref{fig:interface-identity-dsl}) except that all types need to be abstract. Further, in Scala functions can not be directly
+The interface of this type of embeddings is equivalent to the interface of the identity embedding~(\figref{fig:interface-identity-dsl}) except that all types need to be abstract. Further, Scala functions can not be directly
 converted into abstract types so all functions in the deep embedding must be represented
 with their nominal equivalents (e.g., \code{Int => Int} must be represented as \code{Function1[Int, Int]}).
 An example of the interface for functions is presented in \figref{fig:custom-types}. Here, \code{type Function0[U]} makes
@@ -1664,7 +1687,7 @@ A common pitfall with naming abstract types is using only their type name (e.g.,
  The problem arises when two different types (with different paths) have the same name. In these cases
  the DSL author must use the full type path as the abstract type. \yy can be configured to
  add a prefix to the types with their full path or only to their name. In all examples, for conciseness reasons,
- we use the translation that places the prefix only in front of the type name.\todo{name the option}
+ we use the translation that does not use the full path but only the type name.
 
 % How one adds methods to such embedding
 In the embedding with custom types a common way to reify the DSL IR is to
@@ -1702,7 +1725,6 @@ trait BooleanDSL extends DSLBase {
 \caption{Overriding semantics of \code{Boolean} with the reification semantics for the deep embedding.}
 \label{fig:reification-custom-types}
 \end{figure}
-\todo{Type-check this snippet.}
 
 The types in the deep embedding can not be expressed as a type function and therefore
 defining the interface of \code{hole} and \code{lift} is different than the other embeddings. Here,
@@ -1721,9 +1743,9 @@ def lift(v: scala.Int): this.Int =
 With this type of embedding the DSL author is free to redefine types arbitrarily thus giving the
  deep embedding different semantics. The embedding can perform pretty printing or provide a wrapper
  for another DSL. For further information on such embeddings see \cite{hofer_polymorphic_2008}
- and \sct{subsec:slick}.
+ and \S \ref{subsec:slick}.
 
-\section{\yy Interface}
+\section{The \yy Interface}
 \label{sec:yy-interface}
 
 % The interface is liberal.
@@ -1806,7 +1828,7 @@ system resources are easily exhausted.
 
 In this section we show how to define a DSL with \yy, given that we have
  both the direct and deep embedding that conforms to the required interface.
- First we describe how to apply the translation~(\sct{sec:defining-a-translation}) and
+ First we describe how to apply the translation~(\S \ref{sec:defining-a-translation}) and
  then how the DSL user uses \yy based DSLs.
 
 \subsection{Defining a Translation for a DSL}
@@ -1848,9 +1870,9 @@ With the \code{YYTransformer} object the method \code{vectorDSLImpl} is implemen
       body)
 \end{lstparagraph}
 
-here the type of the \code{VectorDSL} is provided in with \code{typeOf}, \code{EagerInliningTypeTransformer} represents the
-translation for polymorphic embedding with eager inlining, and \code{YYConfig} defines that
-functions should not be virtualized.
+here the type of the \code{VectorDSL} is provided in with \code{typeOf} construct,
+\code{EagerInliningTypeTransformer} represents the translation for polymorphic embedding with eager inlining,
+ and \code{YYConfig} defines that functions should not be virtualized.
 
 \section{Using a \yy DSL}
 \label{sec:using-a-dsl}
@@ -1862,16 +1884,222 @@ functions should not be virtualized.
 
 % Test and production are executed inside by setting a simple compilation flag.
 
+\chapter{DSL Reification at Host-Language Compile Time}
+\label{sec:compile-time-reification}
+
+To integrate the deep embedding tightly with the host-language it is necessary to
+ have the DSL IR reified at host language compilation-time. With the reified IR
+ domain-specific analysis and error reporting can be integrated with the host language~(\S \ref{sec:domain-specific-error-reporting}).
+ Also, DSLs that do not depend on run-time values for optimizations can be completely compiled
+ at host-language compile time and their generated code integrated with the IR of the host language~(\S \ref{sec:reducing-runtime-overheads}.
+
+ % Only have the trees so we have two possibilities: i) interpretation ii) code generation.
+Reifying the DSL IR after the translation requires executing the code that is generated
+ after the direct-to-deep translation. Since the translation happens during program type-checking
+ the executable version of the translated DSL does not exist. To execute this code there
+ are two possibilities:\begin{itemize}
+ \item {\bf Use compilation.} Since all the captured variables are replaced by holes~(\todo{ref}) the
+  deep embedding can be compiled down to executable code separately from the rest of the host language program.
+  Then the deep embedding binary can be executed to obtain the domain-specific IR.
+
+ \item {\bf Use interpretation.} Use the interpreter of the host language trees to obtain the
+  domain-specific IR. Since the deep DSL has no captured variables it is possible to
+  perform interpretation.
+ \end{itemize}
+
+Compilation has an upfront cost of compiling the code but the execution is optimal while
+ interpretation does not have an up-front cost but the execution is slower. For Scala
+ and different sizes of DSL programs we evaluate both approaches in \S \ref{sec:performance-of-host-langauge-compile-time-reification}.
+
+\section{Reification by Compilation}
+\label{sec:reification-by-compilation}
+
+% The DSL program does not contain captured terms.
+The DSL program that is being compiled to the executable during host language type-checking
+ does not have terms that can not be compiled:\begin{itemize}
+  \item All captured variables have been converted into calls to \code{hole} by the translation.
+  \item Class and object definitions in the DSL are forbidden by the virtualization phase. \todo{check}
+  \item Usage of definitions (i.e., classes, traits, objects, and methods) that are compiled in the same compilation
+   unit is impossible. The direct embedding does not contain equivalents for these objects and they can
+   not be accepted by operation translation.
+\end{itemize}
+
+% It is possible to compile it independently of the rest of the compilation unit.
+Given that the translated DSL body is independent of the current compilation unit it is possible to
+ compile it separately and produce the executable file. For the DSL body the compilation
+ pipeline is executed to the last phase starting from type-checking. Then the DSL body
+ can be executed and we acquire an instance of the DSL with its trees reified.
+
+% For the tree of that program we execute the evaluate function.
+In \yy for the purpose of compile-time reification we use the \code{eval} construct in Scala. The \code{eval} function
+ accepts the Scala trees and compiles them to bytecode, loads the class that contains the compiled trees and
+executes it.
+
+In case of the JVM the reification by compilation has a relatively large overhead. Compiling, loading the bytecode, and executing that code in the JVM interpreter has a relatively large initial overhead. Then the bytecode that is loaded must be executed in the JVM interpreter as it is executed for the first time. Finally, the code is executed only once in order to reify the DSL program and discarded afterwards.
+
+\section{Reification by Interpretation}
+\label{sec:reification-by-interpretation}
+
+% We build a specialized interpreter.
+An alternative to compilation is interpretation of the DSL trees. With interpretation
+ an \emph{interpreter} interprets the trees emitted by the direct-to-deep translation to obtain
+ an instance to a reified DSL at host-language compile time. Since the DSL trees do not depend
+ on the definitions in the current compilation unit it is possible to interpret them.
+
+Since the \yy translation greatly simplifies the executed trees we use a specialized interpreter.
+ In this interpreter we treat only a subset of Scala that is emitted by the DSL translation.
+ Further, the interpreter invokes all functions in the program with reflection. This way the
+ execution of the DSL operations is achieved by executing pre-compiled code and the interpreter
+ executes the DSL programs.
+
+% Callbacks into the higher order functions.
+With the specialized interpreter special care must be taken with higher-order functions. The DSL operations
+ that accept functions as arguments must accept function instances while the
+ function bodies must be executed in the interpreter. To this end, to pre-compiled
+ operations we pass function instances that call back into the interpreter code.
+
+\section{Performance of Compile-Time Reification}
+\label{sec:performance-of-host-langauge-compile-time-reification}
+ % We evaluate both approaches in section ...
+%
+
+
+
+\chapter{Improving Error Reporting of DSLs}
+\label{sec:error-reporting}
+
+The error reporting of the deep embedding does not blend into the host language in two ways:
+ \emph{i)} the DSL is not able to restrict generic language features of the host language and errors can happen at run-time~(\S \ref{sec:unrestricted-language}) and \emph{ii)} domain-specific errors can only be reported at host-language run-time~(\S \ref{sec:domain-specific-error-reporting-runtime}). In this chapter we show how once ``we broke the ice'' with using the host-language reflection improving error reporting becomes a simple addition and how the DSL author can
+ be completely agnostic of the host language reflection API. In \S \ref{sec:restricting} we
+ show how restricting host language constructs is achieved by omitting operations in
+ the deep embedding and in \S \ref{sec:domain-specific-error-reporting} we explain
+ error reporting at host language compile-time.
+
+
+\section{Restricting Host Language Constructs}
+\label{sec:restricting}
+
+The direct DSL programs can contain well-typed expressions that are not
+supported by the deep embedding. Often, these expressions lead to unexpected program
+behavior~(\S \ref{sec:motivation}) and we must rule them out by reporting meaningful and
+precise error messages to the user.
+
+% Consequence of the translation => Ill typed
+We could rule out unsupported programs by relying on properties of the
+core translation. If a direct program contains unsupported expressions, after
+translation it will become ill-typed in the deep embedding. We could reject
+unsupported programs by simply reporting type checking errors. Since, the
+direct program is well-typed and the translation preserves well-typedness all
+type errors must be due to unsupported expressions.
+
+% Leaks error messages
+Unfortunately, naively restricting the language by detecting type-checking
+failures is leaking information about the deep embedding. The reported error
+messages will contain virtualized language constructs and types. This is not desirable
+as users should not be exposed to the internals of the deep embedding.
+
+% Custom type checking!
+\yy avoids leakage of the deep embedding internals in error messages by performing an
+additional verification step that, in a fine grained way, checks if a method
+from the direct program exists in the deep embedding. This step traverses the
+tree generated by the core translation and verifies for each method call if it
+correctly type-checks in the deep embedding. If the type checking fails \yy
+reports two kinds of error messages:
+
+\begin{itemize}
+\item Generic messages for unsupported methods:\begin{lstparagraph}
+List.fill(1000, Vector.fill(1000,1)).reduce(_+_)
+^
+Method List.fill[T] is unsupported in VectorDSL.
+\end{lstparagraph}
+%\vfill %% sstucki: hack!
+
+\item Custom messages for unsupported host language constructs:\begin{lstparagraph}
+try Vector.fill(1000, 1) / 0
+^
+Construct try/catch is unsupported in VectorDSL.
+\end{lstparagraph}
+\end{itemize}
+%
+% Restricting the language is a piece of cake.
+With \yy the DSL author can arbitrarily restrict virtualized constructs in an
+embedded language by simply omitting corresponding method definitions from the
+deep embedding. Due to the additional verification step all error messages are
+clearly shown to the user. This allows easy construction of embedded DSLs that
+support only a subset of the host language without the need to know the Scala
+reflection API.
+
+\section{Domain-Specific Error Reporting at Compile Time}
+\label{sec:domain-specific-error-reporting}
+
+The domain-specific error reporting is performed on the reified DSL program and to do it
+at host language compile-time we must first reify the DSL IR. To this end \yy uses
+the techniques described in \S \ref{sec:compile-time-reification} to reify the program.
+
+
+Once the program is reified \yy calls the \code{staticallyCheck} method from~\figref{fig:statically-checked} on the DSL component. This method accepts as an argument the \code{Reporter} interface that the  DSL
+author can use to report messages on the host language console. The DSL author can use
+the \code{Reporter} to report errors (the \code{error} method), warnings (the \code{warning} method),
+and to provide informational messages (the \code{info} method).
+
+
+All methods in the \code{Reporter} interface accept the \code{pos} argument of type \code{Option[Position]}
+ for displaying where the information should be displayed. If the position argument
+ is not passed the error will be displayed without a position, and if it is provided the
+ message will be displayed for the source code at the position in the same manner
+ as the host language would.
+
+\begin{figure}
+\begin{listingtiny}
+trait Position {
+  def source: File
+  def line: Int
+  def column: Int
+}
+
+trait Reporter {
+  def info(pos: Option[Position], msg: String): Unit
+  def warning(pos: Option[Position], msg: String): Unit
+  def error(pos: Option[Position], msg: String): Unit
+}
+
+trait StaticallyChecked {
+  def staticallyCheck(c: Reporter): Unit
+}
+\end{listingtiny}
+\caption{Interface for domain-specific error reporting in the deep embedding.}
+\label{fig:statically-checked}
+\end{figure}
+
+The interface that is provided for error reporting is much simpler than the Scala reflection equivalent. The API
+is simplified for error reporting in domain-specific languages and does not require the
+DSL author to comprehend the Scala internals. For the values of the \code{Position} interface
+the DSL author can choose an adequate implementation (e.g., one presented by Rompf et al. \cite{rompf_scala-virtualized:_2009}).
+
+
+
+
+\chapter{Reducing Runtime Overheads of the Deep Embedding}
+\label{sec:reducing-runtime-overheads}
+
+
+\compilation{
+  \chapter{Minimizing Compilation Time of the Deep Embedding}
+  \label{sec:minimizing-compile-times}
+}
+
+
+
 \chapter{Evaluation and Case Studies}
 \label{sec:ch2-evaluation}
 
 We compared the deep embedding generation of \yy with Forge on three Delite-based
- deep \edsls: OptiML, OptiQL, and Vector~(\sct{subsec:eval-deepgen}).
+ deep \edsls: OptiML, OptiQL, and Vector~(\S \ref{subsec:eval-deepgen}).
 Then, we measured the effect of concealing the deep embedding by counting the
 number of obviated annotations related to deep embedding in the test suites of OptiML
-and OptiGraph EDSLs~(\sct{subsec:correctness}). Finally, we evaluated the ease
+and OptiGraph EDSLs~(\S \ref{subsec:correctness}). Finally, we evaluated the ease
 of adopting \yy for the existing deep \edsl Slick~\cite{slick}
-~(\sct{subsec:slick}) and compare the effort of designing the interface with
+~(\S \ref{subsec:slick}) and compare the effort of designing the interface with
 the current version of the interface. We do not report on execution speed since performance
 benefits of the deep embedding have been studied previously~\cite{rompf_optimizing_2013,forge}.
 
@@ -1986,84 +2214,6 @@ This study was performed by only two users and, thus, is not statistically
 significant. Still, we find the difference in required effort large enough to indicate that \yy
 simplifies front-end development of \edsls.
 
-\chapter{Improving Error Reporting of DSLs}
-\label{sec:error-reporting}
-
-\section{Compile-Time Error Reporting}
-\label{sec:compile-time-error-reporting}
-
-\section{Restricting Host Language Constructs}
-\label{sec:restricting}
-% TODO restricting constants
-% TODO Rule out unsupported expressions.
-
-The direct DSL programs can contain well-typed expressions that are not
-supported by the deep embedding. Often, these expressions lead to unexpected program
-behavior (\sct{sec:motivation}) and we must rule them out by reporting meaningful and
-precise error messages to the user.
-
-% Consequence of the translation => Ill typed
-We could rule out unsupported programs by relying on properties of the
-core translation. If a direct program contains unsupported expressions, after
-translation it will become ill-typed in the deep embedding. We could reject
-unsupported programs by simply reporting type checking errors. Since, the
-direct program is well-typed and the translation preserves well-typedness all
-type errors must be due to unsupported expressions.
-
-% Leaks error messages
-Unfortunately, naively restricting the language by detecting type-checking
-failures is leaking information about the deep embedding. The reported error
-messages will contain virtualized language constructs and types. This is not desirable
-as users should not be exposed to the internals of the deep embedding.
-
-% Custom type checking!
-\yy avoids leakage of the deep embedding internals in error messages by performing an
-additional verification step that, in a fine grained way, checks if a method
-from the direct program exists in the deep embedding. This step traverses the
-tree generated by the core translation and verifies for each method call if it
-correctly type-checks in the deep embedding. If the type checking fails \yy
-reports two kinds of error messages:
-
-\begin{itemize}
-\item Generic messages for unsupported methods:\begin{lstparagraph}
-List.fill(1000, Vector.fill(1000,1)).reduce(_+_)
-^
-Method List.fill[T] is unsupported in VectorDSL.
-\end{lstparagraph}
-%\vfill %% sstucki: hack!
-
-\item Custom messages for unsupported host language constructs:\begin{lstparagraph}
-try Vector.fill(1000, 1) / 0
-^
-Construct try/catch is unsupported in VectorDSL.
-\end{lstparagraph}
-\end{itemize}
-%
-% Restricting the language is a piece of cake.
-With \yy the DSL author can arbitrarily restrict virtualized constructs in an
-embedded language by simply omitting corresponding method definitions from the
-deep embedding. Due to the additional verification step all error messages are
-clearly shown to the user. This allows easy construction of embedded DSLs that
-support only a subset of the host language.
-
-\section{Domain-Specific Error Reporting at Compile Time}
-\label{sec:domain-specific-error-reporting}
-
-
-\chapter{Reducing Runtime Overheads of the Deep Embedding}
-\label{sec:reducing-runtime-overheads}
-
-% Section will follow the development cycle, DSL author, DSL user
-
-% We will define a DSL and the dependencies.
-
-% We will use the DSL
-
-% We will generate
-\chapter{Minimizing Compilation Time of the Deep Embedding}
-\label{sec:minimizing-compile-times}
-
-
 
 \chapter{Related Work}
 \label{sec:related-work}
@@ -2123,194 +2273,4 @@ switch between dual embeddings while the type classes ensure
 equivalent type checking.  Unfortunately, this approach does not
 extend easily to native language constructs, and requires changing the
 type signatures of common functions.
-
-\part{Deep Embedding Development with a Breeze}
-\label{part:deep-embedding-development-with-a-breeze}
-
-\chapter{Generation of the Deep Embedding}
-\label{sec:deep-gen}
-
-So far, we have seen how \yy translates programs written in the
-direct embedding to the deep embedding. This arguably simplifies life
-for \edsl users by allowing them to work with the interface of the
-direct embedding.  However, the EDSL author still needs to maintain synchronized
- implementations of the two embeddings, which can be a tedious and error prone task.
-
-% Two steps
-To alleviate this issue, \yy automatically generates the deep embedding from
-the implementation of the direct embedding. This happens in two steps: First, we
-generate high-level IR nodes and methods that construct them through a
-systematic conversion of methods declared in a direct embedding to their
-corresponding methods in the deep embedding~(\sct{sec:yy-impl-def}).
-%
-Second, we exploit the fact that method implementations in the direct
-embedding are also direct DSL programs.  Reusing our core translation
-from~\sct{sec:translation}, we translate them to their deep
-counterparts~(\sct{sec:yy-impl-lower}).
-
-%% sstucki: what exactly does this mean?
-\todo{Explain that there is a core language.}
-
-% In the translated method bodies, in addition to the translated DSL itself, we also allow
-% usage of the Scala library constructs that supported by the target back-end (cf.~\cite{techrep}).
-
-The automatic generation of deep embeddings reduces the amount of
-boilerplate code that has to be written and maintained by \edsl
-authors, allowing them to instead focus on tasks that can not be
-easily automated, such as the implementation of domain-specific
-optimizations in the deep embedding.  However, automatic code
-generation is not a silver bullet.  Hand-written optimizations acting
-on the IR typically depend on the structure of the later, introducing
-hidden dependencies between such optimizations and the direct
-embedding.  Care must be taken in order to avoid breaking
-optimizations when changing the direct embedding of the \edsl.
-
- While these optimizations are not re-generated; only the
- components that correspond to the interface and the IR nodes are
- modified. Therefore, the DSL author is only responsible for
- maintaining analysis and optimizations in the deep embedding. A change
- in the direct embedding interface should affect only optimizations
- related to that change. However, this is back-end dependent so \yy
- does not provide any guarantees.
-
-\todo{Give an example here.}
-
-\section{Constructing High-Level IR Nodes}
-\label{sec:yy-impl-def}
-
-To make the generation regular \yy provides a corresponding IR node and
-construction method for every operation in the direct embedding. By using
-reflection, we extract the method signatures from the direct embedding. From
-these, we generate the interface, implementation, and code generation traits as
-prescribed by LMS. This part of the translation is LMS specific and applying it
-to other frameworks would require changing the code templates. Based on the
-signature of each method, we generate the \emph{case class} that represents the
-IR node. Then, for each method we generate a corresponding method that
-instantiates the high-level IR nodes. Whenever a method is invoked in the deep
-EDSL, instead of being evaluated, a high-level IR node is created.
-
-\figref{lst:vector_deep_ir} illustrates the way of defining IR nodes for
-\code{Vector} EDSL. The case classes in the \code{VectorOps} trait define the
-IR nodes for each method in the direct embedding. The fields of these case
-classes are the callee object of the corresponding method (e.g., \code{v} in
-\code{VectorMap}), and the arguments of that method (e.g., \code{f} in
-\code{VectorMap}).
-
-\begin{figure}
-\begin{listingtiny}
-trait VectorOps extends SeqOps with
-  NumericOps with Base {
-  // elided implicit enrichment methods. E.g.:
-  //   Vector.fill(v, n) = vector_fill(v, n)
-
-  // High level IR node definitions
-  case class VectorMap[T:Numeric,S:Numeric]
-    (v: Rep[Vector[T]], f: Rep[T] => Rep[S])
-    extends Rep[Vector[S]]
-  case class VectorFill[T:Numeric]
-    (v: Rep[T], size: Rep[Int])
-    extends Rep[Vector[T]]
-
-  def vector_map[T:Numeric,S:Numeric]
-    (v: Rep[Vector[T]], f: Rep[T] => Rep[S]) =
-      VectorMap(v, f)
-  def vector_fill[T:Numeric]
-    (v: Rep[T], size: Rep[Int]) =
-    VectorFill(v, size)
-}
-\end{listingtiny}
-\caption{\label{lst:vector_deep_ir} High-level IR nodes for Vector.}
-\end{figure}
-
-% Side-effects
-
-Deep embedding should, in certain cases, be aware of side-effects. The EDSL
-author must annotate methods that cause side-effects with an appropriate
-annotation. To minimize the number of needed annotations we use Scala FX
-\cite{rytz2012lightweight}. Scala FX is a compiler plugin that adds an effect
-system on top of the Scala type system. With Scala FX the regular Scala type
-inference also infers the effects of expressions. As a result, if the direct
-\edsl is using libraries which are already annotated, like the Scala collection
-library, then the EDSL author does not have to annotate the direct EDSL.
-Otherwise, there is a need for manual annotation of the direct embedding by
-the EDSL author. Finally, the Scala FX annotations are mapped to the
-corresponding effect construct in LMS.
-
-\figref{lst:vector_deep_fx} shows how we automatically transform the I/O
-effect of a \code{print} method to the appropriate construct in LMS. As the
-Scala FX plugin knows the effect of \code{System.out.println}, the effect for
-the \code{print} method is inferred together with its result type
-(\code{Unit}). Based on the fact that the \code{print} method has an I/O
-effect, we wrap the high-level IR node creation method into
-\code{reflect}, which is an effect construct in LMS to specify an I/O
-effect~\cite{rompf_building-blocks_2011}. In effect, all optimizations in the \edsl
-will have to preserve the order of \code{println} and other I/O effects. We omit details
-about the LMS effect system; for more details cf. \cite{rompf_building-blocks_2011}.
-
-\begin{figure}
-\begin{listingtiny}
-class Vector[T: Numeric](val data: Seq[T]) {
-  // effect annotations not necessary
-  def print() = System.out.print(data)
-}
-trait VectorOps extends SeqOps with
-  NumericOps with Base {
-  case class VectorPrint[T:Numeric]
-    (v: Rep[Vector[T]]) extends Rep[Vector[T]]
-  def vector_print[T:Numeric](v: Rep[Vector[T]]) =
-    reflect(VectorPrint(v))
-}
-\end{listingtiny}
-\caption{\label{lst:vector_deep_fx} Direct and deep embedding for Vector with side-effects.}
-\end{figure}
-
-\subsection{Lowering High-Level IR Nodes to Their Low-Level Implementation}
-\label{sec:yy-impl-lower}
-
-Having domain-specific optimizations on the high-level representation is not
-enough for generating high performance code. In order to improve the
-performance, we must transform these high-level nodes into their corresponding
-low-level implementations. Hence, we must represent the low-level
-implementation of each method in the deep EDSL. After creating the high-level
-IR nodes and applying domain-specific optimizations, we transform these IR
-nodes into their corresponding low-level implementation. This can be achieved by
-using a \emph{lowering} phase \cite{rompf_optimizing_2013}.
-
-\figref{lst:vector_deep_low} illustrates how the invocation of each method
-results in creating an IR node together with a lowering specification for
-transforming it into its low-level implementation. For example, whenever the
-method \code{fill} is invoked, a \code{VectorFill} IR node is created like
-before. However, this high-level IR node needs to be transformed to its low-level
-IR nodes in the lowering phase. This delayed transformation is specified
-using an \code{atPhase(lowering)} block~\cite{rompf_optimizing_2013}.
-Furthermore, the low-level implementation uses constructs requiring deep
-embedding of other interfaces. In particular, an implementation of the
-\code{fill} method requires the \code{Seq.fill} method that is provided by
-the \code{SeqLowLevel} trait.
-\begin{figure}[ht]
-\begin{listingtiny}
-trait VectorLowLevel extends VectorOps
-  with SeqLowLevel {
-  // Low level implementations
-  override def vector_fill[T:Numeric]
-    (v: Rep[T], s: Rep[Int]) =
-    VectorFill(v, s) atPhase(lowering) {
-      Vector.fromSeq(Seq.fill[T](s)(v))
-    }
-}
-\end{listingtiny}
-\caption{\label{lst:vector_deep_low} Lowering to the low-level implementation for Vector.}
-\end{figure}
-
-Generating the low-level implementation is achieved by transforming the
-implementation of each direct embedding method. This is done in two steps.
-First, the expression given as the implementation of a method is converted to
-a Scala AST of the deep embedding by core translation of \yy. Second, the
-code represented by the Scala AST must be injected back to the corresponding
-trait. To this effect, we implemented Sprinter~\cite{sprinter}, a library that generates
-correct and human readable code out of Scala ASTs. The generated source code
-is used to represent the lowering specification of every IR node.
-
-\chapter{Dynamic Compilation of Domain-Specific Languages}
-\label{sec:dynamic-compilation}
 

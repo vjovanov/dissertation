@@ -135,6 +135,17 @@
 \newcommand{\orElse}[2]{#2}
 \renewcommand{\sout}[1]{}
 \fi
+\newcommand{\toimplement}{0}{}
+
+
+\newif\ifshowCompilation
+%\showCompilationstrue
+\showTodosfalse % Uncomment this to hide all TODOs.
+\ifshowCompilation
+\newcommand{\compilation}[1]{ #1 }
+\else
+\newcommand{\compilation}[1]{ }
+\fi
 
 \newif\ifreport
 
