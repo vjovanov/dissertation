@@ -708,7 +708,9 @@ achieved by translating them into suitable method invocations as shown by of Car
  \paragraph{Methods.} Method definitions follow a similar philosophy as functions.
   The difference is that in Scala, the \code{def} keyword is used to define universal quantification and possibly recursion.
   This is similar to the \code{let} and \code{letrec} constructs in other functional languages. This translation is optional
-  as in some DSLs it is more concise to reuse method application of the host language. \toimplement
+  as in some DSLs it is more concise to reuse method application of the host language.
+
+  %\toimplement
 
 % Discuss control structures.
  \paragraph{Control constructs.} We translate all Scala control constructs (e.g.,\code{if} and \code{try} to method calls.
@@ -736,10 +738,10 @@ achieved by translating them into suitable method invocations as shown by of Car
   performed manually by the DSL author.
 
   For DSLs that require extension of these methods we provide an alternative translation
-  of universal methods into the name mangled infix form:\toimplement
+  of universal methods into the name mangled infix form:%\toimplement
 
   \infyyax{}
-      {t_1\; == \;t_2}{\trone{t_1}.\;\mathtt{\_\_==}(\;\trone{t_2})}
+      {t_1\; == \;t_2}{\trone{t_1}.\;\mathtt{\$==}(\;\trone{t_2})}
 
   \paragraph{The \code{new} construct.} The new construct of Scala can not be
   virtualized to a single method as signatures of data-type constructors differ in number
@@ -805,32 +807,35 @@ achieved by translating them into suitable method invocations as shown by of Car
 \end{multicols}
 
 \begin{multicols}{2}
-% *   t.wait(t1, l)          =>       infix_wait(t, t1, l)
-   \infyyax{}
-      {t_1.\mathtt{wait}(t_2,\;t_3)}{\mathtt{infix\_wait}(\trone{t_1},\;\trone{t_2},\;\trone{t_3})}
-    % *   t.wait(l)              =>       infix_wait(t, l)
-  \infyyax{}
-     {t_1.\mathtt{wait}(t_2)}{\mathtt{infix\_wait}(\trone{t_1},\;\trone{t_2})}
-\end{multicols}
-\vspace{-2.7em}
-\begin{multicols}{2}
-% *   t.wait                 =>       infix_wait(t)
-   \infyyax{}
-     {t.\mathtt{wait}}{\mathtt{infix\_wait}(\trone{t})}
 
 % *   t.notify               =>       infix_notify(t)
    \infyyax{}
      {t.\mathtt{notify}}{\mathtt{infix\_notify}(\trone{t})}
 
-\end{multicols}
-
- % *   t.notifyAll            =>       infix_notifyAll(t)
+% *   t.notifyAll            =>       infix_notifyAll(t)
    \infyyax{}
      {t.\mathtt{notifyAll}}{\mathtt{infix\_notifyAll}(\trone{t})}
+\end{multicols}
+
+\begin{multicols}{2}
+% *   t.wait                 =>       infix_wait(t)
+   \infyyax{}
+     {t.\mathtt{wait}}{\mathtt{infix\_wait}(\trone{t})}
+
+    % *   t.wait(l)              =>       infix_wait(t, l)
+  \infyyax{}
+     {t_1.\mathtt{wait}(t_2)}{\mathtt{infix\_wait}(\trone{t_1},\;\trone{t_2})}
+\end{multicols}
+
+% *   t.wait(t1, l)          =>       infix_wait(t, t1, l)
+   \infyyax{}
+      {t_1.\mathtt{wait}(t_2,\;t_3)}
+      {\mathtt{infix\_wait}(\trone{t_1},\;\trone{t_2},\;\trone{t_3})}
 
 % *   t.synchronized[T](t1)  =>       infix_synchronized(t, t1)
   \infyyax{}
-     {t_1.\mathtt{synchronized}[T](t_2)}{\mathtt{infix\_synchronized}[T](\trone{t_1},\;\trone{t_2})}
+     {t_1.\mathtt{synchronized}[T](t_2)}
+     {\mathtt{infix\_synchronized}[T](\trone{t_1},\;\trone{t_2})}
 
 \caption{Rules for virtualization of methods on \code{Any} and \code{AnyRef}.}
 \label{fig:virt-any}
