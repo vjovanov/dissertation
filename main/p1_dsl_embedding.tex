@@ -262,6 +262,7 @@ definitions that are provided in the DSL.
 
 
 trait VectorDSL extends Base {
+
   object Vector {
     def fromSeq[T:Numeric:TypeTag](seq: Rep[Seq[T]])
       (implicit sc: SourceContext): Rep[Vector[T]] =
@@ -356,9 +357,15 @@ With the deep \edsl{}, user programs in the reification phase only instantiate t
  the host language constructs as they get reified, and \emph{iii)} stepping into the
  DSL operations will only display reificaiton logic.
 
+Debugging generated code or an interpreter is more difficult as users cannot relate
+ the debugger position to the original line of code. The domain-specific and general
+ purpose optimizations applied to the program will likely reorder instructions and
+ rename variables.
+
 The only way to achieve debugging is to make exact maps from the generated code to
- the deep program and implement a specialized debugger\todo{cite} a specialized  Furthermore, debugging generated code or an interpreter is extremely difficult as
- users cannot relate the debugger position and the original line of code.
+ the deep program and implement a specialized debugger. The debugger must track
+ exact maps between the source code and the generated code. This requires extra effort
+ and decreases DSL author productivity.
 
 
 \subsection{Convoluted and Incomprehensible Type Errors}
@@ -453,11 +460,9 @@ The deeply embedded DSLs are compiled at run time when the code is executed. Thi
  has a larger overhead as the DSL needs to be fully compiled, and the overhead of subsequent
  executions depends on the implementation of the deep embedding. Some deep embeddings
  recompile their programs every time~\cite{rompf2012lightweight,slick} which can lead to significant
- execution overheads~\todo{cite amir's thesis}. Others support guards for re-compilation which lower
+ execution overheads~\cite{amirs_thesis}. Others support guards for re-compilation which lower
  the overheads but introduce additional constructs in the user programs further
  leaking deep embedding abstractions.
-
-\todo{cite amirs thesis}
 
 \compilation{
 \subsection{Long Compilation Times}
@@ -846,10 +851,9 @@ achieved by translating them into suitable method invocations as shown by of Car
   definitions. For the given set of DSL compiler frameworks that use \yy it was hard to identify
   an abstraction that would allow virtualization of Scala classes.
 
-  This limitation, however, does not preclude class virtualization for embedded DSLs. We allow extensions to \yy that virtualize classes and traits
-  through the use of the reflection API. The drawback of this approach is that DSL authors are required
+  This limitation, however, does not preclude class virtualization for embedded DSLs. We allow extensions to \yy that virtualize classes and traits through the use of the reflection API. The drawback of this approach is that DSL authors are required
   to know the reflection API compared to the simple interface of language virtualization. For now, each framework that uses \yy defines
-  its own translation scheme. Extending \yy to achieve class virtualization is described in \todo{cf. extensions}.
+  its own translation scheme.
 
  \paragraph{Configuring method virtualization.} When we virtualize methods and their application
    we effectively override all expressions of Scala. In this case the DSL author has to:
@@ -1068,12 +1072,12 @@ DSL intrinsification maps directly embedded versions
    and \code{app} and other core \edsl{} constructs. Here we discuss the ones that we find
    useful in \edsl{} design:
 
-\todo{link translations to their later applications}
 \paragraph{The identity translation.}  If we choose $\ttother$ to be
 the identity function and virtualization methods such as \code{lam},
 \code{app} and \code{ifThenElse} to be implemented in the obvious way
 using the corresponding Scala intrinsics, the resulting translation
-will simply yield the original, directly embedded DSL program.
+will simply yield the original, directly embedded DSL program. Usages
+of this translation are shown in \S \ref{sec:identity-embedding}.
 
 \paragraph{Generic polymorphic embedding.} If instead we choose
 $\ttother$ to map any type term $T$ (in non-argument position)
@@ -1091,7 +1095,8 @@ By choosing the virtualized methods to operate on the IR-types in the
 appropriate way, one obtains an embedding that \emph{preserves
   well-typedness}, irrespective of the particular DSL it implements.
 We will not present the details of this translation here, but refer
-the interested reader to~\cite{carette_finally_2009}.
+the interested reader to~\cite{carette_finally_2009} and the description of the
+ corresponding deep embedding for this translation~(\S \ref{sec:polymorphic-embedding}).
 
 \paragraph{Eager inlining.} In high-performance EDSLs it is often desired to
 eagerly inline all functions and to completely prevent dynamic dispatch in
@@ -1121,15 +1126,13 @@ behavior as it fosters high-performance code by avoiding dynamic dispatch. As an
 coercions from \code{Rep[$A$] => Rep[$B$]} to \code{Rep[$A$ => $B$]} and from \code{Rep[$A$ => $B$]} to \code{Rep[$A$] => Rep[$B$]}.
 
 This translation disallows usage of curried functions in the direct programs. If we
-represent the curried functions as the polymorphic types~\todo{link somehow to scala here or before} then
+represent the curried functions as the polymorphic types then
 functions would appear in the type argument position. To re-introduce the curried functions we
 provide a translation with the modified rule for translation of functions:
 \begin{alignat*}{3}
 &\ttother[T_1 \Rightarrow T_2] & \; = \; & \ttother[T_1] \Rightarrow \ttother[T_2]\\
 \end{alignat*} %\text{if } T \neq T_1 \Rightarrow T_2
-which is correct only when the virtualization of functions is disabled.
-
-\paragraph{Untyped backend.} If DSL authors want to avoid complicated types in the back-end (e.g., \code{Rep[T]}), the $\ttname$ functions can simply transform all types to the \code{Dynamic}~\cite{abadi_dynamic_1991} type. Giving away type safety can make transformations in the back-end easier for the DSL author.
+which is correct only when the virtualization of functions and methods is disabled.
 
 \paragraph{Custom types.} All previous translations preserved types in the type parameter position. The reason is that the $\ttname$ functions behaved like a higher-kinded type. If we would like to map some of the base types in a custom way, those types need to be changed in the position of type-arguments as well. This translation is used for \edsls based on polymorphic embedding~\cite{hofer_polymorphic_2008} that use \code{this.T} to represent type \code{T}.
 
@@ -1142,8 +1145,11 @@ the deep embedding can redefine it:
 
 Unlike with the previous translations, where the type system of the direct embedding was
 ensuring that the term will type-check in the deep embedding, this translation gives no guarantees. The
-responsibility for the correctness of the translation is on the DSL author. We applied this translation to Slick
-\cite{slick} with great success~(\S \ref{subsec:slick}).
+responsibility for the correctness of the translation is on the DSL author. The deep embedding
+for this translation is presented in \S \ref{sec:embedding-with-custom-types} and we applied
+this translation for embedding Slick \cite{slick} with great success~(\S \ref{subsec:slick}).
+
+\paragraph{Untyped backend.} If DSL authors want to avoid complicated types in the back-end (e.g., \code{Rep[T]}), the $\ttname$ functions can simply transform all types to the \code{Dynamic}~\cite{abadi_dynamic_1991} type. Giving away type safety can make transformations in the back-end easier for the DSL author.
 
 \paragraph{Changing the translation.} By simply changing the type translation, the \edsl author can modify behavior of an \edsl.  For example, with the generic polymorphic embedding the \edsl will reify function IR nodes and thus allow for dynamic dispatch. In the same \edsl that uses the eager inlining translation, dynamic dispatch is restricted and all function calls are inlined.
 
@@ -1227,18 +1233,34 @@ VectorFill(Const(1), Const(42))
 
 \todo{calling the methods}
 
-\subsection{Translation Example}
+\subsection{Translation as a Whole}
 \label{sec:translation-example}
 
-To present the translation as a whole we use an example program for calculating $\sum_{i=0}^n i^{exp}$ using the vector \edsl defined in \figref{lst:vector}. \figref{fig:translation-example} contains three versions of the program: \figref{lst:direct-embedding} depicts the direct embedding version, \figref{lst:desugaring} represents the program after type checking (as the translation sees it), and \figref{lst:transformed_program} shows the result of the translation.
+To present the translation as a whole we use an example program for calculating $\sum_{i=0}^n i^{exp}$ using the vector \edsl defined in \figref{lst:vector}. \figref{fig:translation-example} contains three versions of the program: \figref{lst:direct-embedding} depicts the direct embedding version, \figref{lst:desugaring} represents the program after type checking\footnote{The Scala type-checker modifies the program by resolving identifiers to their full paths, adding implicit parameters, etc.} (as the translation sees it), and \figref{lst:transformed_program} shows the result of the translation.
 
- In~\figref{fig:translation-example}, calls to \code{range} on the object
- \code{vector.Vector} and \code{pow} on the package object \code{math.`package`}
- are respectively translated to calls \code{range} and \code{pow} on
- \code{this.Vector} and \code{this.`package`}. For simplicity, passing source
- information (\code{SourceContext}) and type information \code{TypeTag} is
- handled implicitly by the Scala compiler. In absence of implicit parameters
- they should be handled by the translation.
+In~\figref{lst:transformed_program} we see two divergences we omitted from the translation rules for clarity:\begin{itemize}
+
+\item All translated methods are prepended with \code{$\$$}. They are added to the code as this makes translation specific methods treated specially by the Scala tool-chain. Methods with $\$$ are invisible in the deep embedding documentation, REPL, and IDE code auto-completion.
+
+\item The method \code{$\$$hole} is not populated with type parameters but it has a call to \code{$\$$tpe} added as a second argument. This is added as in Scala one can not provide partial
+type arguments to the method and the idea of \yy is to leave the definition of \code{$\$$hole} open to the DSL authors. With \code{$\$$tpe} added Scala's type-inference can infer the type parameters of method \code{$\$$hole}. Similarly \code{$\$$lift} is not provided by the type
+parameter but the type is provided by the first argument.
+
+\end{itemize}
+
+
+In~\figref{lst:transformed_program}, on line 2 we see the DSL component in which
+ the DSL program is injected. On line 3 we see how Scala's \code{if} is virtualized
+ to \code{$\$$ifThenElse}. On line 4, in the condition, \code{n} as it is a captured variable
+ is lifted to the call to \code{$\$$hole(0, $\$$tpe[Int])} as it is a captured variable
+ and the identifier \code{0} as it shows as the first variable in the DSL program. On the same line constant \code{0} is lifted to \code{$\$$ lift(0)}. On line 5 we see how the type
+ of the \code{val} is translated transformed to \code{Rep[Vector[Int]]} and how
+ \code{val} is virtualized. On line 6 \code{vector.Vector} is lifted as a constant.
+ On line 7 we see how variable \code{n} is replaced with a hole with the same identifier (\code{0}). This identifier communicates to the deep embedding that it is the same value.
+ On line 8 the Scala function is virtualized to the \code{$\$$lam} call. On line
+ 9 the identifier \code{exp} is translated to \code{$\$$hole(1, $\$$tpe[Int])} (with the identifier \code{1}) as
+ \code{n} appears as the second identifier in the program.
+
 
 \begin{figure*}[!ht]
 \begin{multicols}{2}
@@ -1287,15 +1309,15 @@ vectorDSL {
 val n = 100; val exp = 6;
 new VectorDSL with IfOps with MathOps { def main() = {
   $\$$ifThenElse[Int](
-    $\$$hole[Int](0, $\$$tpe[Int]) > $\$$lift[Int](0),{ // then
+    $\$$hole(0, $\$$tpe[Int]) > $\$$lift(0),{ // then
     val v: Rep[Vector[Int]] = $\$$valDef[Vector[Int]](
       $\$$lift(vector.Vector).range(
-        $\$$lift[Int](0), $\$$hole[Int]($\$$tpe[Int], 0)))
-    v.map[Int](lam[Int, Int](x: Rep[Int] =>
-      $\$$lift(math.`package`).pow(x, $\$$hole[Int]($\$$tpe[Int], 1))
+        $\$$lift(0), $\$$hole($\$$tpe[Int], 0)))
+    v.map[Int]($\$$lam[Int, Int](x: Rep[Int] =>
+      $\$$lift(math.`package`).pow(x, $\$$hole($\$$tpe[Int], 1))
     ).sum[Int]($\$$lift(math.Numeric).IntIsIntegral)
   },{ // else
-    $\$$lift[Int](0)
+    $\$$lift(0)
   })
 }
 \end{listingtiny}
@@ -1752,6 +1774,10 @@ With this type of embedding the DSL author is free to redefine types arbitrarily
  for another DSL. For further information on such embeddings see \cite{hofer_polymorphic_2008}
  and \S \ref{subsec:slick}.
 
+\section{Embedding Pattern Matching}
+\label{sec:pattern-matching}
+
+
 \section{The \yy Interface}
 \label{sec:yy-interface}
 
@@ -1830,7 +1856,7 @@ system resources are easily exhausted.
  problem has been studied before in context of JIT compilation \todo{cite jit compilation} and
  it falls out of the scope of this \work.
 
-\section{Using \yy}
+\section{Using \yy for the Deep Embedding}
 \label{sec:using-yy}
 
 In this section we show how to define a DSL with \yy, given that we have
@@ -1881,15 +1907,6 @@ here the type of the \code{VectorDSL} is provided in with \code{typeOf} construc
 \code{EagerInliningTypeTransformer} represents the translation for polymorphic embedding with eager inlining,
  and \code{YYConfig} defines that functions should not be virtualized.
 
-\section{Using a \yy DSL}
-\label{sec:using-a-dsl}
-
-% The user of a YY DSL is only faced with the direct embedding where she can
-% work in a host language.
-
-% If the user puts the direct embedding code within the DSL block gets language restriction but sill no performance benefits. Static analysis.
-
-% Test and production are executed inside by setting a simple compilation flag.
 
 \chapter{DSL Reification at Host-Language Compile Time}
 \label{sec:compile-time-reification}
@@ -2096,6 +2113,8 @@ the DSL author can choose an adequate implementation (e.g., one presented by Rom
 }
 
 
+\chapter{Putting it All Together}
+\label{sec:putting-it-all-together}
 
 \chapter{Evaluation and Case Studies}
 \label{sec:ch2-evaluation}
