@@ -95,7 +95,7 @@ note={\url{http://dlang.org/}},
 @inproceedings{composition-ecoop2013,
         title={Composition and Reuse with Compiled Domain-Specific Languages},
         booktitle={European Conference on Object-Oriented Programming ({ECOOP})},
-        author={Sujeeth, Arvind and Rompf, Tiark and Brown, Kevin and Lee, HyoukJoong and Chafi, Hassan and Popic, Victoria and Wu, Michael
+        author={Sujeeth, Arvind K. and Rompf, Tiark and Brown, Kevin and Lee, HyoukJoong and Chafi, Hassan and Popic, Victoria and Wu, Michael
 and Prokopec, Aleksander and Jovanovi\'c, Vojin and Odersky, Martin and Olukotun, Kunle},
         year={2013}
 },
@@ -111,7 +111,7 @@ and Prokopec, Aleksander and Jovanovi\'c, Vojin and Odersky, Martin and Olukotun
 
 @inproceedings{forge,
   title={Forge: generating a high performance {DSL} implementation from a declarative specification},
-  author={Sujeeth, Arvind K and Gibbons, Austin and Brown, Kevin J and Lee, HyoukJoong and Rompf, Tiark and Odersky, Martin and Olukotun, Kunle},
+  author={Sujeeth, Arvind K. and Gibbons, Austin and Brown, Kevin J and Lee, HyoukJoong and Rompf, Tiark and Odersky, Martin and Olukotun, Kunle},
   booktitle={International Conference on Generative Programming and Component Engineering ({GPCE})},
   year={2013}
 }
@@ -204,16 +204,6 @@ aspx}}
   file = {[PDF] from microsoft.com:/home/vjovanov/.zotero/zotero/fwqxvpuo.default/zotero/storage/M9HNJ8X6/Peyton Jones et al. - 2006 - Simple unification-based type inference for GADTs.pdf:application/pdf;Snapshot:/home/vjovanov/.zotero/zotero/fwqxvpuo.default/zotero/storage/GCRJUREM/citation.html:text/html}
 },
 
-@inproceedings{rompf_lightweight_2010,
-  title = {Lightweight modular staging: a pragmatic approach to runtime code generation and compiled {DSLs}},
-  shorttitle = {Lightweight modular staging},
-  booktitle = {Proceedings of the ninth international conference on Generative programming and component engineering},
-  author = {Rompf, T. and Odersky, M.},
-  year = {2010},
-  pages = {127–136},
-  file = {Google Scholar Linked Page:/home/vjovanov/.zotero/zotero/fwqxvpuo.default/zotero/storage/JW7F77JV/citation.html:text/html;p127-rompf.pdf:/home/vjovanov/.zotero/zotero/fwqxvpuo.default/zotero/storage/JA7CTU6T/p127-rompf.pdf:application/pdf}
-},
-
 @article{haller_scala_2009,
   title = {Scala actors: Unifying thread-based and event-based programming},
   volume = {410},
@@ -267,20 +257,6 @@ aspx}}
   file = {Google Scholar Linked Page:/home/vjovanov/.zotero/zotero/fwqxvpuo.default/zotero/storage/NZCFP4U2/citation.html:text/html;p1099-olston (1).pdf:/home/vjovanov/.zotero/zotero/fwqxvpuo.default/zotero/storage/ENTC6BQA/p1099-olston (1).pdf:application/pdf}
 },
 
-@article{rompf_lightweight_2012,
-  title = {Lightweight modular staging: a pragmatic approach to runtime code generation and compiled {DSLs}},
-  volume = {55},
-  shorttitle = {Lightweight modular staging},
-  abstract = {Good software engineering practice demands generalization and abstraction, whereas high performance demands specialization and concretization. These goals are at odds, and compilers can only rarely translate expressive high-level programs to modern hardware platforms in a way that makes best use of the available resources. Generative programming is a promising alternative to fully automatic translation. Instead of writing down the target program directly, developers write a program generator, which produces the target program as its output. The generator can be written in a high-level, generic style and can still produce efficient, specialized target programs. In practice, however, developing high-quality program generators requires a very large effort that is often hard to amortize. We present lightweight modular staging ({LMS)}, a generative programming approach that lowers this effort significantly. {LMS} seamlessly combines program generator logic with the generated code in a single program, using only types to distinguish the two stages of execution. Through extensive use of component technology, {LMS} makes a reusable and extensible compiler framework available at the library level, allowing programmers to tightly integrate domain-specific abstractions and optimizations into the generation process, with common generic optimizations provided by the framework. {LMS} is well suited to develop embedded domain-specific languages ({DSLs)} and has been used to develop powerful performance-oriented {DSLs} for demanding domains such as machine learning, with code generation for heterogeneous platforms including {GPUs.} {LMS} has also been used to generate {SQL} for embedded database queries and {JavaScript} for web applications.},
-  number = {6},
-  urldate = {2012-08-24},
-  journal = {Communications of the {ACM}},
-  author = {Rompf, Tiark and Odersky, Martin},
-  month = jun,
-  year = {2012},
-  pages = {121–130},
-  file = {ACM Full Text PDF:/home/vjovanov/.zotero/zotero/fwqxvpuo.default/zotero/storage/CGMAPDDA/Rompf and Odersky - 2012 - Lightweight modular staging a pragmatic approach .pdf:application/pdf}
-},
 
 @inproceedings{moors_generics_2008,
   title = {Generics of a higher kind},
@@ -583,12 +559,12 @@ aspx}}
 
 @inproceedings{guerrero_implementing_2004,
   title = {Implementing {DSLs} in {metaOCaml}},
-  booktitle = {Object-Oriented Programming Systems, Languages, and Applications ({OOPSLA})},
+  booktitle = {International Conference on Object-Oriented Programming Systems, Languages, and Applications ({OOPSLA})},
   author = {Guerrero, Miguel and Pizzi, Edward and Rosenbaum, Robert and Swadi, Kedar and Taha, Walid},
   year = {2004}
 },
 
-@inproceedings{heeren_scripting_2003,
+@inproceedings{heeren2003scripting,
   title={Scripting the type inference process},
   booktitle = {International Conference on Functional Programming ({ICFP})},
   author={Heeren, Bastiaan and Hage, Jurriaan and Swierstra, S Doaitse},
@@ -1073,43 +1049,19 @@ aspx}}
 
 @book{odersky_programming_2008,
   edition = {{1St} Edition},
-  title = {Programming in Scala: A Comprehensive Step-by-step Guide},
+  title = {Programming in {Scala}: A Comprehensive Step-by-step Guide},
   shorttitle = {Programming in Scala},
   publisher = {Artima Inc},
   author = {Odersky, Martin and Spoon, Lex and Venners, Bill},
-  month = nov,
-  year = {2008},
-  annote = {Chapter 10. Composition and Inheritance
- 
- 
- },
-  annote = {Chapter 11. Scala Class Hierarchy
-Base class of all Scala classes is Any which defines:
-final ==, final !=, {toString}, {hashCode} and equals
-Has subclasses {AnyVal} and {AnyRef} for primitive types and references respectively. {AnyVals} are automatically converted to primitive values by the compiler, have implicit conversion to their rich versions and to their alternative representations (Char -{\textgreater} Int).
-Null is subtype of all {AnyRefs} and has a singleton instance null
-Nothing is a subtype of every other type and it does not have and instance so it is used show abnormal termination (exceptions)},
-  annote = {Chapter 12. Traits
-Traits are a fundamental unit of code reuse. They are very similar to classes with two exceptions:
-
-Traits can not have constructors
-Super calls are dynamically bound
-
-Unlike java interfaces which intrinsically make a tradeoff between client side usability and interface implementers amount of boilerplate. Traits brake this barrier by having method implementation and fields provided. Good example would be Ordered[T] which requires only one method to be implemented but provides many ordering methods ({\textgreater}=, {\textless}=, {\textless}, {\textgreater} etc.)
-Dynamic super reference enables Stackable Modifications. Stacable Modifications are enabled by having traits that extend the abstract class and call the same method on super instance. The method in trait must be declared as abstract override. The order of stackable modifications is from left to right (the rightest  trait mixed in will be executed first).
-Stackable modifications are the nice way to implement the wrapper pattern.
- 
-Multiple inheritance problems with Scala traits are resolved by linearizing types. {TODO}
- 
-When to use traits},
-  file = {Programming in Scala.pdf:/home/vjovanov/.zotero/zotero/fwqxvpuo.default/zotero/storage/S3RUZJGR/Programming in Scala.pdf:application/pdf}
+  month = {Nov},
+  year = {2008}
 },
 
 @inproceedings{ureche_stagedsac:_2012,
   title = {{StagedSAC}: a case study in performance-oriented {DSL} development},
   shorttitle = {{StagedSAC}},
   booktitle = {Workshop on Partial Evaluation and Program Manipulation ({PEPM})},
-  author = {Ureche, Vlad and Rompf, Tiark and Sujeeth, Arvind and Chafi, Hassan and Odersky, Martin},
+  author = {Ureche, Vlad and Rompf, Tiark and Sujeeth, Arvind K. and Chafi, Hassan and Odersky, Martin},
   year = {2012},
 },
 
@@ -1178,7 +1130,7 @@ When to use traits},
 @inproceedings{jonnalagedda2014staged,
  author = {Jonnalagedda, Manohar and Coppey, Thierry and Stucki, Sandro and Rompf, Tiark and Odersky, Martin},
  title = {Staged Parser Combinators for Efficient Data Processing},
- booktitle = {International Conference on Object Oriented Programming Systems Languages and Applications (OOPSLA)},
+ booktitle = {International Conference on Object-Oriented Programming Systems Languages and Applications (OOPSLA)},
  year = {2014},
  location = {Portland, Oregon, USA}
 },
@@ -1228,7 +1180,7 @@ When to use traits},
 
 @inproceedings{odersky_scalable_2005,
   title = {Scalable component abstractions},
-  booktitle = {{Object-Oriented Programming Systems, Languages, and Applications ({OOPSLA})}},
+  booktitle = {{International Conference on Object-Oriented Programming Systems, Languages, and Applications ({OOPSLA})}},
   author = {Odersky, Martin and Zenger, Matthias},
   year = {2005}
 },
@@ -1246,7 +1198,7 @@ When to use traits},
 
 @inproceedings{oliveira_type_2010,
   title = {Type classes as objects and implicits},
-  booktitle = {Object-Oriented Programming Systems, Languages, and Applications ({OOPSLA})},
+  booktitle = {International Conference on Object-Oriented Programming Systems, Languages, and Applications ({OOPSLA})},
   author = {Oliveira, Bruno {C.d.S.} and Moors, Adriaan and Odersky, Martin},
   year = {2010}
 },
@@ -1559,7 +1511,7 @@ Map and reduce phase tied together},
 @inproceedings{shali2011Hybrid,
  author = {Shali, Amin and Cook, William R.},
  title = {Hybrid Partial Evaluation},
- booktitle = {International Conference on Object Oriented Programming Systems Languages and Applications (OOPSLA)},
+ booktitle = {International Conference on Object-Oriented Programming Systems Languages and Applications (OOPSLA)},
  year = {2011},
  location = {Portland, Oregon, USA},
  keywords = {hybrid, object-oriented languages, partial evaluation},
@@ -1589,7 +1541,7 @@ Map and reduce phase tied together},
 @inproceedings{SugarJ,
  author = {Erdweg, Sebastian and Rendel, Tillmann and K\"{a}stner, Christian and Ostermann, Klaus},
  title = {SugarJ: Library-based Syntactic Language Extensibility},
- booktitle = {Object-Oriented Programming Systems, Languages, and Applications ({OOPSLA})},
+ booktitle = {International Conference on Object-Oriented Programming Systems, Languages, and Applications ({OOPSLA})},
  year = {2011}
 },
 
@@ -1679,7 +1631,7 @@ Map and reduce phase tied together},
 @incollection{taha2004gentle,
   title={A gentle introduction to multi-stage programming},
   author={Taha, Walid},
-  booktitle={Domain-Specific Program Generation (DSPG)},
+  booktitle={Domain-Specific Program Generation},
   year={2004}
 },
 
@@ -1784,7 +1736,7 @@ Map and reduce phase tied together},
 @inproceedings{kulkarni2011,
  author = {Kulkarni, Prasad A.},
  title = {{JIT} Compilation Policy for Modern Machines},
- booktitle = {International Conference on Object Oriented Programming Systems Languages and Applications ({OOPSLA})},
+ booktitle = {International Conference on Object-Oriented Programming Systems Languages and Applications ({OOPSLA})},
  year = {2011}
 },
 
@@ -1805,7 +1757,7 @@ Map and reduce phase tied together},
 @inproceedings{groenewegen2008webdsl,
   title={{WebDSL}: a domain-specific language for dynamic web applications},
   author={Groenewegen, Danny M and Hemel, Zef and Kats, Lennart CL and Visser, Eelco},
-  booktitle={Companion to the International Conference on Object Oriented Programming Systems Languages and Applications ({OOPSLA Companion})},
+  booktitle={Companion to the International Conference on Object-Oriented Programming Systems Languages and Applications ({OOPSLA Companion})},
   year={2008}
 },
 
@@ -1822,7 +1774,7 @@ Map and reduce phase tied together},
 @inproceedings{kats2010spoofax,
   title={The spoofax language workbench: rules for declarative specification of languages and IDEs},
   author={Kats, Lennart CL and Visser, Eelco},
-  booktitle={Object-Oriented Programming Systems, Languages, and Applications ({OOPSLA})},
+  booktitle={International Conference on Object-Oriented Programming Systems, Languages, and Applications ({OOPSLA})},
   year={2010}
 },
 
@@ -1852,5 +1804,101 @@ Map and reduce phase tied together},
   booktitle={Software language engineering},
   pages={197--217},
   year={2013}
-}
+},
 
+@incollection{visser2004program,
+  title={Program transformation with {Stratego}/{XT}},
+  author={Visser, Eelco},
+  booktitle={Domain-Specific Program Generation},
+  year={2004}
+},
+
+@inproceedings{arnold2000adaptive,
+  title={Adaptive optimization in the {Jalapeno} {JVM}},
+  author={Arnold, Matthew and Fink, Stephen and Grove, David and Hind, Michael and Sweeney, Peter F},
+  booktitle = {International Conference on Object-Oriented Programming Systems, Languages, and Applications ({OOPSLA})},
+  year={2000}
+},
+
+@inproceedings{kulkarni2001JIT,
+ author = {Kulkarni, Prasad A.},
+ title = {{JIT} Compilation Policy for Modern Machines},
+ booktitle = {International Conference on Object-Oriented Programming Systems, Languages, and Applications ({OOPSLA})},
+ year = {2011}
+},
+
+@article{lee2011implementing,
+  title={Implementing domain-specific languages for heterogeneous parallel computing},
+  author={Lee, HyoukJoong and Brown, Kevin J and Sujeeth, Arvind K. and Chafi, Hassan and Olukotun, Kunle and Rompf, Tirark and Odersky, Martin},
+  journal={{IEEE} Micro},
+  number={5},
+  pages={42--53},
+  year={2011},
+  publisher={IEEE}
+},
+
+@inproceedings{odersky2010contracts,
+  title={Contracts for scala},
+  author={Odersky, Martin},
+  booktitle={Runtime Verification},
+  pages={51--57},
+  year={2010}
+},
+
+@inproceedings{moors2012scala,
+  title={Scala-virtualized},
+  author={Moors, Adriaan and Rompf, Tiark and Haller, Philipp and Odersky, Martin},
+  booktitle={Proceedings of the ACM SIGPLAN 2012 workshop on Partial evaluation and program manipulation},
+  pages={117--120},
+  year={2012},
+  organization={ACM}
+},
+
+@incollection{hage2007heuristics,
+  title={Heuristics for type error discovery and recovery},
+  author={Hage, Jurriaan and Heeren, Bastiaan},
+  booktitle={Symposium on Implementation and Application of Functional Languages ({IFL})},
+  year={2007}
+},
+
+@incollection{konat2013declarative,
+  title={Declarative name binding and scope rules},
+  author={Konat, Gabri{\"e}l and Kats, Lennart and Wachsmuth, Guido and Visser, Eelco},
+  booktitle={International Conference on Software Language Engineering ({SLE})},
+  pages={311--331},
+  year={2013}
+},
+
+@inproceedings{lorenzen2013modular,
+  title={Modular and automated type-soundness verification for language extensions},
+  author={Lorenzen, Florian and Erdweg, Sebastian},
+  booktitle = {International Conference on Functional Programming ({ICFP})},
+  year={2013}
+},
+
+@inproceedings{auslander1996fast,
+  title={Fast, effective dynamic compilation},
+  author={Auslander, Joel and Philipose, Matthai and Chambers, Craig and Eggers, Susan J and Bershad, Brian N},
+  booktitle = {International Conference on Programming Language Design and Implementation ({PLDI})},
+  year={1996}
+},
+
+@article{grant2000dyc,
+  title={{DyC}: an expressive annotation-directed dynamic compiler for {C}},
+  author={Grant, Brian and Mock, Markus and Philipose, Matthai and Chambers, Craig and Eggers, Susan J},
+  journal={Theoretical Computer Science},
+  volume={248},
+  number={1},
+  pages={147--199},
+  year={2000}
+},
+
+@article{mukherjee2009spatio,
+  title={Spatio-temporal thermal-aware job scheduling to minimize energy consumption in virtualized heterogeneous data centers},
+  author={Mukherjee, Tridib and Banerjee, Ayan and Varsamopoulos, Georgios and Gupta, Sandeep KS and Rungta, Sanjay},
+  journal={Computer Networks},
+  volume={53},
+  number={17},
+  pages={2888--2904},
+  year={2009}
+}

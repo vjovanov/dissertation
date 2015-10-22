@@ -262,8 +262,9 @@ definitions that are provided in the DSL.
 
 
 trait VectorDSL extends Base {
+  val Vector = new VectorOps(Const(Vector))
 
-  object Vector {
+  implicit class VectorOps(o: Rep[Vector.type]) {
     def fromSeq[T:Numeric:TypeTag](seq: Rep[Seq[T]])
       (implicit sc: SourceContext): Rep[Vector[T]] =
       vector_fromSeq(seq)
@@ -1019,7 +1020,7 @@ DSL intrinsification maps directly embedded versions
    \item \emph{Scala object accesses} e.g., \code{Vector} in \code{Vector.fill} is viewed as a constant. This allows
     the DSL authors to re-define the default behavior of object access. Translating objects is optional as
     leaving their original semantics simplifies the implementation of the deep embedding,
-    but requires special cases in type translation.\todo{link to the examples}
+    but requires special cases in type translation.
   \end{enumerate}
 
 
@@ -1105,7 +1106,7 @@ function types of the form \code{$A$ => $B$} in the direct embedding into
 \code{Rep[$A$] => Rep[$B$]} in the deep embedding (where \code{Rep} again
 designates IR types). Instead of constructing an IR node for function application, such functions reify the
 whole body of the function starting with IR nodes passed as arguments. The effect of such
-reification is equivalent to inlining. This function representation is used in LMS~\cite{rompf_lightweight_2012} by default
+reification is equivalent to inlining. This function representation is used in LMS~\cite{rompf2012lightweight} by default
 and we use it in \figref{fig:translation-example}. The translation functions are defined as:
 \renewcommand*{\mathellipsis}{%
   \mathinner{{\ldotp}{\ldotp}{\ldotp}}%
@@ -1227,11 +1228,10 @@ In \yy we chose the operation translations that closely match the structure of
 Vector.fill(1)(42)
 \end{lstparagraph}
 except for the abstraction leaks of the deep embedding (\S \ref{sec:abstraction-leaks}).
-This approach requires less code than than ``naked'' AST manipulation\todo{cite}, e.g:\begin{lstparagraph}
+This approach requires less code than than ``naked'' AST manipulation~\cite{visser2004program}, e.g:\begin{lstparagraph}
 VectorFill(Const(1), Const(42))
 \end{lstparagraph}
 
-\todo{calling the methods}
 
 \subsection{Translation as a Whole}
 \label{sec:translation-example}
@@ -1496,7 +1496,7 @@ of individual language constructs without a need to redefine all other language 
 In \figref{fig:interface-identity-dsl} method \code{hole} has a slightly different  representation than what is presented in \S \ref{sec:translation}. Method \code{hole}
  has an additional parameter for the run-time type information~(\code{tpe: TypeTag[T]}).
  This parameter is passed explicitly by \yy to allow the compiler to infer the type arguments
- of the method hole. This allows additional freedom for defining the interface of hole~(see \todo{embedding with custom types}).
+ of the method hole. This allows additional freedom for defining the interface of hole~(see \S \ref{sec:embedding-with-custom-types}).
 
 
 \begin{figure}
@@ -1512,8 +1512,9 @@ trait FunctionsInterface {
 
 trait IdentityInterface with FunctionsInterface {
   // constants and captured variables
-  def lift[T](v: T): T
-  def hole[T](id: Long, tpe: TypeTag[T]): T
+  def $\$$lift[T](v: T): T
+  def $\$$hole[T](id: Long, tpe: TypeTag[T]): T
+  def $\$$tpe[T]: TypeTag[T]
 
   // control structures
   def $\$$ifThenElse[T](cond: Boolean, thn: => T, els: => T): T
@@ -1575,8 +1576,9 @@ trait GenericFunctionsBase extends PolymorphicBase {
 
 trait PolymorphicInterface extends GenericFunctionsBase {
   // constants and captured variables
-  def lift[T](v: T): R[T]
-  def hole[T](id: Long, tpe: TypeTag[T]): R[T]
+  def $\$$lift[T](v: T): R[T]
+  def $\$$hole[T](id: Long, tpe: TypeTag[T]): R[T]
+  def $\$$tpe[T]: TypeTag[T]
 
   // control structures
   def $\$$ifThenElse[T](cnd: R[Boolean], thn: => R[T], els: => R[T]): R[T]
@@ -1613,7 +1615,7 @@ An object from the direct embedding should be represented with an appropriate \c
  of extension methods that represent its operations. For example, to support the \code{println}
  method on the \code{Predef} object the deep embedding must introduce a lifting construct and
  an extension method on \code{R[Predef.type]}:\begin{lstparagraph}
- def lift(c: Predef.type): R[Predef.type] = Const(Predef)
+ def $\$$lift(c: Predef.type): R[Predef.type] = Const(Predef)
  implicit class PredefOps(predef: R[Predef.type]) {
    def println(p: R[Any]): R[Unit] = \\...
  }
@@ -1678,7 +1680,7 @@ a drawback that curred functions are not allowed.
 
 \paragraph{Eager inlining without function virtualization.} Without virtualization the interface
 for functions in the deep embedding is not necessary. The deep embedding will use the
-functions from the host language. This kind of embedding is the primary choice of DSLs based on LMS\footnote{LMS supports both generic polymorphic embedding and embedding with eager inlining. However, in LMS DSLs\todo{cite} and tutorials\todo{cite} eager inlining is more common.}.
+functions from the host language. This kind of embedding is the primary choice of DSLs based on LMS\footnote{LMS supports both generic polymorphic embedding and embedding with eager inlining. However, in LMS DSLs~\cite{rompf2012lightweight} and tutorials eager inlining is more common.}.
 
 \section{Embedding With Custom Types}
 \label{sec:embedding-with-custom-types}
@@ -1763,9 +1765,9 @@ deep embedding.
 One way to achieve such type map is to use function overloading in Scala. The deep embedding should have one
 \code{hole} and \code{lift} method for each type in the direct embedding. For example, lifting the
 type \code{Int} is achieved with:\begin{lstparagraph}
-def hole(id: Long, tpe: TypeTag[scala.Int]): this.Int =
+def $\$$hole(id: Long, tpe: TypeTag[scala.Int]): this.Int =
   new Hole(sym, v) with IntOps
-def lift(v: scala.Int): this.Int =
+def $\$$lift(v: scala.Int): this.Int =
   new Const(v) with IntOps
 \end{lstparagraph}
 
@@ -1853,7 +1855,7 @@ amounts of memory. When multiple frameworks use compilation without coordination
 system resources are easily exhausted.
 
 \yy currently does not provide a way to coordinate compilation of different DSLs. Resolving this
- problem has been studied before in context of JIT compilation \todo{cite jit compilation} and
+ problem has been studied before in context of JIT compilation~\cite{arnold2000adaptive,kulkarni2011} and
  it falls out of the scope of this \work.
 
 \section{Using \yy for the Deep Embedding}
@@ -1922,7 +1924,7 @@ Reifying the DSL IR after the translation requires executing the code that is ge
  after the direct-to-deep translation. Since the translation happens during program type-checking
  the executable version of the translated DSL does not exist. To execute this code there
  are two possibilities:\begin{itemize}
- \item {\bf Use compilation.} Since all the captured variables are replaced by holes~(\todo{ref}) the
+ \item {\bf Use compilation.} Since all the captured variables are replaced by holes~(\S \ref{sec:constants-and-free-variables}) the
   deep embedding can be compiled down to executable code separately from the rest of the host language program.
   Then the deep embedding binary can be executed to obtain the domain-specific IR.
 
@@ -1942,7 +1944,7 @@ Compilation has an upfront cost of compiling the code but the execution is optim
 The DSL program that is being compiled to the executable during host language type-checking
  does not have terms that can not be compiled:\begin{itemize}
   \item All captured variables have been converted into calls to \code{hole} by the translation.
-  \item Class and object definitions in the DSL are forbidden by the virtualization phase. \todo{check}
+  \item Class and object definitions in the DSL are forbidden by the virtualization phase.
   \item Usage of definitions (i.e., classes, traits, objects, and methods) that are compiled in the same compilation
    unit is impossible. The direct embedding does not contain equivalents for these objects and they can
    not be accepted by operation translation.
