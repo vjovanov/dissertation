@@ -1991,7 +1991,7 @@ With the specialized interpreter special care must be taken with higher-order fu
 
 
 
-\chapter{Improving Error Reporting of DSLs}
+\chapter{Improving Error Reporting of Embedded DSLs}
 \label{sec:error-reporting}
 
 The error reporting of the deep embedding does not blend into the host language in two ways:
@@ -2105,8 +2105,201 @@ the DSL author can choose an adequate implementation (e.g., one presented by Rom
 
 
 
-\chapter{Reducing Runtime Overheads of the Deep Embedding}
+\chapter{Reducing Run-Time Overheads of the Deep Embedding}
 \label{sec:reducing-runtime-overheads}
+
+\section{Introduction: Runtime Overheads}
+\label{sec:runtime-overheads-deep}
+
+% Overheads
+The deep embedding without translation necessarily introduces overheads overheads. As the
+DSL compilation is performed at host language run-time it incurres additional execution steps. We categorize overheads
+related to run-time DSL compilation in the following categories:\begin{itemize}
+ \item {\bf DSL program reification} is the time necessary to reify the program.
+ \item {\bf DSL compilation} is the process after reification that applies domain-specific optimizations and
+   generates the final version of the code.
+\end{itemize}
+
+Since the deep programs are compiled at run-time captured variables are seen by the DSL
+  as compile-time constants. Those captured variables are, then, further used in compilation
+  decisions. The DSL compiler, without user modifying the program, can not distinguish between
+  captured variables and constants.  Let's examine a simple Slick DSL program that queries the database
+  for finding all cars with price higher than \code{minPrice}:\begin{lstparagraph}
+def expensiveCars(minPrice: Double): Seq[Car] =
+  TableQuery[Car].filter(c => c.price > minPrice).result
+\end{lstparagraph}
+Here the query must be compiled with every call to \code{expensiveCars} method as for
+each call to the method the generated SQL will be different. In Slick both reification
+and query compilation will happen at every execution of the method \code{expensiveCars}.
+
+
+Without translation or modification of the DSL programs the deep embedding must
+ at every program execution at least reify the program.
+ Without users modifying the code, DSL compilers can not distinguish between
+ constants and captured variables. Therefore, in order to see if recompilation is required
+ the deep embedding must reify the IR every time and verify that all DSL compilation-time
+ constants are the same.
+
+Some DSLs solve this by making explicit parametrization of captured variables. This way the captured
+ variables are marked by the programmer and the DSL program is written outside of the scope to avoid
+ re-reification of the program. For example, Slick supports query templates where the user first
+ defines a query that is compiled once and then uses it later. For example, definition of the \code{expensiveCars} query is:\begin{lstparagraph}
+val expensiveCarsCompiled = Compiled((minPrice: Rep[Double]) =>
+  TableQuery[Car].filter(c => c.price > minPrice))
+
+def expensiveCars(minPrice: Double): Seq[Car] =
+  expensiveCarsCompiled(minPrice).result
+ \end{lstparagraph}
+ and its later usage would not recompile the query on every execution. However, we see that
+ the user has to augment the program significantly in order to avoid re-compilation.
+
+% The recompilation can be replaced with just reification.
+In all deep embedding we have seen both reification and compilation are performed on every
+ execution. Compilation on every execution, however, could be avoided by modifying the user program to include
+ a unique identifier for each program. With the unique identifier the DSL could only reify
+ the program and compare it to the previous reifications of the same program. If they are the same
+ the compiled result could be reused. This way the deep DSLs could avoid full recompilation
+ at every execution. Possible way to add an identifier to the program is by passing them as parameters:\begin{lstparagraph}
+ new VectorDSL(uid) { \* DSL Program that is only reified. *\ }
+ \end{lstparagraph}
+
+% To see we measured reification overheads of LMS
+
+In \S \ref{sec:measuring-overheads-in-the-deep-embedding} we measure run-time overheads for reification of
+ LMS based DSLs. We do not measure the case with full compilation as this depends on a DSL at hand.
+ Then, in \S \ref{sec:reducing-runtime-overheads} and \S \ref{sec:worfklow-for-reducing-run-time-overheads-in-multi-stage}, we describe a
+ translation-based solution for minimizing run-time overheads of the deep embedding.
+
+\section{Measuring Run-Time Overheads}
+\label{sec:measuring-overheads-in-the-deep-embedding}
+
+\section{Reducing Run-Time Overheads}
+\label{sec:reducing-run-time-overheads}
+
+% Categorize DSLs
+Before we describe our solution we will categorize DSLs based on their interaction with captured variables:\begin{itemize}
+ \item {\bf One stage DSLs.} This is the category of DSLs that never uses run-time values for optimization or compilation
+  decisions. This category of DSLs could be compiled together with the host language, thus, incurring run-time overheads. For
+  this category of DSLs we enable compilation at host-language compile time~(\S \ref{sec:avoiding-run-time-overheads-one-stage}).
+
+ \item {\bf Two-stage DSLs.} This category makes compilation decisions (e.g., optimizations) based on the captured values. These
+  DSLs benefit from compilation at host-language run time. For this category of DSLs we provide a
+  translation that removes the reification overheads~(\S \ref{sec:worfklow-for-reducing-run-time-overheads-in-multi-stage})workflow for deciding whether they will be compile
+
+  Even in multi-stage DSLs run-time compilation is not always necessary. If the DSL program does not capture
+  interesting values, or the captured values are not of interest for compilation decisions, compilation can
+  be executed at host language compile-time. For this case we introduce a DSL author controlled
+  workflow for deciding a compilation-stage~(\S \ref{sec:per-program-decision}).
+\end{itemize}
+
+\subsection{Avoiding Run-Time Overheads for One Stage DSLs}
+\label{sec:avoiding-run-time-overheads-one-stage}
+
+For this category of DSLs we exploit compile-time reification of \yy to generate
+ code at host-language compile time. After the compile-time reification of the program
+ \yy demands from the DSL to generate code. The generated code is then inlined into
+ the block where the original direct DSL program was and that direct DSL program
+ is discarded.
+
+To achieve compile-time compilation the DSL author must extend one of the two traits
+ from \figref{fig:generator-traits}. The \code{CodeGenerator} requires from the DSL author
+ to return a string with the generated code. The code should be hygienic
+ (the framework does not provide hygiene) and all captured variables should be replaced with
+ values from the \code{holes} parameter. Similarly \code{TreeGenerator} generates directly
+ Scala trees. Both trees and strings are supported since some DSL authors might prefer
+ working with quasi-quotes and trees while the others prefer strings.
+
+\begin{figure}
+\begin{listingtiny}
+trait Generator
+
+trait CodeGenerator extends Generator {
+  def generate(holes: String*): String
+}
+
+trait TreeGenerator extends Generator {
+  def generate(c: Context)(holes: c.Tree*): c.Tree
+}
+\end{listingtiny}
+\caption{Interface for generating code at host-language compile time.}
+  \label{fig:generator-traits}
+\end{figure}
+
+
+\subsection{Reducing Run-Time Overheads in Two-Stage DSLs}
+\label{sec:worfklow-for-reducing-run-time-overheads-in-multi-stage}
+
+% Ideally we would simply hoist the DSL definition outside the program.
+In case of two-stage DSLs, ideally, we would reify and compile the DSL only
+for the first execution and when the captured values that affect compilation
+decisions are changed. Also, the DSL would decide on its recompilation based on
+the values that are passed to its \code{execute} method.
+
+Ideally, we would simply convert the DSL instantiation and reification into a the global value definition and
+instead of the original direct program invoke \code{execute} on that global definition. The
+invocations of the \code{execute} method would take care of recompilation in case when
+input values change. For example, a simple direct program\begin{lstparagraph}
+vectorDSL { Vector.fill(1000, 1) }
+\end{lstparagraph} would be converted into a definition\begin{lstparagraph}
+val prog<UID> = new VectorDSL {
+  def main() = lift(Vector).fill(lift(1000), lift(1))
+}
+\end{lstparagraph}
+and the original DSL would be replaced with\begin{lstparagraph}
+prog<UID>.execute[Vector[Int]]()
+\end{lstparagraph}
+
+
+% In Scala this is not possible.
+In case of \yy this is not possible due to Scala limitations. In Scala macros are
+not allowed to introduce global definitions. Therefore the unique value \code{prog<ID>} can
+not be defined from the translation macro.
+
+% We use mutable state to store reified DSLs.
+To overcome this issue \yy gives DSL programs a unique identifier and stores them
+ in a global \code{ConcurrentHashMap}. With this modification the previous program becomes\begin{lstparagraph}
+val prog = YYStorage.programs.computeIfAbsent(<UID>, { _ =>
+  new VectorDSL {
+    def main() = lift(Vector).fill(lift(1000), lift(1))
+})
+prog.execute[Vector[Int]]()
+\end{lstparagraph}
+where \code{computIfAbsent} assures thread-safe access and instantiates the DSL only once: the DSL is instantiated
+ when the unique identifier is not found in a map and that is only on the first execution.
+ All issues related to concurrency that might arise from recompilation inside the \code{execute}
+ method are left for the DSL author to resolve.
+
+
+% Performace once it is done.
+
+\subsection{Per-Program Decision on the DSL Compilation Stage}
+\label{sec:per-program-decision}
+
+% Have no interest in runtime values
+Compilation of two-stage DSLs still introduces a large compilation overhead in the first run
+ and minor overheads for fetching the DSL in consecutive runs. This is not always necessary
+ as two-stage DSLs can be compiled at host-language run-time when their compilation decisions
+ do not depend on captured values. This happens in two cases: \emph{i)} no values are captured by the DSL program,
+ and \emph{ii)} captured values can not be used for optimization.
+
+In order to compile these two categories at host-language compile time \yy must get an
+ answer from the DSL compiler: are captured values of interest for optimizations. To this
+ end \yy provides an interface \code{Staged} from \figref{fig:staged}. The method
+ \code{compileTimeCompiled} is invoked during host-language compilation time to determine the
+ stage of a program. The trait \code{Staged} depends on the trait \code{Generator} as in
+ order to perform compile-time DSL compilation the DSL must be able to generate code.
+
+\begin{figure}
+\begin{listingtiny}
+trait Staged { self: Generator =>
+  def compileTimeCompiled: Boolean
+}
+\end{listingtiny}
+\caption{Interface for determining the compilation stage of a DSL at host-language compilation time.}
+  \label{fig:staged}
+\end{figure}
+
+If the method \code{compileTimeCompiled} returns \code{true} the DSL will be compiled at compile time with no run-time overheads (as described in \S \ref{sec:avoiding-run-time-overheads-one-stage}). If the method returns \code{false} the DSL will be compiled at run-time (as described in \S \ref{sec:worfklow-for-reducing-run-time-overheads-in-multi-stage}). The decision about compilation stage is domain-specific: it is made in the DSL component by analyzing usage of holes in the reified body.
 
 
 \compilation{
@@ -2121,9 +2314,7 @@ the DSL author can choose an adequate implementation (e.g., one presented by Rom
 \chapter{Evaluation and Case Studies}
 \label{sec:ch2-evaluation}
 
-We compared the deep embedding generation of \yy with Forge on three Delite-based
- deep \edsls: OptiML, OptiQL, and Vector~(\S \ref{subsec:eval-deepgen}).
-Then, we measured the effect of concealing the deep embedding by counting the
+We measured the effect of concealing the deep embedding by counting the
 number of obviated annotations related to deep embedding in the test suites of OptiML
 and OptiGraph EDSLs~(\S \ref{subsec:correctness}). Finally, we evaluated the ease
 of adopting \yy for the existing deep \edsl Slick~\cite{slick}
@@ -2131,69 +2322,6 @@ of adopting \yy for the existing deep \edsl Slick~\cite{slick}
 the current version of the interface. We do not report on execution speed since performance
 benefits of the deep embedding have been studied previously~\cite{rompf_optimizing_2013,forge}.
 
-\section{Automatic Deep EDSL Generation}
-\label{subsec:eval-deepgen}
-
-To evaluate the automatic deep EDSL generation for OptiML, OptiQL, and Vector,
-we used Forge~\cite{forge}, a Scala based meta-EDSL for generating both direct
-and deep EDSLs from a single specification. Forge already contained
-specifications for OptiML and OptiQL.
-
-To avoid re-typing OptiML and OptiQL we modified Forge to generate the direct
-embedding from its specification and generated the direct embeddings
-from the existing Forge based \edsl specifications. Then, we used our automatic deep
-generation tool to convert these direct embeddings into their deep
-counterparts. Since, deep \edsls mostly consist of boilerplate the generated
-embeddings have a similar number of LOC as the handwritten counterparts. For all
-three \edsls, we verified that tests running in the direct embeddings behave the
-same as the tests for the deep embeddings.
-
-In Table \ref{tbl:deepgen}, we give a line count comparison for the code in
-the direct embedding, Forge specification, and deep embedding for three \edsls:
-\emph{i) OptiML} is a Delite-based \edsl for machine learning,
-\emph{ii) OptiQL} is a Delite-based \edsl for running in-memory queries, and
-\emph{iii) Vector} is the EDSL shown as an example throughout this paper.
-We are careful with measuring lines-of-code (LOC) with Forge and the deep EDSLs: we only
-count the parts which are generated out of the given direct EDSL.
-
-Overall, \yy requires roughly the same number of LOC as Forge to specify the DSL.
-This can be viewed as positive result since Forge relies on a specific meta-language
- for defining the two embeddings. \yy, however, uses Scala itself
-for this purpose and is thus much easier to use. In case of OptiML, Forge
-slightly outperforms \yy. This is because Forge supports meta-programming at
-the level of classes while Scala does not.
-
-\begin{table}[ht]
-\caption{LOC for direct EDSL, Forge specification, and deep EDSL.}
-\label{tbl:deepgen}
-\centering
-\begin{tabularx}{\linewidth}{ X X X X }
-\toprule
- EDSL       &   Direct      &     Forge     &   Deep      \\ \midrule
-OptiML      &   1128        &     1090    &   5876      \\
-OptiQL      &   73          &     74      &   526       \\
-Vector      &   70          &     71      &   369       \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-We did not compare the efforts required to specify the DSL with \yy and Forge. The
-reason is twofold:
-\begin{itemize}
-
-\item It is hard to estimate the effort required to design a DSL. If the same
-person designs a single DSL twice, the second implementation will always be
-easier and take less time. On the other hand, when multiple people implement a DSL their skill levels
-can greatly differ. Finally, DSL design is technically demanding and it is hard to find
-a large enough group to conduct a statistically significant user
-study.
-
-\item Writing the direct embedding in Scala is arguably simpler than writing a
-Forge specification. Forge is Delite-specific language and uses a custom
-preprocessor to define method bodies in Scala. Thus, learning a new language and
-combining it with Scala snippets must be harder than just writing idiomatic
-Scala.
-\end{itemize}
 
 \section{No Annotations in the Direct Embedding}
 \label{subsec:correctness}

@@ -191,6 +191,71 @@ trait. To this effect, we implemented Sprinter~\cite{sprinter}, a library that g
 correct and human readable code out of Scala ASTs. The generated source code
 is used to represent the lowering specification of every IR node.
 
+\section{Evaluation}
+\label{sec:eval-deepgen}
+
+To evaluate the automatic deep EDSL generation for OptiML, OptiQL, and Vector,
+we used Forge~\cite{forge}, a Scala based meta-EDSL for generating both direct
+and deep EDSLs from a single specification. Forge already contained
+specifications for OptiML and OptiQL.
+
+To avoid re-typing OptiML and OptiQL we modified Forge to generate the direct
+embedding from its specification and generated the direct embeddings
+from the existing Forge based \edsl specifications. Then, we used our automatic deep
+generation tool to convert these direct embeddings into their deep
+counterparts. Since, deep \edsls mostly consist of boilerplate the generated
+embeddings have a similar number of LOC as the handwritten counterparts. For all
+three \edsls, we verified that tests running in the direct embeddings behave the
+same as the tests for the deep embeddings.
+
+In Table \ref{tbl:deepgen}, we give a line count comparison for the code in
+the direct embedding, Forge specification, and deep embedding for three \edsls:
+\emph{i) OptiML} is a Delite-based \edsl for machine learning,
+\emph{ii) OptiQL} is a Delite-based \edsl for running in-memory queries, and
+\emph{iii) Vector} is the EDSL shown as an example throughout this paper.
+We are careful with measuring lines-of-code (LOC) with Forge and the deep EDSLs: we only
+count the parts which are generated out of the given direct EDSL.
+
+Overall, \yy requires roughly the same number of LOC as Forge to specify the DSL.
+This can be viewed as positive result since Forge relies on a specific meta-language
+ for defining the two embeddings. \yy, however, uses Scala itself
+for this purpose and is thus much easier to use. In case of OptiML, Forge
+slightly outperforms \yy. This is because Forge supports meta-programming at
+the level of classes while Scala does not.
+
+\begin{table}[ht]
+\caption{LOC for direct EDSL, Forge specification, and deep EDSL.}
+\label{tbl:deepgen}
+\centering
+\begin{tabularx}{\linewidth}{ X X X X }
+\toprule
+ EDSL       &   Direct      &     Forge     &   Deep      \\ \midrule
+OptiML      &   1128        &     1090    &   5876      \\
+OptiQL      &   73          &     74      &   526       \\
+Vector      &   70          &     71      &   369       \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+We did not compare the efforts required to specify the DSL with \yy and Forge. The
+reason is twofold:
+\begin{itemize}
+
+\item It is hard to estimate the effort required to design a DSL. If the same
+person designs a single DSL twice, the second implementation will always be
+easier and take less time. On the other hand, when multiple people implement a DSL their skill levels
+can greatly differ. Finally, DSL design is technically demanding and it is hard to find
+a large enough group to conduct a statistically significant user
+study.
+
+\item Writing the direct embedding in Scala is arguably simpler than writing a
+Forge specification. Forge is Delite-specific language and uses a custom
+preprocessor to define method bodies in Scala. Thus, learning a new language and
+combining it with Scala snippets must be harder than just writing idiomatic
+Scala.
+\end{itemize}
+
+
 \chapter{Dynamic Compilation of Domain-Specific Languages}
 \label{sec:dynamic-compilation}
 
