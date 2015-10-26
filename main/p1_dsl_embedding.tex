@@ -2003,14 +2003,25 @@ We compare compilation and interpretation on synthetic DSL programs based on LMS
 
 In \ref{fig:interpretation-vs-compilation} we see that reification by
  compilation-and-execution has a constant overhead of 0.4 seconds after which it reifies 166 lines of code per second. On the other hand, interpretation has small initial overhead of 2ms but reifies 62.5 lines of code per second.
- Compilation becomes faster than interpretation for programs that have more than \todo{60} lines of code.
+ Compilation becomes faster than interpretation for programs that have more than 60 lines of code.
  We explain the small difference in execution speed (without the initial overhead) between compilation-and-execution and interpretation by the manner in which newly compiled code is executed on the JVM. Since the newly compiled code is loaded for the first time
  the JVM will use its own interpreter to execute it. This interpreter is only slightly faster than
  the Scala interpreter and significantly slower than the JIT compiled code which reifies 16000 lines per second.
 
-By analyzing the application suites of LMS based DSLs we see that more than 95\% of the
- have less than 60 lines of code. To this end we chose interpretation as the default
+By analyzing the application suites of LMS based DSLs we see that more than 90\% of the
+ DSL programs have less than 60 lines of code. To this end we chose interpretation as the default
  choice for compile-time reification of DSLs in \yy.
+
+
+
+
+
+
+
+
+
+
+
 
 
 \chapter{Improving Error Reporting of Embedded DSLs}
@@ -2134,8 +2145,8 @@ the DSL author can choose an adequate implementation (e.g., one presented by Rom
 \label{sec:runtime-overheads-deep}
 
 % Overheads
-The deep embedding without translation necessarily introduces overheads overheads. As the
-DSL compilation is performed at host language run-time it incurres additional execution steps. We categorize overheads
+The deep embedding without translation necessarily introduces overheads. As the
+DSL compilation is performed at host language run-time it incurs additional execution steps. We categorize overheads
 related to run-time DSL compilation in the following categories:\begin{itemize}
  \item {\bf DSL program reification} is the time necessary to reify the program.
  \item {\bf DSL compilation} is the process after reification that applies domain-specific optimizations and
@@ -2176,13 +2187,13 @@ def expensiveCars(minPrice: Double): Seq[Car] =
  the user has to augment the program significantly in order to avoid re-compilation.
 
 % The recompilation can be replaced with just reification.
-In all deep embedding we have seen both reification and compilation are performed on every
+In all deep embeddings we have seen both reification and compilation are performed on every
  execution. Compilation on every execution, however, could be avoided by modifying the user program to include
  a unique identifier for each program. With the unique identifier the DSL could only reify
  the program and compare it to the previous reifications of the same program. If they are the same
  the compiled result could be reused. This way the deep DSLs could avoid full recompilation
  at every execution. Possible way to add an identifier to the program is by passing them as parameters:\begin{lstparagraph}
- new VectorDSL(uid) { \* DSL Program that is only reified. *\ }
+ new VectorDSL(uid) { \* DSL Program that is only reified to avoid compilation *\ }
  \end{lstparagraph}
 
 % To see we measured reification overheads of LMS

@@ -322,22 +322,20 @@ In this dissertation we improve the language support for embedded domain specifi
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Part 1
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Improving User Experience in the Deep Embedding}
+\subsection{Part 1: Improving User Experience in the Deep Embedding}
 \label{sec:user-experience}
 %%
 %% Concealing the deep embedding.
 %%
-\todo{fix this!}
-In the first part of the thesis we improve user experience of the deep embedding by
- exploiting the complementary nature of shallow and deep embedding. We use the shallow embedding
- for program development and, when performance is important,
- we translate the shallow program into the corresponding deep program.
+
+We improve user experience of the deep embedding by exploiting the complementary nature of shallow and deep embedding.
+ We use the shallow embedding for program development when good DSL user interface is important and not the performance.
+ In production, when performance is important, we use the automatic translation from shallow program
+ into the corresponding deep program.
 
 
-Using the shallow embedding for development provides users with idiomatic interfaces,
- allows easy debugging, and gives comprehensible type errors. The translation allows
- to improve other aspects of the deep embedding such as error reporting and run-time overheads.
-
+We show the types of deep embeddings supported by \yy (\S \ref{sec:deep-embedding-implementations}), how DSL reification at host language compile-time~(\S \ref{sec:compile-time-reification}) can be used to improve error reporting~(\S \ref{sec:error-reporting}) and reduce
+run-time overheads of the deep embedding. Finally, we show the overview of the framework~(\S \ref{sec:putting-it-all-together}).
 
 %%
 %% Simple translation resolves all the problems with deep embedding of DSLs.
@@ -350,18 +348,17 @@ Using the shallow embedding for development provides users with idiomatic interf
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Part 2
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Automating Development of the Deep Embedding}
+\subsection{Part 2: Automating Development of the Deep Embedding}
 \label{sec:automating-developemnt}
 
- \todo{fix this!}
- In the first part of the thesis we required that the deep embedding interface
- and implementation corresponds to the shallow embedding. In practice,
- this is error prone and requires great effort on the part of a DSL author. Further,
- handling of internal DSL transformations was performed by AST manipulation or
- re-use of the deep embedding. Finally, the DSL authors had to take care of dynamic
- compilation of the deep embedding.
+% In the first part of the thesis we required that the deep embedding interface
+% and implementation corresponds to the shallow embedding. In practice,
+% this is error prone and requires great effort on the part of a DSL author. Further,
+% handling of internal DSL transformations was performed by AST manipulation or
+% re-use of the deep embedding. Finally, the DSL authors had to take care of dynamic
+% compilation of the deep embedding.
 
- In the second part of the thesis we ease the development of the deep embedding: \begin{itemize}
+ In the second part of the thesis we ease and automate development of the deep embedding: \begin{itemize}
 
    \item By re-using the shallow-to-deep translation to allow user friendly
     transformations in the deep embedding~(\S \ref{sec:yy-for-transformations}).
@@ -378,7 +375,7 @@ Using the shallow embedding for development provides users with idiomatic interf
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Part 3
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Removing Abstraction Overheads in Shallow Domain-Specific Languages}
+\subsection{Part 3: Removing Abstraction Overheads in DSLs}
 \label{sec:removing-abstraction-overheads}
 %%
 %% Evaluation of different approaches to partial evaluation.
