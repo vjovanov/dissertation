@@ -7,43 +7,42 @@ Infrastructure of our society is controlled by billions of lines of code execute
  mobile devices, routers, personal computers, and device controllers. There are
  several million programmers worldwide writing that code mostly
  in \emph{general-purpose programming languages} such as JavaScript, Java, Python,
- and C\#. Advancements in our society's infrastructure are depend on evolution of the code that controls it and
- evolution of code is influenced by \emph{programmer productivity}.
+ and C\#. Advancements in our society's infrastructure depend on evolution of the code that controls it and
+ evolution of code is directly influenced by \emph{programmer productivity}.
 
  % Advancements in our society's infrastructure directly depend on productivity of the programmers that write programs that control it.
 
 % High-level of abstraction.
 Modern general-purpose programming languages make programmers productive by
- providing language constructs with \emph{high levels of abstraction}. Abstract constructs foster
- writing concise programs that are easy to comprehend. Unfortunately, abstraction comes with a cost: each layer of
- abstraction must be executed on a \emph{target platform}. This execution takes time and energy, i.e.,
- computations with high-level of abstraction take more time and energy.
+ providing constructs that allow high levels of \emph{abstraction}. Good abstractions lead to
+ concise programs that are easy to comprehend. Unfortunately, abstraction comes with a cost: each layer of
+ abstraction must be executed on a \emph{target platform} and makes programs \emph{inefficient}.
 
 % The performance is important for our environment.
-Inefficient and long running programs slow down decision making and use excess energy
+Inefficient, long running, programs slow down decision making and use excess energy
  for computation. The amount of energy used for computation is becoming a significant
  portion of the overall energy consumption in the world. It is estimated that 2\% of
  electricity budget in the United States is used for only data center computations~\cite{mukherjee2009spatio}. If
  we would write more efficient programs the IT infrastructure would advance faster and consume less energy.
 
 % Low-level specialized code and heterogeneous platforms
-Writing efficient programs in general-purpose programming languages, however, leads to low productivity.
- To make programs efficient programmers usually write them with low-level of abstraction and hand-craft their programs for the particular platform where the program is executed~\cite{lee2011implementing}. The problem becomes even worse on \emph{heterogeneous platforms} where programmers are faced with multiple \emph{computing targets} such as parallel CPUs, GPUs, and FPGAs. With heterogeneous
- platforms programmers must specialize their programs for each target separately.
+Writing efficient programs in general-purpose programming languages, however, lead us back to
+ low productivity. To make programs efficient programmers usually remove abstractions and
+ hand-craft their programs for the particular platform where the program is executed~\cite{lee2011implementing}.
+ The problem becomes even worse on \emph{heterogeneous platforms} where programmers are faced with multiple \emph{computing targets} such as parallel CPUs, GPUs, and FPGAs. With heterogeneous platforms programmers must specialize their programs for each target separately.
 
 % General purpose programming languages won't cut it for achieving both high-productivity and specialized code.
 %  - compiler general purpose
 %  - language too broad for both high-performance
-\paragraph{Why compilers can not optimize high-level programs?} For compilers of
+\paragraph{Why general-purpose languages can not optimize abstract programs?} For compilers of
  general-purpose programming languages it is hard to remove the abstraction overheads
- and at the same time target heterogeneous platforms. The two main reasons general
- purpose compilers can not achieve these goals are:\begin{itemize}
+ and at the same time target heterogeneous platforms. The main reasons for this are:\begin{itemize}
 
- \item General purpose compilers reason about general computations and can not reason
-   about \emph{specific domains} such as linear algebra and relational algebra. This reduces
-   the number of possible optimizations they can apply to the programs.
+ \item General purpose compilers reason about general computations and are agnostic to
+  \emph{specific domains} such as linear algebra and relational algebra. This reduces
+   the number of possible optimizations they can perform.
 
- \item During compilation compilers are faced with a overwhelming number of choices
+ \item General purpose compilers are faced with a overwhelming number of choices
    for optimization. Each choice exponentially increases a \emph{search space}
    that the compiler needs to explore. Finding a specific solution that is optimal
    for a given platform in this wast space is in most cases unfeasible. The only way
@@ -68,36 +67,42 @@ Domain-specific languages (DSLs) provide a \emph{restricted} interface that allo
  same time highly optimize them for execution on different target platforms. The restricted
  interface allows the optimizer to extract the \emph{domain knowledge} from user programs.
  The domain knowledge is used to define a larger space of possible program executions
- and to guide the optimizer in exploring that space. The restricted interface and domain knowledge can
- further be used to execute on heterogeneous targets~\cite{chafi_language_2010}.
+ and to guide the optimizer in exploring that space. The restricted interface and the domain knowledge
+ can further be used to target heterogeneous platforms~\cite{chafi_language_2010}.
 
 % Examples of super successful DSLs
 A successful example of a DSL is the Standard Query Language (SQL) with millions of active
  users worldwide. SQL concisely expresses the domain of data querying and uses
- the knowledge about relational algebra to optimize data queries. SQL, as such,
- provides the base for almost all enterprise applications in the world.
+ the knowledge about relational algebra to optimize data queries as good as performance experts.
+ SQL, as such, provides the base for almost all enterprise applications in the world.
 
 \subsection{Kinds of DSLs}
 \label{sec:kinds-of-dsls}
 
 DSLs can be implemented in two major categories: \emph{i)} as \emph{external DSLs} that
- have a specialized compiler for the language, \emph{ii)} \emph{internal} or \emph{embedded DSLs} that are embedded inside a general-purpose host language.
+ have a specialized compiler for the language, and \emph{ii)} as \emph{internal} or \emph{embedded DSLs}
+ that are \emph{embedded} inside a general-purpose host language.
 
 \paragraph{External DSLs.} The implementation of a usable external (or \emph{stand-alone})
  DSL requires building a \emph{language ecosystem} which consists of a compiler and a complete
- tool chain consisting of IDE integration, debugging, and documentation
- tools. This is a great undertaking that can in many cases outweigh the
+ tool chain (IDE integration, debugging, documentation tools, etc.). This is a great undertaking that can in many cases outweigh the
  benefits of building an external DSL.
-\todo{fix tool chain}
 
-External DSLs usually start as small concise languages but through their development end up with features of general-purpose language\footnote{At the moment there is no scientific evidence for this claim except for the discussion thread at \url{http://lambda-the-ultimate.org/node/4560}}. As DSLs become popular their language designers can not resist the user's demand for features of general-purpose languages. These features, as they are added after the initial language design, do not always fit well into the original language. For example, SQL in most databases supports constructs like loops, variables, and hash-maps which diverge from the domain of relational algebra.
 
-\paragraph{Embedded DSLs.} A promising alternative to external DSLs are \emph{embedded DSLs} (\edsls)~\cite{Hudak96csur}. Embedded DSLs
-are hosted in a general-purpose language and reuse large parts of its
-infrastructure: \emph{i)} IDE support, \emph{ii)} tools (e.g., debuggers and code analysis), \emph{iii)} compilation pipeline (e.g., parser, type-checker, optimizations, and code generation), and \emph{iv)} standard library. Since general-purpose languages are designed for general
- purpose code and the \todo{standard library growth of embedded DSLs is well supported}. Many
- general-purpose features already exist and those that have to be added fit well with the
- general-purpose host language.
+External DSLs usually start as concise restricted languages but through their development
+ grow towards general-purpose languages. As DSLs become popular their language designers
+ can not resist the user's demand for features of general-purpose languages.
+ These features, as they are added after the initial language design, do not always fit
+ well into the original language. For example, SQL in most databases supports constructs
+ like loops, variables, and hash-maps which diverge from the domain of relational algebra.
+
+\paragraph{Embedded DSLs.} A promising alternative to external DSLs are
+ \emph{embedded DSLs} (\edsls)~\cite{Hudak96csur}. Embedded DSLs are hosted in a
+ general-purpose language and reuse large parts of its infrastructure:
+ \emph{i)} IDE support, \emph{ii)} tools (e.g., debuggers and code analysis),
+ \emph{iii)} compilation pipeline (e.g., parser, type-checker, optimizations, and code generation),
+ and \emph{iv)} standard library. Since general-purpose languages are designed for general
+ purpose constructs, growth towards general-purpose constructs is well supported.
 
 For the purpose of the following discussion, we distinguish between two main types of embeddings: \emph{shallow} and \emph{deep} embeddings.
 
@@ -128,15 +133,17 @@ For the purpose of the following discussion, we distinguish between two main typ
 
 \subsection{Comparison of DSL Kinds}
 \label{sec:comparison-of-dsl-kinds}
+
 % What we will compare
-In this section we will show a brief comparison of programmability and performance
- of different DSL kinds. As it is hard to quantify and exactly judge programmability,
- in the following discussion we will make binary decision whether DSLs are easy to
- program or not. Scientifically proving how programmable is a DSL kind would require
- user studies which we did not perform, but we rather build on informal collective experience.
+In this section we will compare DSL kinds with respect to programmability and performance.
+ As it is hard to quantify and exactly judge programmability, in the following discussion we
+ will make a binary decision whether DSLs are easy to program or not. Scientifically proving
+ how programmable is a DSL kind would require user studies which we did not perform--we rather
+ build on informal collective experience.
 
 % Comparison of different DSL types.
-To compare programmability of different DSL kinds we introduce two types of programmers:\begin{itemize}
+To compare programmability of different DSL kinds we introduce two types of programmers
+ for which we will judge programmability:\begin{itemize}
   \item {\bf DSL users} are people that use a DSL to model and solve their tasks.
    This is a larger group of programmers as, usually, there are more language users
    than language authors. Therefore, it is good to optimize the design of DSLs for
@@ -157,19 +164,23 @@ To compare programmability of different DSL kinds we introduce two types of prog
 For the DSL authors developing external DSLs is a different story. Although, the development
  process is not hard as DSL authors design their own compiler, the amount of work
  required to build a language ecosystem is tremendous. Therefore, we categorize
- external DSLs as \emph{hard to develop}. % cite
+ external DSLs as \emph{hard to develop}.
 
 Finally, external DSLs have \emph{high performance}. The language and the compiler can be
  designed such that they extract all domain-knowledge from user programs. This domain knowledge
  can then be used to optimize programs. Good example of high-performance DSLs is
- Spiral~\cite{puschel2005spiral} as it thoroughly defines and  uses the domain
- knowledge to define and explore the entire search space in order to find optimal
- programs.
+ Spiral~\cite{puschel2005spiral} as it thoroughly defines and uses the domain
+ knowledge to explore the entire search space in order to find optimal programs.
 
 
 \paragraph{Shallowly embedded DSLs.} We categorize shallow DSLs as \emph{easy to program} for
  the DSL users but less so than the external DSLs. Syntax and error reporting of the host language
- typically can not be modified to perfectly fit the domain. However, languages with flexible syntax~\cite{moors_scala-virtualized_2012,odersky2010contracts} and powerful type systems can closely model many domains. Some host languages have language extensions for introducing extensible syntax~\cite{SugarJ} and customizable error reporting~\cite{hage2007heuristics,heeren2003scripting} further improving the interface of DSLs. Finally, shallow DSLs have perfect interoperability with the host language libraries as the values in the embedded language directly correspond to the values in the host language.
+ typically can not be modified to perfectly fit the domain. However, languages with
+ flexible syntax~\cite{moors_scala-virtualized_2012,odersky2010contracts} and
+ powerful type systems can closely model many domains. Some host languages have
+ language extensions for introducing extensible syntax~\cite{SugarJ} and customizable error reporting~\cite{hage2007heuristics,heeren2003scripting} further improving the interface of DSLs. Finally, shallow DSLs have
+ perfect interoperability with the host language libraries as the values in the embedded
+ language directly correspond to the values in the host language.
 
 For the DSL authors basic shallowly embedded DSLs are \emph{easy to program} as their
  development is similar to development of host language libraries. This makes it easy
@@ -184,28 +195,26 @@ performance overheads.
 
 \paragraph{Deeply embedded DSLs.} For the DSL users deeply embedded DSLs are not ideal,
  and we categorize them as \emph{hard to program}. The reification in the host language
- is inevitably leads to abstraction leaks~(\S \ref{sec:abstraction-leaks}) such as
+ inevitably leads to abstraction leaks~(\S \ref{sec:abstraction-leaks}) such as
  convoluted interfaces, difficult debugging, incomprehensible type errors, run-time error reporting,
  and others~(see \ref{sec:abstraction-leaks}).
 
 For the DSL author developing a DSL in the deep embedding is \emph{not easy}. Unlike with
  external DSLs where the difficulty comes from the amount of work required to develop
- the language ecosystem, in deep embeddings it is difficult to retrofit reification in the host language.
- The DSL author is required to exploit complicated type system features to
+ the language ecosystem, in deep embeddings it is difficult to retrofit reification
+ in the host language. The DSL author is required to exploit complicated type system features to
  minimize the abstraction leaks caused by the deep embedding.
 
 % High-level of abstraction, good user interface, great performance, portable code.
-Deeply embedded DSLs have \emph{high performance}. An important advantage of deep embeddings over shallow ones is that DSL
-  terms can be easily manipulated by the host language. This enables domain-specific
-  optimizations~\cite{rompf2012lightweight,rompf_optimizing_2013}
+Deeply embedded DSLs have \emph{high performance}. An important advantage of deep
+  embeddings over shallow ones is that DSL terms can be easily manipulated by the
+  host language. This enables domain-specific optimizations~\cite{rompf2012lightweight,rompf_optimizing_2013}
   that lead to orders-of-magnitude improvements in program performance, and
-  multi-target code generation~\cite{brown_heterogeneous_2011}.
-
-Another advantage is that deeply embedded DSLs are compiled at host language run-time and therefore
- support dynamic compilation~\cite{auslander1996fast,grant2000dyc}: values in the host language are treated as constants during DSL compilation. Dynamic compilation can improve performance in certain types of DSLs (e.g., linear algebra and query languages).
+  multi-target code generation~\cite{brown_heterogeneous_2011}.Another advantage is that deeply embedded DSLs are compiled at host language run-time and therefore support dynamic compilation~\cite{auslander1996fast,grant2000dyc}: values in the host language are treated as constants during DSL compilation.
+  Dynamic compilation can improve performance in certain types of DSLs (e.g., linear algebra and query languages).
 
 
-\paragraph{Comparison summary.} We summarize different DSL kinds in \tabref{tbl:comparison}.
+\paragraph{Comparison summary.} We summarize our discussion in \tabref{tbl:comparison}.
  We can see that none of the DSL kinds provides an ideal solution for DSL users, DSL authors,
  and high-performance. Depending on the domain that is being targeted by the language some
  kinds of DSLs might be more suitable than the others.
@@ -214,7 +223,7 @@ Another advantage is that deeply embedded DSLs are compiled at host language run
 
 \newcolumntype{Y}{>{\centering\arraybackslash}X}
 \begin{table}[ht]
-\caption{Compares different DSL kinds with respect to ease of programming and performance. The sign \checkmark means ``good'' and the sign X means ``bad''. }
+\caption{Compares different DSL kinds with respect to ease of programming and performance. The sign \checkmark stands for ``good'' and the sign X stands for ``bad''. }
 \label{tbl:comparison}
 \centering
 \begin{tabularx}{\linewidth}{ X Y Y Y }
@@ -232,11 +241,11 @@ Performance           &  \checkmark   &      X         &   \checkmark \\
  the domain knowledge. Typically, languages for domains with well defined transformation
  rules (e.g., relational algebra, linear algebra, logical formulas, etc.) benefit the
  most as those rules can be used to define the space of possible transformations. The optimizer
- can then explore the space of possible executions and find the optimal one.
+ can explore the space of possible executions and find the optimal one.
 
 For languages whose domain allows transformations based on the domain knowledge external
  and deeply embedded DSLs are a good fit. With those approaches the DSL author can extract
- the domain knowledge from the programs and use it for optimizations. Some DSL authors
+ the domain knowledge from programs and use it for optimizations. Some DSL authors
  choose to use the deep embedding~(e.g., OptiML~\cite{sujeeth_optiml:_2011}) and
  some external DSLs~(e.g., WebDSL~\cite{groenewegen2008webdsl}). Both of these approaches
  are important--discussing which DSL kind is a better choice is out of the scope of this thesis.
@@ -248,13 +257,13 @@ Shallow embeddings, on the other hand, are a good fit for languages where exploi
  and XML, testing frameworks, and Actors~\cite{haller2009scala}.
 
 
-\section{Importance of Support for DSL}
+\section{Importance of Support for DSLs}
 \label{sec:importance-of-language-support}
 
 % No approach to DSLs is good in all aspects.
 To allow both high-level of abstraction and high performance of programs it is necessary
  enable wide adoption of domain specific languages. However, from \tabref{tbl:comparison} we
- see that support for domain specific languages is not ideal. External DSLs require
+ see that support for domain-specific languages is not ideal. External DSLs require
  tremendous amounts of work to be implemented, deep embeddings are not ideal in terms
  of DSL user experience and DSL author productivity, and shallow embeddings lack in
  ways to remove the abstraction overheads.
@@ -271,7 +280,7 @@ In the recent years \emph{language workbenches}~\cite{fowler2005language} such a
   IDE support~\cite{lorenzen2013modular}, and debuggers (the detailed overview of language workbenches is presented by Erdweg et al.~\cite{erdweg2013state}).
 
 % For improving deep embeddings.
-Support for deeply embedded domain specific languages has improved in the interface and
+Support for deeply embedded domain specific languages has improved in the DSL user interface and
 ease of development in recent years. Frameworks like Forge~\cite{forge}
 , similarly to language workbenches, allow generating the deep embedding from a declarative
 specification. Scala-Virtualized~\cite{rompf_scala-virtualized:_2009} proposes overriding
@@ -304,7 +313,11 @@ overview see of approaches and their comparison see \S \ref{sec:related-work-sta
 \label{sec:improving-language-support}
 
 In this dissertation we improve the language support for embedded domain specific languages. The
- thesis is divided in three parts: \emph{i)} Part I describes a translation from shallow to deep embedding that is used to user experience in deeply embedded DSLs, \emph{ii)} describes automation of the deep embedding design in order to minimize the effort required by the DSL author, \emph{iii)}we propose a method for improving performance of shallow DSLs by removing abstraction overheads in a user-controlled and predictable way.
+ thesis is divided in three parts: \emph{Part I} improves on DSL user experience in deeply embedded DSLs,
+ \emph{Part II} describes automation of the deep embedding development in order to minimize
+ the effort required by the DSL author, \emph{Part III)} describes a method for improving
+ performance of shallow DSLs by removing abstraction overheads in a user-controlled
+ and predictable way.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Part 1
@@ -314,14 +327,16 @@ In this dissertation we improve the language support for embedded domain specifi
 %%
 %% Concealing the deep embedding.
 %%
-
+\todo{fix this!}
 In the first part of the thesis we improve user experience of the deep embedding by
- using an equivalent shallow embedding for program development. Then, when performance is
- important, we translate the shallow program into the corresponding deep program
- with a compile-time type-driven translation.
+ exploiting the complementary nature of shallow and deep embedding. We use the shallow embedding
+ for program development and, when performance is important,
+ we translate the shallow program into the corresponding deep program.
+
 
 Using the shallow embedding for development provides users with idiomatic interfaces,
- allows easy debugging, and gives comprehensible type errors. The translation allows to improve other aspects of the deep embedding such as error reporting and run-time overheads.
+ allows easy debugging, and gives comprehensible type errors. The translation allows
+ to improve other aspects of the deep embedding such as error reporting and run-time overheads.
 
 
 %%
@@ -338,6 +353,7 @@ Using the shallow embedding for development provides users with idiomatic interf
 \subsection{Automating Development of the Deep Embedding}
 \label{sec:automating-developemnt}
 
+ \todo{fix this!}
  In the first part of the thesis we required that the deep embedding interface
  and implementation corresponds to the shallow embedding. In practice,
  this is error prone and requires great effort on the part of a DSL author. Further,
@@ -350,11 +366,12 @@ Using the shallow embedding for development provides users with idiomatic interf
    \item By re-using the shallow-to-deep translation to allow user friendly
     transformations in the deep embedding~(\S \ref{sec:yy-for-transformations}).
 
-   \item By re-using the shallow-to-deep translation to generate the deep embedding based on the
+   \item By re-using the shallow-to-deep translation to automatically generate the deep embedding based on the
     shallow embedding~(\S \ref{sec:deep-gen}).
 
-   \item By providing an abstraction in the deep embedding for managing decisions about
-     dynamic compilation of deeply embedded DSLs~(\S \ref{sec:dynamic-compilation}).
+   \item By providing an abstraction in the deep embedding for automatically managing
+     dynamic compilation of deeply embedded DSLs~(\S \ref{sec:dynamic-compilation}). Compilation
+     guards, and code caches are introduced without any DSL author intervention.
 
  \end{itemize}
 
@@ -367,9 +384,11 @@ Using the shallow embedding for development provides users with idiomatic interf
 %% Evaluation of different approaches to partial evaluation.
 %%
 
- In the introductory part~(\S \ref{sec:introdution-partial-evaluation}) we evaluate existing approaches to predictably remove abstraction overheads in libraries. Then we show that none of
-  the approaches is ideal. Approaches like partial evaluation are not predictable and type-safe,
-  approaches like \code{static} terms in D are not powerful enough. Approaches like staging (both quotation and type based) require code duplication on the part of the DSL author which hampers development of shallow DSLs.
+ In the introductory chapter~(\S \ref{sec:introdution-partial-evaluation}) we evaluate
+  existing approaches for predictably removing abstraction overheads. Then we show that none of
+  the approaches is ideal for domain-specific languages. Approaches like partial evaluation
+  are not predictable and type-safe, while approaches like staging (both quotation and type based)
+  require code duplication on the part of the DSL author which hampers development of shallow DSLs.
 
 %%
 %% Polyvariant Staging for Performance of Shallow DSLs
@@ -377,8 +396,8 @@ Using the shallow embedding for development provides users with idiomatic interf
 We propose polyvariant staging~(\S \ref{sec:polyvariant-staging}) for removing abstraction
  overheads in a predictable, type-safe, and concise way. We enhance the programs with
  information about polymorphic binding-time analysis~\cite{rytz1992polyvariant}. Then we provide
-  a small set of annotations on program types to achieve type-safe partial evaluation.
-  The user has complete control over partial evaluation but since we only use types to propagate binding-time information, user programs do not require quotation and polymorphic binding-time analysis obviates the need to duplicate DSL code.
+ a small set of annotations on program types to achieve predictable partial evaluation.
+ The programmer has complete control over partial evaluation but since we only use types to propagate binding-time information, user programs do not require quotation and polymorphic binding-time analysis obviates the need to duplicate DSL code.
 
 %\section{Terminology}
 %\label{sec:terminology}
