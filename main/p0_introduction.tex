@@ -493,8 +493,7 @@ and the \code{NumericOps} trait introduces the \code{Numeric} type
 class and the corresponding support for numeric operations.  The
 bottom of the figure shows an example usage of the \edsl. The constant
 literals in the program are lifted to the IR through \emph{implicit
-  conversions} introduced by
-\code{NumericOps}~\cite{oliveira_type_2010}.
+  conversions} introduced by \code{NumericOps}~\cite{oliveira_type_2010}.
 
 \begin{figure}
 \begin{listingtiny}
@@ -516,7 +515,7 @@ trait VectorDSL extends NumericOps with Base {
 
 new VectorDSL { // EDSL program
   Vector.fill(1,3) + Vector.fill(2,3)
-} // returns a regular Scala Vector(3,6)
+} // after execution returns a regular Scala Vector(3,6)
 \end{listingtiny}
 \caption{\label{lst:lms} Minimal \edsl for vector manipulation.}
 \end{figure}

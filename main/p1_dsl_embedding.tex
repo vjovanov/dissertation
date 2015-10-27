@@ -725,8 +725,8 @@ achieved by translating them into suitable method invocations as shown by of Car
 
 % Discuss variables.
  \paragraph{Value bindings.} Scala has multiple constructs for value binding: values, variables, and lazy values. \yy translates
-  definition of all values into methods as well as accesses to them. Abstraction over values accesses is
-  necessary for tracking effects in case of variables, access order in case of lazy values, and for instrumentation
+  definition of all values into methods as well as value accesses. Abstraction over values accesses is
+  necessary for tracking effects in case of variables, access order in case of lazy values, and for instrumentation and verification\footnote{Spores~\cite{miller2014spores} by Miller et al. is an example where simple values should be virtualized for verification purposes.}
   in case of simple values.
 
  \paragraph{Universal methods.} Scala is designed such that the types \code{Any} and
@@ -2347,6 +2347,65 @@ If the method \code{compileTimeCompiled} returns \code{true} the DSL will be com
 
 \chapter{Putting it All Together}
 \label{sec:putting-it-all-together}
+
+\begin{figure*}[!ht]
+\centering
+\includegraphics{diagrams/workflow.pdf}
+\caption{Overview of the Yin-Yang framework: the workflow diagram depicts what
+happens to the DSL program throughout the compilation pipeline.}
+\label{fig:workflow}
+\end{figure*}
+
+% Provide an overview of the Yin-Yang operation.
+In this chapter we provide an overview over the individual steps in \yy operation. \yy makes
+ decisions based on the development mode, the user written programs, and the DSL definition. These
+ decisions use reflection to achieve debugging, language restriction, domain-specific error reporting, and
+ DSL compilation at host-language compile time.
+
+\figref{fig:workflow} shows the workflow around the core translation that allows
+ all benefits of the deep embedding during program development and hides all its abstraction leaks.
+
+ The direct program is first translated into the deep embedding and type checked. At this point, since the translation
+ is guaranteed to preserve well typedness the only possible source of type errors are unsupported language
+ constructs.
+
+ At this point if the program not correct the specialized analysis for supported features is performed. The unsupported features
+  in the direct embedding are detected and reported with the precise position and specialized error messages. The reported errors
+  use the standard reporting mechanism of the host language that works in all environments (e.g., IDEs, Repl, standard error). After,
+  supported feature analysis the compilation is failed.
+
+In the correct program the next decision checks whether the DSL uses domain-specfic analysis. This check is performed by looking
+ into the hierarchy of the DSL component for the \code{StaticallyChecked} trait. If the DSL uses analysis
+ the DSL is reified at host-language compile time and the \code{staticallyCheck} method is called. The errors
+ are reported at host-language compile time and use the standard reporting mechanism. After, error reporting
+ the host-language compilation is failed.
+
+If there are no domain-specific errors or the DSL does not use domain-specific analysis \yy checks
+ whether the DSL is used in development mode. If the development mode is active
+ the original direct program is returned from and the compilation succeeds. Returning
+ the original program allows the DSL user to perform debugging in the direct embedding in
+ by inspecting the host language values.
+
+In the non-development mode the DSL is checked for the stage it should be compiled in. DSLs that
+ do not extend the \code{Generator} trait are directly sent for run-time compilation as they
+ do not expose the interface to produce the host-language code.
+
+For DSLs that expose generation there are two options: \begin{itemize}
+ \item The program does not capture any variables in which case it is sent to compilation at host-language compile time.
+ \item The program captures variables. At this point the decision on the compilation stage is based on the DSL and the program. The
+   method \code{compileTimeCompiled} is invoked on the reified DSL to determine the compilation stage.
+\end{itemize}
+
+If the DSL is compiled on the code generation is invoked on the reified DSL (method \code{generate}). The code is then inlined in the
+DSL invocation site and the original direct embedding is discarded. The compile-time compilation completely removes the run-time overheads of the deep embedding.
+
+a
+
+In case of run-time compilation the deep program is augmented with the the logic
+ to execute it with the parameters ordered by convention and to store
+ the code in a common storage. Storing the code in storage avoids reification of the
+ deep program on every execution.
+
 
 \chapter{Evaluation and Case Studies}
 \label{sec:ch2-evaluation}
