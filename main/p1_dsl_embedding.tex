@@ -1,5 +1,5 @@
 %!TEX root = ../phd.tex
-\part{Improving User Experience in Deep Embeddings}
+\part{Improving User Experience with Deep Embeddings}
 
 \chapter{Introduction: Concealing the Deep Embedding of DSLs}
 \label{sec:introduction-yy}
@@ -1990,7 +1990,8 @@ With the specialized interpreter special care must be taken with higher-order fu
 We compare compilation and interpretation on synthetic DSL programs based on LMS that vary in size from
  0 to 100 lines of code. In the benchmark we use programs that reify 5 DSL IR nodes
  per line of code\footnote{We take 5 as an average number of IR nodes per line. We calculated this number on a small set of applications from the OptiML application suite. This number, however, greatly depends on the coding style of the DSL user and the embedded language.}. For each program we measure the time it takes to instantiate the DSL compiler and
- reify the IR for a program. Benchmarks are executed on the hardware platform defined in \S \ref{sec:hardware-platform}.
+ reify the IR for a program. Benchmarks use the methodology, as well as hardware
+ and software platform defined in \S \ref{sec:hardware-platform}.
 
 \begin{figure*}[!ht]
 \centering
@@ -2187,14 +2188,12 @@ def expensiveCars(minPrice: Double): Seq[Car] =
  the user has to augment the program significantly in order to avoid re-compilation.
 
 % The recompilation can be replaced with just reification.
-In all deep embeddings we have seen both reification and compilation are performed on every
+In all deep embeddings we have seen, both reification and compilation are performed on every
  execution. Compilation on every execution, however, could be avoided by modifying the user program to include
  a unique identifier for each program. With the unique identifier the DSL could only reify
- the program and compare it to the previous reifications of the same program. If they are the same
- the compiled result could be reused. This way the deep DSLs could avoid full recompilation
- at every execution. Possible way to add an identifier to the program is by passing them as parameters:\begin{lstparagraph}
- new VectorDSL(uid) { \* DSL Program that is only reified to avoid compilation *\ }
- \end{lstparagraph}
+ the program and compare it to the previous reifications of the same program that are stored
+ in global storage. If they are the same the compiled result could be reused. This way the deep DSLs could avoid full recompilation
+ at every execution.
 
 % To see we measured reification overheads of LMS
 
@@ -2207,7 +2206,28 @@ In \S \ref{sec:measuring-overheads-in-the-deep-embedding} we measure run-time ov
 \label{sec:measuring-overheads-in-the-deep-embedding}
 
 % The overheads
+We measured the cost of reification in two DSLs: \emph{i)} the core of LMS, and \emph{ii)} in the Slick DSL.
+The benchmark first initializes the compiler and then it runs a mix of synthetic lines of code where
+each line reifies an average of 5 IR nodes. Benchmarks use the methodology, as well as hardware
+and software platform defined in \S \ref{sec:hardware-platform}.
 
+\begin{table}[ht]
+\caption{The initialization time and reification per line of code for Slick and LMS.}
+\label{tbl:reification-cost}
+\centering
+\begin{tabularx}{\linewidth}{ X Y Y }
+\toprule
+EDSL       &   Initialization Cost (ms)    &     Reificaiton per LoC (ms)\\ \midrule
+Slick      &           0.17                &     0.16                   \\
+LMS        &           0.11                &     0.04                   \\
+Simple IR  &           0                   &     0.02                  \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+
+% World perspective
+In the benchmark the initialization phase of
 % It is meaningful in tight loops.
 
 \section{Reducing Run-Time Overheads}
