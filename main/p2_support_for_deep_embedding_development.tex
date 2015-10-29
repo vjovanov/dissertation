@@ -4,9 +4,170 @@
 
 
 
-
 \chapter{Simplifying Transformations in the Deep Embedding}
 \label{sec:yy-for-transformations}
+
+% Typically in the deep embedding the DSL author has to perform transformations over the internal representation
+%  - lowerings, simplifications, global transformations. For all of these it is necessary to construct
+%    new ASTs, and deconstruct ASTs.
+
+In the deep embedding the DSL author often performs transformations over the intermediate representation. The
+transformations can be \emph{lowering} transformations that convert
+domain-specific IR nodes to a lower-level representation, program optimizations, global
+transformations, etc. In all of these categories the DSL author must \emph{deconstruct} ASTs
+ and constructs new ASTs based on the information from deconstructed ASTs.
+
+% In the deep embeddings there are two ways to achieve this:
+ % using the naked translation. Example.
+ % using the deep embedding it self. Example. Explanation.
+In the deep embeddings the common ways to achieve transformations are:\begin{itemize}
+
+\item {\bf AST manipulation.} The ``naked'' AST manipulation is typically achieved by
+ using the constructors and deconstructors of the AST nodes. The disadvantage of this
+ technique is that, although it gives complete control over the ASTs, it is verbose. To demonstrate
+ the verbosity of the approach we show the lowering transformation of \code{Vector.fill}:\begin{lstparagraph}
+ case VectorFill(size, v) =>
+   VectorFromSeq(SeqFill(s, v))
+ \end{lstparagraph}
+
+\item {\bf Using the deep embedding interface.} An alternative to AST manipulation is
+ the reuse of the deep embedding for transformations~\cite{rompf_optimizing_2013}. This
+ approach improves the interface for the DSL authors. The lowering of \code{VectorFill}
+ could be performed as:\begin{lstparagraph}
+ case VectorFill(size, v) =>
+   Vector.fromSeq(Seq.fill(s, v))
+ \end{lstparagraph}
+ This approach, however, has several drawbacks that we describe in the next section.
+\end{itemize}
+
+\section{Drawbacks of the Deep Embedding as a Transformer}
+\label{sec:drawbacks-of-the-deep-embedding-as-a-transformer}
+
+\paragraph{Non-idiomatic interface.} Using deep embedding for transformations improves over
+AST manipulations but it is not ideal. The subset of the problems with the deep embedding
+ interface~(\S \ref{sec:abstraction-leaks}) persists. The DSL authors are, however, more
+ accustomed to the convoluted interfaces and complicated type errors.
+
+% In LMS based DSLs lifting your code
+\paragraph{Masking the standard library.} In DSLs based on polymorphic embedding there
+ is a particular difficulty. When the DSL back-end uses the interface of the deep embedding
+ it often masks the interface of the standard library. The DSL authors then must use full
+ paths to access objects in the standard library. For example, constructing a simple hash-map
+ must be achieved with \begin{lstparagraph}
+collection.immutable.HashMap("Int"->typeTag[Int])
+\end{lstparagraph}
+because simply calling \code{HashMap("Int"->typeTag[Int])} would be captured by the deep interface
+and result in producing a \code{HashMapApply} IR node.
+
+\paragraph{Implicitly passed parameters.} Implicit parameters that were used during construction
+of case classes are not implicit during their deconstruction. This makes it hard to use the same implicit
+mechanisms in the deep embedding in the presence of deconstruction.
+
+For the constructor of \code{Vector.fill} the type information can be passed as an implicit argument
+and stored in the IR node:\begin{lstparagraph}
+def vector_fill[T](v: Rep[T], size: Rep[Int])
+  (implicit tp: TypeTag[T]) = VectorFill(v,size,tp)
+\end{lstparagraph}
+
+In the scope where the node is deconstructed, however, the parameter is not present: \begin{lstparagraph}
+case VectorFill(v, size, tp) => // tp is not implicit in this scope
+\end{lstparagraph}
+
+In order to pass the type information in their transformations the users are faced with
+ two choices: \emph{i)} pass the information manually, \emph{ii)} or re-introduce the implicit
+ information manually in the scope. Both approaches make it harder to transform
+ the ASTs with the deep embedding.
+
+\section{Quotation for Specifying Transformations}
+\label{sec:yy-as-quotation}
+
+% We improve this by using the core translation for quotation.
+To improve transformations in the deep embedding we again use the direct embedding
+ as the front end. From the direct Instead of using the interface of the deep embedding we simply use the the direct
+ embedding and use the translation to achieve node reification.
+
+By using only the direct interface there are no issues with the abstraction leaks of the deep embedding.
+Further, the difference between the host language terms and deep terms is clearly separated with the scope of
+the translation. The lowering of \code{VectorFill} with the translation goes as follows:\begin{lstparagraph}
+case VectorFill(size, v) => trans {
+  Vector.fromSeq(Seq.fill(s, uq(v)))
+}
+\end{lstparagraph}
+where the \code{trans} is the translation defined similarly to the DSL translation.
+
+
+% We modify two parts of the translation: the captured variables, and scope injection.
+The translation we use here has several differences compared to translation for DSL programs:\begin{itemize}
+\item {Signature of the translation method.} The return type of the translation method (\code{trans} in the
+example) is modified:\begin{lstparagraph}
+def trans[T](body: => T): $\tau$(T)
+\end{lstparagraph} The return type is now the type in the deep embedding ($\tau$ is the type translation for a given DSL).
+
+\item {Captured variables.} The captured variables (\code{s} and \code{v} in the example)
+ have incompatible types with the direct embedding. We tackle this problem by allowing
+ \emph{unquoting} of captured variables with the function \code{uq} that has a signature:\begin{itemize}
+  def uq[T](t: $\tau$(T)): T
+\end{itemize}
+An implicit version of this function is also provided that allows the user to omit the function in many cases.
+
+In the example, the value \code{v} must use the \code{uq} function as
+the function \code{fill} is generic and passing a \code{$\tau$(t)} would pass the type checking and never
+introduce the implicit version of the function. The captured variable \code{s}, on the other hand,
+has the expected type \code{Int}. The wrong expected type will trigger the implicit version of \code{uq}
+that unquotes the term.
+
+\item {Scope injection.} For AST transformation the scope injection phase is defined differently. In case of the
+ polymorphic embeddings, where all DSL definitions are inside Scala components, the scope injection phase is not necessary. The
+ translated code is already in the scope of the deep embedding definitions.
+
+\end{itemize}
+
+\subsection{Passing Implicit Parameters}
+\label{sec:dealing-with-implict-parameters}
+
+To minimize the work required to deal with implicit arguments we modify the transformation
+method introduce them automatically. First we allow the method to accept a list of
+ nodes whose parameters with type information should be implicit in the scope:\begin{lstparagraph}
+def trans[T](nodes: Any*)(body: => T): $\tau$(T)
+\end{lstparagraph}
+
+To allow introduction of implicits we modify the scope injection phase to introduce the
+implicits required by the DSL author. The way how implicits are extracted from the node
+are left to the DSL author. In the following example we will find all the \code{TypeTag}s
+in the signature of the node and provide them in scope implicitly. With this scheme
+the previous example becomes:\begin{lstparagraph}
+case node@VectorFill(size, v, _) => trans(node) {
+  Vector.fromSeq(Seq.fill(s, uq(v)))
+}
+\end{lstparagraph}
+and it expands to\begin{lstparagraph}
+case node @ VectorFill(size, v, _) =>
+  class T // A synthetic class
+  implicit val impl$\$$0 = node.tpe.asInstanceOf[TypeTag[T]]
+  val v$\$$1 = v.asInstanceOf[$\tau$(T)]
+
+  lift[Vector].fromSeq(lift[Seq].fill(s, v$\$$1))
+}
+\end{lstparagraph}
+
+
+\section{AST Deconstruction}
+\label{sec:yy-ast-deconstruction}
+
+A similar mechanism as with node construction could be used for AST deconstruction. In this case the
+ deep embedding domain must be changed to perform deconstruction instead of construction of IR nodes.
+ The deconstruction of nodes can be achieved by using Scala quasi-quotation in pattern matching. Deconstruction
+ of \code{VectorFill}, from the example, would be achieved with:\begin{lstparagraph}
+ case ext"Vector.fill($\$$size, $\$$v)" =>
+   // here variables `size' and `v' have expected types
+ \end{lstparagraph}
+
+
+ In order to achieve this we must provide an alternative deep embedding for
+  node deconstruction with the interface prescribed by the core translation. We
+  leave this for future work.
+
+
 
 
 

@@ -3,7 +3,7 @@
 \label{sct:introduction}
 
 % How worlds infrastructure depends on high-productivity (elaborate what is high-productivity).
-Infrastructure of our society is controlled by billions of lines of code executed in data-centers,
+Our society's infrastructure is controlled by billions of lines of code executed in data-centers,
  mobile devices, routers, personal computers, and device controllers. There are
  several million programmers worldwide writing that code mostly
  in \emph{general-purpose programming languages} such as JavaScript, Java, Python,
@@ -411,18 +411,130 @@ We propose polyvariant staging~(\S \ref{sec:polyvariant-staging}) for removing a
 % DSL author ~> author
 
 
-\chapter{Background \todo{Not Finished}}
+\chapter{Background}
 \label{ch:background}
+
+In this chapter we provide a brief introduction to the Scala Programming Language~\cite{odersky_scala_2004}~(\S \ref{sec:scala}), to embedded domain-specific languages in Scala~(\S \ref{sec:embedded-domain-specific-languages}), and to partial evaluation and staging~(\S \ref{sec:introdution-partial-evaluation}). The purpose of this chapter is to provide the necessary background for comprehending this thesis. Throughout the thesis it is assumed that the reader has basic knowledge about programming languages.
+
 
 \section{The Scala Programming Language}
 \label{sec:scala}
-% Distinguish method and functions
-% Pattern matching ~> unapply pattern
-% Prefixes
-% Extension methods
+
 % Type hierarchy
+Scala is a multi-paradigm programming language. It supports object-oriented
+programming as well as functional programming. The primary target of Scala is the
+Java Virtual Machine (JVM), although, recently Scala's dialects also target JavaScript.
+
+\paragraph{Object oriented features.} Scala types are organized in a \emph{type hierarchy}.
+At the \emph{top} of the hierarchy is type \code{Any} with its two subtypes \code{AnyVal} and \code{AnyRef}. Type \code{AnyVal} is the supertype of all primitive types (e.g., \code{Int}) while \code{AnyRef} is the supertype
+of all \emph{reference} types.
+
 % Universal method
-% Implicit arguments
+Types at the top of the hierarchy define an interface for \emph{universal methods}
+ that are available on all types in Scala. An example of such method are methods
+ \code{equals} and \code{hashCode} that are used for checking equality between two objects
+ and computing a hash code of an object.
+
+At the bottom of the hierarchy is the type \code{Nothing} which has no corresponding
+ instances. Type \code{Null} is a subtype of all reference types and has a single instance \code{null}.
+
+\paragraph{The Scala components.}
+
+% Paths
+
+\subsection{Functional Programming Features}
+
+% Distinguish method and functions
+Besides methods Scala provides native support for functions. In Scala functions can be defined
+as terms with a special syntactic construct (e.g., \code{(x: Int)=> x + 1}). The functions
+in Scala are internally represented as classes with an \code{apply} method that holds
+the body of the function. For each cardinality of the function there is a corresponding
+class. For example, function \code{(x: Int)=> x + 1} is represented with:\begin{lstparagraph}
+class anonymous$\$$uid extends Function2[Int, Int] {
+  def apply(x: Int) = x + 1
+}
+\end{lstparagraph}
+
+\todo{Function currying.}
+
+The Scala function evaluation, by default, first executes the method arguments and then
+ the function body (by-value evaluation order). However, at the method definition site it
+ is possible to declare certain method parameters as evaluated by-name, that is the function
+ is evaluated before the arguments. To achieve this in Scala one writes an \code{=>} before
+ the type of the function parameter. A by-name parameter of type \code{Int} is written as
+ \code{p: => Int}.
+
+
+% Pattern matching ~> unapply pattern
+Scala supports \emph{pattern matching} over terms.  In Scala the \code{case classes} are
+used to define that classes can be deconstructed with pattern matching. A case class is
+a data-type that, among other things, has a synthesized factory method \code{apply} and
+\emph{extractor} for deconstruction. Extractor is a method named \code{unapply} that
+is used by pattern matching to deconstruct an object. By using
+methods for deconstruction Scala decouples the deconstruction of a type and its
+data representation \cite{emir2007matching}.
+
+The signature of an extractor method for a case class must correspond to the factory method that
+ constructs the object. If the constructor is defined as \code{(T1,...,Tn) => U)}
+ the deconstructor must have the signature \code{Any => Option[(T1,...,Tn)]}. Type \code{Option[_]}
+ is an equivalent of the \code{Maybe} monad for Scala.
+
+
+\subsection{Implicit Parameters and Conversions}
+
+Value, object, and method definitions in Scala can be declared as \emph{implicit}. Marking a
+definition as implicit allows the Scala compiler to use this method as an \emph{implicit argument} or
+for \emph{implicit conversions}. The definition is declared as implicit by writing a keyword implicit in
+front:\begin{lstparagraph}
+implicit val stream: PrintWriter
+\end{lstparagraph}
+
+Methods in Scala can have implicit parameters. Only the parameters in the last parameter list
+can be implicit, and they are declared so by writing the keyword \code{implicit} in the beginning
+of the parameter list. Inside the method definition implicit parameters are further treated as implicit
+definitions. For example, a code generation method can accept an implicit \code{PrintStream} by declaring it implicit:\begin{lstparagraph}
+def emitNode(sym: Sym, rhs: Def)(implicit stream: PrintWriter) = {
+// in the method body stream is treated as implicit
+}
+\end{lstparagraph}
+
+The implicit parameters can be passed explicitly by the programmer, however,
+ if they are omitted the Scala compiler tries to find an implicit definition
+ that can satisfy that parameter. The \code{emitNode} method can be called in two ways:\begin{lstparagraph}
+emitNode(sym, rhs)(stream) // parameter passed explicitly
+emitNode(sym, rhs)         // parameter added by the compiler
+ \end{lstparagraph}
+
+\smartparagraph{Type classes.} Type classes are in Scala~\cite{oliveira_type_2010} introduced
+ as a combination of traits, implicit definitions, and implicit parameters. Type class declaration
+ is achieved by defining a trait for that type class, e.g., \code{Numeric[T]}. Then a type class
+ instance is defined as an implicit definition that provides a type-class instance for
+ a concrete type:\begin{lstparagraph}
+implicit val intNumeric: Numeric[Int] = IntNumeric
+ \end{lstparagraph}
+
+ To \emph{constrain} a type parameter of a method or a class one adds an implicit parameter
+  that requires a presence of the type-class instance:\begin{lstparagraph}
+def sum[T](xs: List[T])(implicit num: Numeric[T]): T
+\end{lstparagraph}
+The same can be expressed with the shorthand notation for declaring type classes:\begin{lstparagraph}
+def sum[T: Numeric](xs: List[T]): T
+\end{lstparagraph}
+
+\paragraph{Implicit conversions.} Scala allows user-defined implicit conversions, besides the standard implicit conversions
+ that apply to primitive types. The implicit conversions are defined as implicit method definitions
+ that have a single non-implicit parameter list. An implicit conversion for an abstract type \code{Rep[Int]}
+ can be defined as:\begin{lstparagraph}
+implicit def intOps(x: Rep[Int]): IntOps = new IntOps(x)
+\end{lstparagraph}
+
+The implicit conversions are applied when a given term does not have correct types. The compiler then
+tries to find the implicit conversion method that would ``fix'' the program and have correct types. The
+
+
+\smartparagraph{Extension methods.}
+% Extension methods
+
 
 
 \subsection{Scala Macros}
@@ -466,11 +578,10 @@ vectorDSL {
 \label{sec:embedded-domain-specific-languages}
 
 In this section we provide background information necessary for understanding this
-thesis. We briefly explain the core concepts of Lightweight Modular Staging
+thesis. \todo{fix this} We briefly explain the core concepts of Lightweight Modular Staging
 \cite{rompf2012lightweight,rompf_optimizing_2013} and Scala Macros
-\cite{burmako_scala_2013}. Throughout the paper we assume familiarity with
-the basics of the Scala Programming Language~\cite{odersky_scala_2004}.
-\subsection{Scala}
+\cite{burmako_scala_2013}.
+
 \subsection{Deep Embedding of DSLs with LMS}
 \label{subsec:deep-embedding}
 
@@ -493,7 +604,7 @@ and the \code{NumericOps} trait introduces the \code{Numeric} type
 class and the corresponding support for numeric operations.  The
 bottom of the figure shows an example usage of the \edsl. The constant
 literals in the program are lifted to the IR through \emph{implicit
-  conversions} introduced by \code{NumericOps}~\cite{oliveira_type_2010}.
+  conversions} introduced by \code{NumericOps}.
 
 \begin{figure}
 \begin{listingtiny}
@@ -536,5 +647,5 @@ Operations on \code{Rep[T]} terms are added by implicit conversions that are int
 LMS has been successfully used by project Delite~\cite{brown_heterogeneous_2011,composition-ecoop2013} for building DSLs that support heterogeneous parallel computing. \edsls developed with Delite cover domains
 such as machine learning, graph processing, data mining, etc.
 
-\section{Partial Evaluation and Multi-Stage Programming}
-\label{sec:partial-evaluation}
+%\section{Partial Evaluation and Multi-Stage Programming}
+%\label{sec:partial-evaluation}

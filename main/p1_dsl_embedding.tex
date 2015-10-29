@@ -1,4 +1,8 @@
 %!TEX root = ../phd.tex
+% TODO explode the related work.
+% TODO explode the Slick experiment
+% TODO explode the putting it all together
+
 \part{Improving User Experience with Deep Embeddings}
 
 \chapter{Introduction: Concealing the Deep Embedding of DSLs}
@@ -1228,7 +1232,7 @@ In \yy we chose the operation translations that closely match the structure of
 Vector.fill(1)(42)
 \end{lstparagraph}
 except for the abstraction leaks of the deep embedding (\S \ref{sec:abstraction-leaks}).
-This approach requires less code than than ``naked'' AST manipulation~\cite{visser2004program}, e.g:\begin{lstparagraph}
+This approach requires less code than ``naked'' AST manipulation~\cite{visser2004program}, e.g:\begin{lstparagraph}
 VectorFill(Const(1), Const(42))
 \end{lstparagraph}
 
@@ -2206,29 +2210,37 @@ In \S \ref{sec:measuring-overheads-in-the-deep-embedding} we measure run-time ov
 \label{sec:measuring-overheads-in-the-deep-embedding}
 
 % The overheads
-We measured the cost of reification in two DSLs: \emph{i)} the core of LMS, and \emph{ii)} in the Slick DSL.
-The benchmark first initializes the compiler and then it runs a mix of synthetic lines of code where
+We measured the cost of reification in three different IRs: \emph{i)} the core IR of LMS, \emph{ii)} the IR of the Slick DSL,
+and the \emph{iii)} a synthetic IR that only builds a simple object graph and has no reification overheads for maintaining symbol tables etc.
+The benchmark first initializes the compiler for Slick and LMS and then it runs a mix of synthetic lines of code where
 each line reifies an average of 5 IR nodes. Benchmarks use the methodology, as well as hardware
 and software platform defined in \S \ref{sec:hardware-platform}.
 
 \begin{table}[ht]
-\caption{The initialization time and reification per line of code for Slick and LMS.}
+\caption{The initialization cost and cost of reification per line of code for the simple IR, Slick, and LMS.}
 \label{tbl:reification-cost}
 \centering
 \begin{tabularx}{\linewidth}{ X Y Y }
 \toprule
-EDSL       &   Initialization Cost (ms)    &     Reificaiton per LoC (ms)\\ \midrule
-Slick      &           0.17                &     0.16                   \\
-LMS        &           0.11                &     0.04                   \\
-Simple IR  &           0                   &     0.02                  \\
+EDSL       &   Initialization Cost ($\mu{s}$)    &     Reificaiton Cost ($LoC/\mu{s}$)\\ \midrule
+Simple IR  &           0                &     0.2                  \\
+Slick      &           2                &     5                  \\
+LMS        &           1                &     24                 \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 
 % World perspective
-In the benchmark the initialization phase of
+In the benchmark the initialization phase of the reification instantiates the compiler in case of LMS and the table in case of Slick. This phase is relatively cheap of only 1 and 2 most respectively. We notice that the simple IR is far less costly
+than the IR in existing DSLs. The reason for this difference is that DSLs, besides simple reification, do other operations during reification (e.g., tracking source information, tracking types and simplifications of the IR). Finally, we see that reification in
+real-world DSLs costs between 5 and 24 $\mu{s}$ per line of code.
+
 % It is meaningful in tight loops.
+On large computations the reification costs are negligible, however, the overhead is
+ relevant when DSLs are used in tight loops. To put these numbers in perspective for 24 $\mu{s}$
+ the same hardware platform can traverse an \todo{1000} element array or sort
+ \todo{100} an element array.
 
 \section{Reducing Run-Time Overheads}
 \label{sec:reducing-run-time-overheads}
@@ -2365,7 +2377,7 @@ If the method \code{compileTimeCompiled} returns \code{true} the DSL will be com
 }
 
 
-\chapter{Putting it All Together}
+\chapter{Putting It All Together}
 \label{sec:putting-it-all-together}
 
 \begin{figure*}[!ht]
