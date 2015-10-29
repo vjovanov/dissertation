@@ -438,9 +438,6 @@ Types at the top of the hierarchy define an interface for \emph{universal method
 At the bottom of the hierarchy is the type \code{Nothing} which has no corresponding
  instances. Type \code{Null} is a subtype of all reference types and has a single instance \code{null}.
 
-\paragraph{The Scala components.}
-
-% Paths
 
 \subsection{Functional Programming Features}
 
@@ -455,7 +452,12 @@ class anonymous$\$$uid extends Function2[Int, Int] {
 }
 \end{lstparagraph}
 
-\todo{Function currying.}
+Functions as well as methods can be \emph{curried}: they can have multiple \emph{parameter lists}. For functions
+a curried function is simply a function that returns another function. For methods, Scala has special syntax
+to support multiple parameters in the definition. The following example shows a curried method and functions:\begin{lstparagraph}
+def fill(v: Int)(size: Int) // curried method
+(v: Int) => (size: Int) => fill(v)(size) // curried function
+\end{lstparagraph}
 
 The Scala function evaluation, by default, first executes the method arguments and then
  the function body (by-value evaluation order). However, at the method definition site it
@@ -529,11 +531,24 @@ implicit def intOps(x: Rep[Int]): IntOps = new IntOps(x)
 \end{lstparagraph}
 
 The implicit conversions are applied when a given term does not have correct types. The compiler then
-tries to find the implicit conversion method that would ``fix'' the program and have correct types. The
+tries to find the implicit conversion method that would ``fix'' the program to have correct types. The
+implicit conversions can be: \emph{i)} value conversions that happens when the expected type
+is not satisfied, and \emph{ii)} method conversions that happens the invoked method does not exist
+on a type. Given that \code{IntOps} has a method \code{+} the following example demonstrates both types
+of conversion:\begin{lstparagraph}
+val y: Rep[Int] = ...
+val ops: IntOps = y // value conversion
+y + 1               // method conversion
+\end{lstparagraph}
 
 
-\smartparagraph{Extension methods.}
-% Extension methods
+\smartparagraph{Extension methods.} Implicit conversions subsume the mechanism of extension methods. In Scala an
+ extension method is introduced by providing a wrapper-class (e.g., \code{IntOps}) that introduces the method and an implicit conversion that applies the wrapper. A class and an implicit conversion can be more concisely written as an \code{implicit class}.The following examples shows the implicit class that adds the \code{+} method to \code{Rep[Int]}:\begin{lstparagraph}
+ implicit class IntOps(lhs: Rep[Int]) {
+   def +(lhs: Rep[Int]): Rep[Int] = Plus(lhs, rhs)
+ }
+ \end{lstparagraph}
+
 
 
 
