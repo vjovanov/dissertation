@@ -414,7 +414,9 @@ We propose polyvariant staging~(\S \ref{sec:polyvariant-staging}) for removing a
 \chapter{Background}
 \label{ch:background}
 
-In this chapter we provide a brief introduction to the Scala Programming Language~\cite{odersky_scala_2004}~(\S \ref{sec:scala}), to embedded domain-specific languages in Scala~(\S \ref{sec:embedded-domain-specific-languages}), and to partial evaluation and staging~(\S \ref{sec:introdution-partial-evaluation}). The purpose of this chapter is to provide the necessary background for comprehending this thesis. Throughout the thesis it is assumed that the reader has basic knowledge about programming languages.
+In this chapter we provide a brief introduction to the Scala Programming Language~\cite{odersky_scala_2004}~(\S \ref{sec:scala}) and to embedded domain-specific languages in Scala~(\S \ref{sec:embedded-domain-specific-languages}). %and to partial evaluation and staging~(\S \ref{sec:introdution-partial-evaluation}).
+This chapter provides necessary background for comprehending this thesis. Throughout the thesis we assume
+ that the reader has basic knowledge about programming languages.
 
 
 \section{The Scala Programming Language}
@@ -425,53 +427,56 @@ Scala is a multi-paradigm programming language. It supports object-oriented
 programming as well as functional programming. The primary target of Scala is the
 Java Virtual Machine (JVM), although, recently Scala's dialects also target JavaScript.
 
-\paragraph{Object oriented features.} Scala types are organized in a \emph{type hierarchy}.
-At the \emph{top} of the hierarchy is type \code{Any} with its two subtypes \code{AnyVal} and \code{AnyRef}. Type \code{AnyVal} is the supertype of all primitive types (e.g., \code{Int}) while \code{AnyRef} is the supertype
-of all \emph{reference} types.
+\paragraph{Object oriented features of Scala.} Scala's types are organized in a
+ \emph{type hierarchy}. At the \emph{top} of the hierarchy is the \code{Any} type
+ with its two subtypes \code{AnyVal} and \code{AnyRef}. Type \code{AnyVal} is the
+ supertype of all primitive types (e.g., \code{Int}) while \code{AnyRef} is the supertype
+of all \emph{reference} types. At the bottom of the hierarchy is the type \code{Nothing} which has no corresponding
+ instances. Type \code{Null} is a subtype of all reference types and has a single instance \code{null}.
 
 % Universal method
-Types at the top of the hierarchy define an interface for \emph{universal methods}
- that are available on all types in Scala. An example of such method are methods
+Types at the top of the hierarchy define \emph{universal methods} that are available
+ on all their subtypes and therefore all Scala types. An example of such method are methods
  \code{equals} and \code{hashCode} that are used for checking equality between two objects
  and computing a hash code of an object.
 
-At the bottom of the hierarchy is the type \code{Nothing} which has no corresponding
- instances. Type \code{Null} is a subtype of all reference types and has a single instance \code{null}.
-
+% Components, classes, traits paths.
 
 \subsection{Functional Programming Features}
+\label{functional-programming-features}
 
 % Distinguish method and functions
 Besides methods Scala provides native support for functions. In Scala functions can be defined
 as terms with a special syntactic construct (e.g., \code{(x: Int)=> x + 1}). The functions
-in Scala are internally represented as classes with an \code{apply} method that holds
-the body of the function. For each cardinality of the function there is a corresponding
+in Scala are internally represented as classes with an \code{apply} method that defines
+the body of a function. For each cardinality (number of parameters) of the function there is a corresponding
 class. For example, function \code{(x: Int)=> x + 1} is represented with:\begin{lstparagraph}
 class anonymous$\$$uid extends Function2[Int, Int] {
   def apply(x: Int) = x + 1
 }
 \end{lstparagraph}
 
-Functions as well as methods can be \emph{curried}: they can have multiple \emph{parameter lists}. For functions
-a curried function is simply a function that returns another function. For methods, Scala has special syntax
-to support multiple parameters in the definition. The following example shows a curried method and functions:\begin{lstparagraph}
+Functions as well as methods can be \emph{curried}: they can have multiple \emph{parameter lists}.
+ A curried function is simply a function that returns another function.
+ For methods, Scala has special syntax to support multiple parameters in the definition.
+ The following example shows a curried method and functions:\begin{lstparagraph}
 def fill(v: Int)(size: Int) // curried method
 (v: Int) => (size: Int) => fill(v)(size) // curried function
 \end{lstparagraph}
 
-The Scala function evaluation, by default, first executes the method arguments and then
+The Scala function evaluation first executes method arguments and then
  the function body (by-value evaluation order). However, at the method definition site it
- is possible to declare certain method parameters as evaluated by-name, that is the function
- is evaluated before the arguments. To achieve this in Scala one writes an \code{=>} before
+ is possible to declare certain method parameters as evaluated \emph{by-name}: the function
+ is evaluated before its arguments. To achieve this in Scala one writes an \code{=>} before
  the type of the function parameter. A by-name parameter of type \code{Int} is written as
  \code{p: => Int}.
 
 
 % Pattern matching ~> unapply pattern
-Scala supports \emph{pattern matching} over terms.  In Scala the \code{case classes} are
+Scala supports \emph{pattern matching} over terms. In Scala the \code{case classes} are
 used to define that classes can be deconstructed with pattern matching. A case class is
 a data-type that, among other things, has a synthesized factory method \code{apply} and
-\emph{extractor} for deconstruction. Extractor is a method named \code{unapply} that
+an \emph{extractor} for deconstruction. Extractor is a method named \code{unapply} that
 is used by pattern matching to deconstruct an object. By using
 methods for deconstruction Scala decouples the deconstruction of a type and its
 data representation \cite{emir2007matching}.
@@ -491,10 +496,10 @@ front:\begin{lstparagraph}
 implicit val stream: PrintWriter
 \end{lstparagraph}
 
-Methods in Scala can have implicit parameters. Only the parameters in the last parameter list
-can be implicit, and they are declared so by writing the keyword \code{implicit} in the beginning
+Methods in Scala can have implicit parameters. Only the parameters in the last parameter list of a curried method
+can be implicit. They are declared implicit by writing the keyword \code{implicit} in the beginning
 of the parameter list. Inside the method definition implicit parameters are further treated as implicit
-definitions. For example, a code generation method can accept an implicit \code{PrintStream} by declaring it implicit:\begin{lstparagraph}
+definitions. For example, a code generation method can accept an implicit \code{PrintWriter} by declaring it as implicit:\begin{lstparagraph}
 def emitNode(sym: Sym, rhs: Def)(implicit stream: PrintWriter) = {
 // in the method body stream is treated as implicit
 }
@@ -508,15 +513,16 @@ emitNode(sym, rhs)         // parameter added by the compiler
  \end{lstparagraph}
 
 \smartparagraph{Type classes.} Type classes are in Scala~\cite{oliveira_type_2010} introduced
- as a combination of traits, implicit definitions, and implicit parameters. Type class declaration
- is achieved by defining a trait for that type class, e.g., \code{Numeric[T]}. Then a type class
- instance is defined as an implicit definition that provides a type-class instance for
- a concrete type:\begin{lstparagraph}
-implicit val intNumeric: Numeric[Int] = IntNumeric
+ as a combination of traits, implicit definitions, and implicit parameters. A type class declaration
+ is achieved by defining a trait with the interface for that type class, e.g., \code{Numeric[T]}. Then a type class
+ instance is defined as an implicit definition that provides a type-class instance (i.e., instance of
+ a trait) for a concrete type:\begin{lstparagraph}
+implicit val intNumeric: Numeric[Int] = new IntNumeric()
  \end{lstparagraph}
 
  To \emph{constrain} a type parameter of a method or a class one adds an implicit parameter
-  that requires a presence of the type-class instance:\begin{lstparagraph}
+  that requires presence of a type-class instance. For example, constraining \code{T} to be \code{Numeric} is achieved by
+  requiring an implicit instance of \code{Numeric} for type \code{T}:\begin{lstparagraph}
 def sum[T](xs: List[T])(implicit num: Numeric[T]): T
 \end{lstparagraph}
 The same can be expressed with the shorthand notation for declaring type classes:\begin{lstparagraph}
@@ -524,16 +530,16 @@ def sum[T: Numeric](xs: List[T]): T
 \end{lstparagraph}
 
 \paragraph{Implicit conversions.} Scala allows user-defined implicit conversions, besides the standard implicit conversions
- that apply to primitive types. The implicit conversions are defined as implicit method definitions
- that have a single non-implicit parameter list. An implicit conversion for an abstract type \code{Rep[Int]}
- can be defined as:\begin{lstparagraph}
+ that are applied to primitive types. Implicit conversions are defined as implicit method definitions
+ that have a single non-implicit parameter list and an optional implicit parameter list.
+  An implicit conversion for an abstract type \code{Rep[Int]} can be defined as:\begin{lstparagraph}
 implicit def intOps(x: Rep[Int]): IntOps = new IntOps(x)
 \end{lstparagraph}
 
-The implicit conversions are applied when a given term does not have correct types. The compiler then
-tries to find the implicit conversion method that would ``fix'' the program to have correct types. The
-implicit conversions can be: \emph{i)} value conversions that happens when the expected type
-is not satisfied, and \emph{ii)} method conversions that happens the invoked method does not exist
+The implicit conversions are applied when a given term has an incorrect type. The compiler then
+tries to find an implicit conversion method that would ``fix'' the program to have correct types. Implicit
+ conversions are categorized as: \emph{i)} value conversions that happen when the \emph{expected type} of term
+is not satisfied, and \emph{ii)} method conversions that happen when the invoked method does not exist
 on a type. Given that \code{IntOps} has a method \code{+} the following example demonstrates both types
 of conversion:\begin{lstparagraph}
 val y: Rep[Int] = ...
@@ -662,5 +668,5 @@ Operations on \code{Rep[T]} terms are added by implicit conversions that are int
 LMS has been successfully used by project Delite~\cite{brown_heterogeneous_2011,composition-ecoop2013} for building DSLs that support heterogeneous parallel computing. \edsls developed with Delite cover domains
 such as machine learning, graph processing, data mining, etc.
 
-%\section{Partial Evaluation and Multi-Stage Programming}
-%\label{sec:partial-evaluation}
+\section{Partial Evaluation and Multi-Stage Programming}
+\label{sec:partial-evaluation}
