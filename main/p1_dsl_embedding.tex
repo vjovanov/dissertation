@@ -1,5 +1,4 @@
 %!TEX root = ../phd.tex
-% TODO explode the related work.
 % TODO explode the Slick experiment
 % TODO explode the putting it all together
 
@@ -7,11 +6,12 @@
 
 \chapter{Introduction: Concealing the Deep Embedding of DSLs}
 \label{sec:introduction-yy}
+
 In \S \ref{sct:introduction} we introduced domain-specific languages and how they can
- be embedded into a host language. Then we discussed strengths and weaknesses of deep and shallow embeddings.
- In this section we compare deep and shallow embeddings and then show how they can
- be combined in order to keep all the strengths and cancel out the weaknesses with
- embedded DSLs (EDSLs).
+ be embedded into a host language. Then we discussed strengths and weaknesses of
+ deep and shallow embeddings. In this section we compare deep and shallow embeddings
+ and then show how they can be combined in order to keep all the strengths and
+ cancel-out the weaknesses with embedded DSLs (EDSLs).
 
 % Deep embedding
 
@@ -118,19 +118,18 @@ alternative interpretations of a program are required (e.g., for
 hardware generation).
 
 Once we ``broke the ice'' by using reflection it becomes simpler to further
- improve the deep embeddings. \yy enables \emph{domain-specific error reporting} at host language compile time
- by compiling a DSL program during host language compilation. It \emph{restricts} the embedded language by
+ improve the deep embeddings. \yy enables \emph{domain-specific error reporting} at host-language compile time
+ by compiling a DSL program during host-language compilation. It \emph{restricts} the embedded language by
  providing an additional verification step for producing comprehensible error messages,
- reduces long compilation times of the deep embedding by avoiding extension methods and
- directly calling reification operations, and reduces run-time overheads by compiling the
- deep programs at host language compile-time.
+ and reduces run-time overheads by compiling the deep programs at host language compile-time.
 
-Finally, to avoid error prone maintenance of synchronized direct and deep embeddings \yy reuses the core
-translation to generate the deep embeddings based on the definition of
-direct embeddings. Since the same translation is applied both for the
-\edsl definition and the \edsl program the equivalence between the
-embeddings is assured.
-
+\compilation{
+  Finally, to avoid error prone maintenance of synchronized direct and deep embeddings \yy reuses the core
+  translation to generate the deep embeddings based on the definition of
+  direct embeddings. Since the same translation is applied both for the
+  \edsl definition and the \edsl program the equivalence between the
+  embeddings is assured.
+}
 % Contributions
 \yy{} contributes to the state of the art as follows:
 \begin{itemize}
@@ -141,31 +140,31 @@ embeddings is assured.
    ensures that programs written in the direct embedding will always be correct
    in the deep embedding. The core translation is described in \S \ref{sec:translation}.
 
-  \item It allows changing different deep embedding back-ends with simple configuration
-   changes. We discuss different deep embeddings supported by \yy
-   in~\S \ref{sec:deep-embedding-implementations}.
+  \item It allows choosing different deep embedding back-ends with simple configuration
+   changes. We discuss different deep embeddings supported by \yy in~\S \ref{sec:deep-embedding-implementations}.
 
   \item It improves error reporting~(\S \ref{sec:error-reporting}) in the direct embedding by:
    \emph{i)} allowing domain-specific error reporting at host language
    compile-time~(\S \ref{sec:domain-specific-error-reporting}) and \emph{ii)}
    restricting host language features in the direct \edsl{} based on the
-   supported features of the deep \edsl{}~(\S \ref{sec:restricting}).
+   supported features of the deep DSL~(\S \ref{sec:restricting}).
 
-  \item It reduces the run-time overheads of the deep embedding~(\S \ref{sec:reducing-runtime-overheads}). The deep embeddings
-   always reify their IR before execution at runtime and thus impose execution overheads. For DSLs
-   which are fundamentally not staged \yy uses \emph{reflective instantiation} to compile DSLs at host language compile time. For staged DSLs (compiled at host language run-time) \yy avoids re-reification of
-   programs by storing them into a cache.
+  \item It reduces the run-time overheads of the deeply embedded DSL programs~(\S \ref{sec:reducing-runtime-overheads}). The deep embeddings reify their IR before execution at runtime and thus impose execution overheads. For DSLs
+   which are fundamentally not staged \yy uses \emph{compile-time reification} to
+   compile DSLs at host language compile time. For staged DSLs (compiled at host
+   language run-time) \yy avoids re-reification of programs by storing them into a cache.
 
 \compilation{
   \item It reduces large compilation times introduced by the deep embedding. The translation
    is changed such that it directly calls the reification methods without having to use
    the complicated type system constructs. Reducing compilation times is presented
    in~\S \ref{sec:minimizing-compile-times}.
-}
+
   \item It simplifies deep \edsl development and guarantees semantic equivalence
    between the direct embedding and the deep embedding by reusing the core
    translation to generate the deep \edsl definition out of the direct \edsl
    definition~(\S \ref{sec:deep-gen}).
+}
 
 \end{itemize}
 
@@ -173,17 +172,18 @@ embeddings is assured.
 % Evaluation summary
 %
 We evaluate \yy by generating 3 deep \edsls from their direct
-embedding, and providing interfaces for 2 existing \edsls. The effects
-of concealing the deep embedding and reliability of the translation
-were evaluated on 21 programs (1284 LOC), from EDSLs
-OptiGraph~\cite{composition-ecoop2013} and
-OptiML~\cite{sujeeth_optiml:_2011}. In all programs combined the
-direct implementation obviates 101 type annotations related to the
-deep embedding.
+ embedding, and providing interfaces for 2 existing \edsls. The effects
+ of concealing the deep embedding and reliability of the translation
+ were evaluated on 21 programs (1284 LOC), from EDSLs
+ OptiGraph~\cite{composition-ecoop2013} and
+ OptiML~\cite{sujeeth_optiml:_2011}. In all programs combined the
+ direct implementation obviates 101 type annotations related to the
+ deep embedding.
 
-We use \yy as a tool for generating a user-friendly frontend for the Slick DSL~\cite{slick}. This case study shows
-that developing a frontend for existing DSLs requires little effort and that
-developing an API with \yy takes far less time than the deep embedding. The complete evaluation is presented in \S \ref{sec:ch2-evaluation}.
+We use \yy as to introduce a user-friendly frontend for the Slick DSL~\cite{slick}. This case study shows
+ that developing a front-end for existing DSLs requires little effort and that developing
+ an API with \yy takes far less time than developing the deep embedding. The complete evaluation
+ is presented in \S \ref{sec:ch2-evaluation}.
 
 
 
@@ -2614,10 +2614,12 @@ Scala Virtualized~\cite{rompf_scala-virtualized:_2009} allows usage of host lang
  into the host language.
 
 Heeren et.al~\cite{heeren2003scripting,hage2007heuristics} introduce extensible
- type error reporting that can be used to improve error messages. The deep embedding
- can use their tool to improve incomprehensible error messages in the deep embedding.
+ error reporting to type systems. With their approach the library author can provide
+ custom error messages for specific usage patterns of their libraries and DSLs. This
+  can be used in the deep embedding to improve convoluted and incomprehensible error messages.
 
-Svenningsson and Axelson~\cite{svenningsson_combining_2012} propose having a small
- core as the deep embedding. Then, the DSL features are built as a shallow
- layer over the core deep embedding improving its interface. In their approach,
- however, the shallow interface is still modified to hide the IR construction.
+Svenningsson and Axelson~\cite{svenningsson_combining_2012} propose combining a small deeply embedded
+ core with a shallow front-end. The shallow front end uses the small core to provide
+ all language features to DSL users: it is a layer over the core deep embedding
+ that is used to improve its interface. In their approach, however, the shallow interface
+ is still modified to hide the IR construction.
